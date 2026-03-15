@@ -15,16 +15,14 @@ interface
 
 uses
   Classes, SysUtils, Controls, StdCtrls, Forms;
-  
-{ @abstract(@name returns @true if it can find a control that has help starting
- its search with HelpRequestControl.  The control that it finds is
- returned in HasHelpControl.)
 
- In its search, the function checks the FocusControl property of
- TCustomStaticText and TCustomLabel, the Parent property of TControl,
- and finally Application.MainForm.
+{ Looks for a control that has HelpKeyword or HelpContext, starting
+  its search with HelpRequestControl. The control that it finds is
+  returned in HasHelpControl.
 
- @name works for both HelpType = htKeyword and HelpType = htContext.}
+  This function checks the FocusControl property of
+  TCustomStaticText and TCustomLabel, the Parent property of TControl,
+  and finally Application.MainForm. }
 function GetHelpControl(const HelpRequestControl: TControl;
   out HasHelpControl: TControl): boolean;
 
@@ -92,7 +90,7 @@ begin
         // nothing left to test so quit.
         Exit;
       end;
-      
+
       // If the FocusControl of a TCustomStaticText or TCustomLabel
       // refers back to itself either directly or indirectly the
       // while loop might never exit.  The following prevents that

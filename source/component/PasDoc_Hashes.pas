@@ -40,8 +40,8 @@
 
   Programmer's information:
   @unorderedList(
-    @item(you need Freepascal (http://www.freepascal.org) or
-      Delphi (http://www.borland.com)
+    @item(you need @url(http://www.freepascal.org Free Pascal Compiler) or
+      @url(https://www.embarcadero.com/products/delphi Delphi)
       to compile this unit)
     @item(I recommend that you use Ansistrings {$H+} to be able to use keys
       longer than 255 chars))

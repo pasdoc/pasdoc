@@ -4,14 +4,30 @@
 <title>ok_complicated_record</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="bootstrap.min.css">
 <link rel="StyleSheet" type="text/css" href="pasdoc.css">
 </head>
 <body>
-<div class="container"><div class="navigation">
-<ul><li><a href="AllUnits.html">Units</a></li><li><a href="ClassHierarchy.html">Class Hierarchy</a></li><li><a href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li><a href="AllTypes.html">Types</a></li><li><a href="AllVariables.html">Variables</a></li><li><a href="AllConstants.html">Constants</a></li><li><a href="AllFunctions.html">Functions and Procedures</a></li><li><a href="AllIdentifiers.html">Identifiers</a></li></ul></div><div class="content">
+<nav class="navbar d-md-none sticky-top bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="index.html">Documentation</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarNav" aria-controls="sidebarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  </div>
+</nav>
+<div class="offcanvas-md offcanvas-start navigation" tabindex="-1" id="sidebarNav" data-bs-scroll="true">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">Documentation</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebarNav" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body py-2">
+<ul class="nav flex-column px-3"><li class="nav-item"><a class="nav-link px-2 py-1" href="AllUnits.html">Units</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="ClassHierarchy.html">Class Hierarchy</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllTypes.html">Types</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllVariables.html">Variables</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllConstants.html">Constants</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllFunctions.html">Functions and Procedures</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllIdentifiers.html">Identifiers</a></li></ul></div></div>
+<main class="pasdoc-content content">
+<div class="container-fluid py-3 px-4">
 <h1 class="unit">Unit ok_complicated_record</h1>
 <div class="sections">
-<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section"><a class="section" href="#PasDoc-Types">Types</a></div><div class="one_section">Constants</div><div class="one_section">Variables</div></div>
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section"><a class="section" href="#PasDoc-Types">Types</a></div></div>
 <span id="PasDoc-Description"></span><h2 class="description">Description</h2>
 <p>
  This unit is used for converting to and from the BigEndian format. See <a href="http://community.borland.com/article/0,1410,28964,00.html">http://community.borland.com/article/0,1410,28964,00.html</a>.</p>
@@ -33,26 +49,26 @@ Submitted in thread &quot;Pasdoc tests&quot; on pasdoc-main on 2005-04-11 by Ric
 </table>
 <span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
 <table class="summary wide_list">
-<tr class="list">
+<tr class="list visibility-published">
 <td class="itemcode"><code>function <strong><a href="ok_complicated_record.html#ConvertDouble-double-">ConvertDouble</a></strong>(const Value: double): double;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list2 visibility-published">
 <td class="itemcode"><code>procedure <strong><a href="ok_complicated_record.html#SwapDoubleBytes-PDoubleEndianCnvRec-PDoubleEndianCnvRec-">SwapDoubleBytes</a></strong>(Dest, Source: <a href="ok_complicated_record.html#PDoubleEndianCnvRec">PDoubleEndianCnvRec</a>);</code></td>
 </tr>
 </table>
 <span id="PasDoc-Types"></span><h3 class="summary">Types</h3>
 <table class="summary wide_list">
-<tr class="list">
+<tr class="list visibility-published">
 <td class="itemcode"><code><strong><a href="ok_complicated_record.html#BytePos">BytePos</a></strong> = (...);</code></td>
 </tr>
-<tr class="list2">
+<tr class="list2 visibility-published">
 <td class="itemcode"><code><strong><a href="ok_complicated_record.html#PDoubleEndianCnvRec">PDoubleEndianCnvRec</a></strong> = &circ;<a href="ok_complicated_record.TDoubleEndianCnvRec.html">TDoubleEndianCnvRec</a>;</code></td>
 </tr>
 </table>
 <h2 class="description">Description</h2>
 <h3 class="detail">Functions and Procedures</h3>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="ConvertDouble-double-"></span><code>function <strong>ConvertDouble</strong>(const Value: double): double;</code></td>
 </tr>
 <tr><td colspan="1">
@@ -68,8 +84,8 @@ Submitted in thread &quot;Pasdoc tests&quot; on pasdoc-main on 2005-04-11 by Ric
 <h6 class="description_section">Returns</h6>
 <p class="return">Value after being converted to or from the BigEndian format.</p></td></tr>
 </table>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="SwapDoubleBytes-PDoubleEndianCnvRec-PDoubleEndianCnvRec-"></span><code>procedure <strong>SwapDoubleBytes</strong>(Dest, Source: <a href="ok_complicated_record.html#PDoubleEndianCnvRec">PDoubleEndianCnvRec</a>);</code></td>
 </tr>
 <tr><td colspan="1">
@@ -80,8 +96,8 @@ Submitted in thread &quot;Pasdoc tests&quot; on pasdoc-main on 2005-04-11 by Ric
 </td></tr>
 </table>
 <h3 class="detail">Types</h3>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="BytePos"></span><code><strong>BytePos</strong> = (...);</code></td>
 </tr>
 <tr><td colspan="1">
@@ -96,8 +112,8 @@ enumeration used in variant record</p>
 </ul>
 </td></tr>
 </table>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="PDoubleEndianCnvRec"></span><code><strong>PDoubleEndianCnvRec</strong> = &circ;<a href="ok_complicated_record.TDoubleEndianCnvRec.html">TDoubleEndianCnvRec</a>;</code></td>
 </tr>
 <tr><td colspan="1">
@@ -105,4 +121,6 @@ enumeration used in variant record</p>
 <code>PDoubleEndianCnvRec</code> is a pointer to a <a class="normal" href="ok_complicated_record.TDoubleEndianCnvRec.html">TDoubleEndianCnvRec</a>.</p>
 </td></tr>
 </table>
-</div></div></body></html>
+</div></main>
+<script src="bootstrap.bundle.min.js"></script>
+</body></html>

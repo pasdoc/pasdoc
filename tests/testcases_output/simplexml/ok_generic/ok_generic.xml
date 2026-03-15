@@ -1,4 +1,4 @@
-<unit name="ok_generic.pas">
+<unit name="ok_generic">
   <description><detailed>Tests of generics, both FPC and Delphi style.</detailed></description>
   <type name="TGeometryAttribsList2" declaration="TGeometryAttribsList2 = specialize TMyList&lt;TALBuffersCache&gt;;" visibility="published">
   </type>

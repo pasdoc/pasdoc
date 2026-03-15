@@ -1,4 +1,4 @@
-<unit name="ok_weird_record.dpr">
+<unit name="WeirdRecord">
   <constant name="val1" declaration="val1 = 1;" visibility="published">
   </constant>
   <constant name="val2" declaration="val2 = 2;" visibility="published">

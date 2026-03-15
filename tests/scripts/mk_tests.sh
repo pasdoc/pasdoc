@@ -28,13 +28,13 @@ run_echo ()
   if [ "${CHECK_MEM_LEAK:-false}" = 'true' ]
   then
     STDERR=$( { "$@" > "$OUTPUT_FILENAME"; } 2>&1)
-    MEMLEAKED=$(echo $STDERR | grep -G "(\d{2,}|[^0]) unfreed memory blocks")
+    MEMLEAKED=$(echo "${STDERR}" | grep -G "(\d{2,}|[^0]) unfreed memory blocks")
     if [ -n "$MEMLEAKED" ]
     then
       DIR=$(dirname "$OUTPUT_FILENAME")
       DIR=$(basename "$DIR")
-      echo Test $DIR: mem leak found, check .heaptrc file
-      echo $STDERR > "$OUTPUT_FILENAME.heaptrc"
+      echo "Test ${DIR}: mem leak found, check .heaptrc file"
+      echo "${STDERR}" > "$OUTPUT_FILENAME.heaptrc"
     fi
   else
     "$@" > "$OUTPUT_FILENAME"
@@ -67,7 +67,15 @@ mk_test ()
 all_tests_for_current_format ()
 {
   now="$(date +'%H.%M.%S')"
-  echo $now Running tests for format $FORMAT
+  echo "${now} Running tests for format ${FORMAT}"
+
+  # calculate $SOURCE_ROOT as realpath of ../.. expressed as native path.
+  # This will be used in --source-root test.
+  local SOURCE_ROOT
+  SOURCE_ROOT="$(realpath ../..)"
+  if command -v cygpath > /dev/null 2>&1; then
+    SOURCE_ROOT="$(cygpath -m "$SOURCE_ROOT")"
+  fi
 
   # Make a test of many units with normal pasdoc command-line.
   #
@@ -218,7 +226,14 @@ all_tests_for_current_format ()
   mk_test ok_external_class_hierarchy ok_external_class_hierarchy.pas --external-class-hierarchy=ok_external_class_hierarchy.txt
   mk_test ok_anonymous_methods ok_anonymous_methods.pas
   mk_test ok_class_record_helpers ok_class_record_helpers.pas
-  mk_test utf_bom_test ok_bom.pas error_bom_utf16_be.pas error_bom_utf16_le.pas error_bom_utf32_be.pas
+
+  # Results of this would be different between STRING_UNICODE and non-STRING_UNICODE builds.
+  # PasDoc build with STRING_UNICODE can parse UTF-16 files.
+  #mk_test utf_bom_test ok_bom.pas error_bom_utf16_be.pas error_bom_utf16_le.pas error_bom_utf32_be.pas
+
+  # Test simpler version of it now, with only UTF-8 BOM that can be handled by any build.
+  mk_test utf_bom_test ok_bom.pas
+
   mk_test ok_cvar ok_cvar.pas
   mk_test ok_nested_types ok_nested_types.pas
   mk_test ok_generic ok_generic.pas
@@ -247,6 +262,9 @@ all_tests_for_current_format ()
   mk_test warning_back_comments warning_back_comments.pas
   mk_test ok_longcode_indentation ok_longcode_indentation.pas
   mk_test ok_utf8_failchar ok_utf8_failchar.pas
+  # Not tested - resulting SimpleXML is not valid, and resulting filenames are wrong, cannot be staged in GIT
+  # mk_test ok_unicode_identifiers_windows_1252 ok_unicode_identifiers_windows_1252.pas
+  mk_test ok_unicode_identifiers_utf8 ok_unicode_identifiers_utf8.pas
   mk_test ok_markdown ok_markdown.pas --markdown
   mk_test ok_auto_back_comments ok_auto_back_comments.pas --auto-back-comments
   mk_test error_file_not_supported_dpk error_file_not_supported.dpk
@@ -280,6 +298,31 @@ all_tests_for_current_format ()
   mk_test ok_array_parameters ok_array_parameters.pas
   mk_test ok_multiple_markers --marker=foo --marker=bar --marker-optional ok_multiple_markers.pas
   mk_test ok_multiple_markers_prefix '--marker=*' '--marker=**' --marker-optional ok_multiple_markers_prefix.pas
+  mk_test ok_link_function_type ok_link_function_type.pas
+  mk_test ok_keyword_function_names ok_keyword_function_names.pas
+  mk_test ok_ignore_leading_impl ok_ignore_leading_impl.pas --implementation-comments=join --ignore-leading=-
+  mk_test ok_objc ok_objc.pas
+  mk_test ok_source_position --show-source-position ok_source_position.pas
+  mk_test ok_source_position_url --show-source-position \
+    '--source-url-pattern=https://github.com/pasdoc/pasdoc/blob/master/{FILE}#L{LINE}' \
+    --source-root="${SOURCE_ROOT}" \
+    ok_source_position.pas
+  mk_test ok_longcode_2dots ok_longcode_2dots.pas
+  mk_test ok_ancestor_not_cio ok_ancestor_not_cio.pas
+
+  mk_test ok_interfaces_graphviz ok_interfaces_graphviz.pas \
+    --link-gv-uses png --link-gv-classes png --graphviz-uses --graphviz-classes
+  # Useful to check that graphviz output is generated and parsable.
+  # But don't commit it to testcases_output, to avoid seeing ignorable
+  # differences in it (e.g. due to different graphviz versions).
+  # pushd ../testcases_output/"$FORMAT"/ok_interfaces_graphviz/ > /dev/null
+  # dot -Grankdir=LR -T png GVUses.dot > GVUses.png
+  # dot -Grankdir=LR -T png GVClasses.dot > GVClasses.png
+  # popd > /dev/null
+
+  mk_test ok_ancestor_qualified ok_ancestor_qualified.pas
+  mk_test ok_nested_with_exclude ok_nested_with_exclude.pas
+  mk_test ok_nested_12 ok_nested_1.pas ok_nested_2.pas --visible-members='private,strictprivate,protected,strictprotected,public,published'
   mk_test ok_type_aliases ok_type_aliases.pas
 }
 
@@ -287,6 +330,12 @@ all_tests_for_current_format ()
 
 # Assume pasdoc is on $PATH, if PASDOC_BIN not set.
 PASDOC_BIN="${PASDOC_BIN:-pasdoc}"
+
+# clear error when no format specified
+if [[ "$#" -eq 0 ]]; then
+  echo 'No output format specified, exiting.'
+  exit 1
+fi
 
 for FORMAT; do
   all_tests_for_current_format

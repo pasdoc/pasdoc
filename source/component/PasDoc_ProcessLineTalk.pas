@@ -50,12 +50,7 @@ type
     After calling Readln or Eof you should STOP directly using underlying
     Stream (but you CAN use Stream right after creating
     TTextReader.Create(Stream) and before any Readln or Eof
-    operations on this TTextReader).
-
-    Original version of this class comes from Michalis Kamburelis
-    code library, see [http://www.camelot.homedns.org/~michalis/],
-    unit base/KambiClassUtils.pas. }
-
+    operations on this TTextReader). }
   TTextReader = class
   private
     Stream: TStream;
@@ -182,7 +177,7 @@ begin
    Delete(ReadBuf, 1, 1);
    LastNewLineChar := #0;
   end else
-  if IsCharInSet(ReadBuf[i], [#10, #13]) then
+  if CharInSet(ReadBuf[i], [#10, #13]) then
   begin
    Result := Copy(ReadBuf, 1, i-1);
    LastNewLineChar := ReadBuf[i];

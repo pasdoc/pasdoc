@@ -1,4 +1,4 @@
-<unit name="ok_description_test.pas">
+<unit name="ok_description_test">
   <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
     <description><detailed>TMyClass description from source file. Description of TMyClass from external file is here. Another paragraph of TMyClass description. Another description of TMyClass from external file is here.</detailed></description>
     <ancestor name="TObject" declaration="TObject" />

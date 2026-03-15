@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -42,10 +42,7 @@ unit PasDoc_Tokenizer;
 interface
 
 uses
-{$IFDEF MSWINDOWS}
-  Windows,
-{$ENDIF}
-  Classes,
+  Classes, Generics.Collections,
   PasDoc_Utils,
   PasDoc_Types,
   PasDoc_StreamUtils;
@@ -80,6 +77,7 @@ type
     KEY_BEGIN,
     KEY_CASE,
     KEY_CLASS,
+    KEY_OBJCCLASS,
     KEY_CONST,
     KEY_CONSTRUCTOR,
     KEY_DESTRUCTOR,
@@ -138,7 +136,8 @@ type
     KEY_WHILE,
     KEY_WITH,
     KEY_XOR,
-    KEY_OUT);
+    KEY_OUT
+  );
 
   TStandardDirective = (
     SD_INVALIDSTANDARDDIRECTIVE,
@@ -191,7 +190,9 @@ type
     SD_SAFECALL,
     SD_PLATFORM,
     SD_VARARGS,
-    SD_FINAL);
+    SD_FINAL,
+    SD_UNIMPLEMENTED
+  );
 
   TStandardDirectives = set of TStandardDirective;
 
@@ -240,6 +241,8 @@ type
     FEndPosition: Int64;
     FBeginPosition: Int64;
     FStreamName: string;
+    FStreamAbsoluteFileName: string;
+    FLine: Integer;
   public
     { the exact character representation of this token as it was found in the
       input file }
@@ -291,9 +294,17 @@ type
       Starts with lower letter. }
     function Description: string;
 
-    // @name is the name of the TStream from which this @classname was read.
-    // It is currently used to set @link(TRawDescriptionInfo.StreamName).
+    { Informative to user name of the stream from which this token was read.
+      This can be a filename (relative or absolute, however user specified
+      it), but it also can be something arbitrary like "$if / $elseif condition".
+      So don't treat it like a reliable filename.
+
+      It is currently used to set @link(TRawDescriptionInfo.StreamName). }
     property StreamName: string read FStreamName;
+
+    { Filename, always absolute, of the underlying file of this stream.
+      Empty ('') if this is not a file stream. }
+    property StreamAbsoluteFileName: string read FStreamAbsoluteFileName;
 
     // @name is the position in the stream of the start of the token.
     // It is currently used to set @link(TRawDescriptionInfo.BeginPosition).
@@ -303,7 +314,12 @@ type
     // after the end of the token.
     // It is currently used to set @link(TRawDescriptionInfo.EndPosition).
     property EndPosition: Int64 read FEndPosition;
+
+    // Line number (1-based) in the stream where this token starts.
+    property Line: Integer read FLine;
   end;
+
+  TTokenList = {$ifdef FPC}specialize{$endif} TObjectList<TToken>;
 
   { @abstract(Converts an input TStream to a sequence of @link(TToken) objects.) }
   TTokenizer = class(TObject)
@@ -323,12 +339,18 @@ type
       the next call to @link(GetChar) or @link(PeekChar) will return this
       character, not the next in the associated stream @link(Stream) }
     IsCharBuffered: Boolean;
-    { current row in stream @link(Stream); useful when giving error messages }
-    Row: Integer;
-    { the input stream this tokenizer is working on }
+    { current line number in stream @link(Stream); useful when giving error messages }
+    Line: Integer;
+    { Input stream this tokenizer is working on.
+      In case of STRING_UNICODE, all reads should go through the TStreamReader API,
+      so underlying TStream is not exposed as a field even. }
+    {$ifdef STRING_UNICODE}
+    StreamReader: TStreamReader;
+    {$else}
     Stream: TStream;
+    {$endif}
     FStreamName: string;
-    FStreamPath: string;
+    FStreamAbsoluteFileName: string;
 
     procedure DoError(const AMessage: string; const AArguments: array of const);
     procedure DoMessage(const AVerbosity: Cardinal; const MessageType:
@@ -342,24 +364,32 @@ type
 
     { Uses default symbol representation, from SymbolNames[st] }
     function CreateSymbolToken(const st: TSymbolType): TToken; overload;
-{$IFDEF STRING_UNICODE}
-    { Returns source codepoint size in bytes on success or 0 on failure. }
-    { Supports ANSI, UTF-8, UCS2 and UCS2 big endian sources.            }
-    { Note that only Unicode codepoints from the BMP are supported.      }
-    function GetChar(out c: WideChar): Integer;
-{$ELSE}
-    { Returns 1 on success or 0 on failure }
-    function GetChar(out c: AnsiChar): Integer;
-{$ENDIF}
+
+    { Read next character (WideChar in case of STRING_UNICODE).
+      Returns how many bytes this character takes, or 0 if cannot read. }
+    function GetChar(out c: {$ifdef STRING_UNICODE} WideChar {$else} AnsiChar {$endif}): Integer;
     function PeekChar(out c: Char): Boolean;
     function ReadCommentType1: TToken;
     function ReadCommentType2: TToken;
     function ReadCommentType3: TToken;
     function ReadAttAssemblerRegister: TToken;
     function ReadLiteralString(var t: TToken): Boolean;
-    function ReadToken(c: Char; const s: TCharSet; const TT: TTokenType; var
-      t: TToken): Boolean;
 
+    { Read the rest of token of type TokenType,
+      knowing the 1st character of this token is StartChar,
+      and subsequent characters of this token are in set AllowedChars.
+
+      Returns @true and sets T if we successfully read such token,
+      returns @false (and sets T to @nil) otherwise.
+      The @false result means we encountered an error reading the next character
+      from stream (we are not at end of stream, but TTokenizer.GetChar returned 0). }
+    function ReadToken(const StartChar: Char; const AllowedChars: TCharSet;
+      const TokenType: TTokenType; out T: TToken): Boolean;
+
+    { Like ReadToken, but for identifiers. The set of valid subsequent characters
+      is defined by IsIdentifierOtherChar function, and the token type is
+      always TOK_IDENTIFIER. }
+    function ReadIdentifierToken(const StartChar: Char; out T: TToken): Boolean;
   public
     { Creates a TTokenizer and associates it with given input TStream.
       Note that AStream will be freed when this object will be freed. }
@@ -367,7 +397,7 @@ type
       const AStream: TStream;
       const OnMessageEvent: TPasDocMessageEvent;
       const VerbosityLevel: Cardinal;
-      const AStreamName, AStreamPath: string);
+      const AStreamName, AStreamAbsoluteFileName: string);
     { Releases all dynamically allocated memory. }
     destructor Destroy; override;
     function HasData: Boolean;
@@ -400,28 +430,25 @@ type
 
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
     property Verbosity: Cardinal read FVerbosity write FVerbosity;
+
+    { Informative to user name of the stream from which this token was read.
+      This can be a filename (relative or absolute, however user specified
+      it), but it also can be something arbitrary like "$if / $elseif condition".
+
+      So don't treat it like a reliable filename, for this use
+      StreamAbsoluteFileName. }
     property StreamName: string read FStreamName;
 
-    { This is the path where the underlying file of this stream is located.
-
-      It may be an absolute path or a relative path. Relative paths
-      are always resolved vs pasdoc current directory.
-      This way user can give relative paths in command-line
-      when writing Pascal source filenames to parse.
-
-      In particular, this may be '' to indicate current dir.
-
-      It's always specified like it was processed by
-      IncludeTrailingPathDelimiter, so it has trailing PathDelim
-      included (unless it was '', in which case it remains empty). }
-    property StreamPath: string read FStreamPath;
+    { Filename, always absolute, of the underlying file of this stream.
+      Empty ('') if this is not a file stream. }
+    property StreamAbsoluteFileName: string read FStreamAbsoluteFileName;
   end;
 
 const
   { all Object Pascal keywords }
   KeyWordArray: array[Low(TKeyword)..High(TKeyword)] of string =
   ('x', // lowercase never matches
-    'AND', 'ARRAY', 'AS', 'ASM', 'BEGIN', 'CASE', 'CLASS', 'CONST',
+    'AND', 'ARRAY', 'AS', 'ASM', 'BEGIN', 'CASE', 'CLASS', 'OBJCCLASS', 'CONST',
     'CONSTRUCTOR', 'DESTRUCTOR', 'DISPINTERFACE', 'DIV',  'DO', 'DOWNTO',
     'ELSE', 'END', 'EXCEPT', 'EXPORTS', 'FILE', 'FINALIZATION',
     'FINALLY', 'FOR', 'FUNCTION', 'GOTO', 'IF', 'IMPLEMENTATION',
@@ -443,7 +470,8 @@ const
     'PROTECTED', 'PUBLIC', 'PUBLISHED', 'READ', 'REFERENCE', 'REGISTER',
     'REINTRODUCE', 'RESIDENT', 'SEALED', 'SPECIALIZE', 'STATIC',
     'STDCALL', 'STORED', 'STRICT', 'VIRTUAL',
-    'WRITE', 'DEPRECATED', 'SAFECALL', 'PLATFORM', 'VARARGS', 'FINAL');
+    'WRITE', 'DEPRECATED', 'SAFECALL', 'PLATFORM', 'VARARGS', 'FINAL',
+    'UNIMPLEMENTED');
 
 { Checks is Name (case ignored) some Pascal keyword.
   Returns SD_INVALIDSTANDARDDIRECTIVE if not. }
@@ -453,10 +481,19 @@ function StandardDirectiveByName(const Name: string): TStandardDirective;
   Returns KEY_INVALIDKEYWORD if not. }
 function KeyWordByName(const Name: string): TKeyword;
 
+{ Returns true if c is a valid first character of a Pascal identifier:
+  underscore, ASCII letter, or non-ASCII character (Unicode letter).
+  Following https://docwiki.embarcadero.com/RADStudio/Athens/en/Identifiers ,
+  Delphi allows Unicode letters as identifier start characters. }
+function IsIdentifierStartChar(const C: Char): Boolean;
+
+{ Returns true if c is a valid continuation character of a Pascal identifier:
+  underscore, ASCII letter, ASCII digit, or non-ASCII character (Unicode letter/digit). }
+function IsIdentifierOtherChar(const C: Char): Boolean;
+
 implementation
 
-uses
-  SysUtils, Math;
+uses SysUtils, Math;
 
 function KeyWordByName(const Name: string): TKeyword;
 var
@@ -488,6 +525,12 @@ begin
   end;
 end;
 
+type
+  TSingleCharSymbol = record
+    c: Char;
+    s: TSymbolType;
+  end;
+
 const
   Whitespace = [#9, #10, #13, ' '];
   Letters = ['A'..'Z', 'a'..'z'];
@@ -500,11 +543,7 @@ const
   NumberOther = HexadecimalDigits + ['.', '+', '-'];
   QuoteChar = '''';
   NUM_SINGLE_CHAR_SYMBOLS = 10;
-  SingleCharSymbols: array[0..NUM_SINGLE_CHAR_SYMBOLS - 1] of
-  record
-    c: Char;
-    s: TSymbolType;
-  end =
+  SingleCharSymbols: array[0..NUM_SINGLE_CHAR_SYMBOLS - 1] of TSingleCharSymbol =
   ((c: ';'; s: SYM_SEMICOLON),
     (c: ','; s: SYM_COMMA),
     (c: '['; s: SYM_LEFT_BRACKET),
@@ -515,6 +554,16 @@ const
     (c: '='; s: SYM_EQUAL),
     (c: '^'; s: SYM_DEREFERENCE),
     (c: '@'; s: SYM_AT));
+
+function IsIdentifierStartChar(const C: Char): Boolean;
+begin
+  Result := CharInSet(C, IdentifierStart) or (Ord(C) > 127);
+end;
+
+function IsIdentifierOtherChar(const C: Char): Boolean;
+begin
+  Result := CharInSet(C, IdentifierOther) or (Ord(C) > 127);
+end;
 
 { ---------------------------------------------------------------------------- }
 { TToken }
@@ -567,22 +616,31 @@ constructor TTokenizer.Create(
   const AStream: TStream;
   const OnMessageEvent: TPasDocMessageEvent;
   const VerbosityLevel: Cardinal;
-  const AStreamName, AStreamPath: string);
+  const AStreamName, AStreamAbsoluteFileName: string);
 begin
   inherited Create;
   FOnMessage := OnMessageEvent;
   FVerbosity := VerbosityLevel;
-  Row := 1;
+  Line := 1;
+  {$ifdef STRING_UNICODE}
+  StreamReader := TStreamReader.Create(AStream);
+  StreamReader.OwnStream;
+  {$else}
   Stream := AStream;
+  {$endif}
   FStreamName := AStreamName;
-  FStreamPath := AStreamPath;
+  FStreamAbsoluteFileName := AStreamAbsoluteFileName;
 end;
 
 { ---------------------------------------------------------------------------- }
 
 destructor TTokenizer.Destroy;
 begin
-  Stream.Free;
+  {$ifdef STRING_UNICODE}
+  FreeAndNil(StreamReader);
+  {$else}
+  FreeAndNil(Stream);
+  {$endif}
   FBufferedToken.Free;
   inherited;
 end;
@@ -637,110 +695,69 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-{$IFDEF STRING_UNICODE}
-function TTokenizer.GetChar(out c: WideChar): Integer;
-const
-  LDefaultFailChar = '?';
+
+function TTokenizer.GetChar(out c: {$ifdef STRING_UNICODE} WideChar {$else} AnsiChar {$endif}): Integer;
+{$ifdef STRING_UNICODE}
 var
-  Buf : array [0..7] of Byte;
-  LInt: Integer;
+  CharArray: TCharArray;
+{$endif}
 begin
   if IsCharBuffered then
   begin
     c := BufferedChar;
     IsCharBuffered := False;
     Result := FBufferedCharSize;
-  end
-  else begin // Actually only UCS2 and UCS2Be
-    case TStreamReader(Stream).CurrentCodePage of
-        CP_UTF16    :
-          begin
-            Result := Stream.Read(c, 2);
-            Exit;
-          end;
-        CP_UTF16BE  :
-          begin
-            Result := Stream.Read(c, 2);
-            Swap16Buf(@c, @c, 1);
-            Exit;
-          end;
-    end; // case
+  end else
+  begin
+    {$ifdef STRING_UNICODE}
+    { Do not call StreamReader.Read when EndOfStream,
+      otherwise (for TStringStream) the StreamReader.Read at the end of string
+      would return 1 character with code 0.
+      This would trip our tokenizer, 0 is invalid character in input. }
+    if StreamReader.EndOfStream then
+      Exit(0);
 
-    { MBCS text }
-    Result := 0;
-    Buf[0] := 0;
-
-    Result := Stream.Read(Buf[Result], 1);
-    if Result = 0 then
-      Exit;
-    if TStreamReader(Stream).CurrentCodePage = CP_UTF8 then
-    begin
-      LInt := Utf8Size(Buf[0]); // Read number of bytes
-      if LInt > 1 then
-      begin
-        Inc(Result, Stream.Read(Buf[Result], LInt -1));
-        if Result <> LInt then
-        begin
-          c := LDefaultFailChar;    // return the default fail char.
-          Exit;
-        end;
-      end;
-    end
-    else begin
-      { Only DBCS have constant LeadBytes so we actually do not support }
-      { some rarely used MBCS, such as euc-jp or UTF-7, with a maximum  }
-      { codepoint size > 2 bytes.                                 }{ AG }
-      if AnsiChar(Buf[0]) in TStreamReader(Stream).LeadBytes then
-      begin
-        if Stream.Read(Buf[Result], 1) = 1 then
-          Inc(Result)
-        else begin
-          Result := 0;
-          Exit;
-        end;
-      end
-    end;
-    if (Result = 1) and (Buf[0] < 128) then
-      c := WideChar(Buf[0]) // Plain ASCII, no need to call MbToWc (speed)
-    else
-    if MultiByteToWideChar(TStreamReader(Stream).CurrentCodePage,
-                           0, @Buf[0], Result, @c, 1) <> 1 then
-        c := LDefaultFailChar; // return the default fail char.
+    SetLength(CharArray, 1);
+    Result := StreamReader.Read(CharArray, 0, 1) * SizeOf(WideChar);
+    if Result <> 0 then
+      C := CharArray[0];
+    {$else}
+    Result := Stream.Read(c, 1);
+    {$endif}
   end;
 end;
 
-{$ELSE}
-
-function TTokenizer.GetChar(out c: AnsiChar): Integer;
-begin
-  if IsCharBuffered then
-  begin
-    c := BufferedChar;
-    IsCharBuffered := False;
-    Result := FBufferedCharSize;
-  end
-  else
-    Result := Stream.Read(c, 1);
-end;
-{$ENDIF}
 { ---------------------------------------------------------------------------- }
 
 function TTokenizer.GetStreamInfo: string;
 begin
-  GetStreamInfo := FStreamName + '(' + IntToStr(Row) + ')';
+  GetStreamInfo := FStreamName + '(' + IntToStr(Line) + ')';
 end;
 
 { ---------------------------------------------------------------------------- }
 
 function TTokenizer.HasData: Boolean;
 begin
-  HasData := IsCharBuffered or (Stream.Position < Stream.Size);
+  HasData := IsCharBuffered or
+    {$ifdef STRING_UNICODE}
+    (not StreamReader.EndOfStream)
+    {$else}
+    (Stream.Position < Stream.Size)
+    {$endif};
 end;
 
 { ---------------------------------------------------------------------------- }
 
 function TTokenizer.StreamPosition: Int64;
+{$ifdef STRING_UNICODE}
+var
+  Stream: TStream;
+{$endif}
 begin
+  {$ifdef STRING_UNICODE}
+  Stream := StreamReader.BaseStream;
+  {$endif}
+
   if IsCharBuffered then
     Result := Stream.Position - FBufferedCharSize
   else
@@ -774,19 +791,19 @@ begin
       else
         DoError('Tokenizer: could not read character, unexpected end of stream', []);
 
-    if IsCharInSet(c, Whitespace) then
+    if CharInSet(c, Whitespace) then
     begin
       if ReadToken(c, Whitespace, TOK_WHITESPACE, Result) then
           { after successful reading all whitespace characters, update
-            internal row counter to be able to state current row on errors.
+            internal line counter to be able to state current line on errors.
             Count both types of possible EOLs and select the max one }
-        Inc(Row, Max(StrCountCharA(Result.Data, #10), StrCountCharA(Result.Data, #13)))
+        Inc(Line, Max(StrCountCharA(Result.Data, #10), StrCountCharA(Result.Data, #13)))
       else
         DoError('Tokenizer: could not read character', []);
     end else
-    if IsCharInSet(c, IdentifierStart) then
+    if IsIdentifierStartChar(c) then
     begin
-      if ReadToken(c, IdentifierOther, TOK_IDENTIFIER, Result) then
+      if ReadIdentifierToken(c, Result) then
       begin
         s := Result.Data;
         { check if identifier is a keyword }
@@ -802,7 +819,7 @@ begin
         end;
       end;
     end else
-    if IsCharInSet(c, NumberStart) then
+    if CharInSet(c, NumberStart) then
       ReadToken(c, NumberOther, TOK_NUMBER, Result)
     else
       case c of
@@ -933,8 +950,8 @@ begin
         '%': Result := ReadAttAssemblerRegister;
         '&': begin
                if not ((GetChar(C) > 0) and
-                       IsCharInSet(C, IdentifierStart) and
-                       ReadToken(C, IdentifierOther, TOK_IDENTIFIER, Result)) then
+                       IsIdentifierStartChar(C) and
+                       ReadIdentifierToken(C, Result)) then
                begin
                  if NilOnInvalidContent then
                    Exit(nil)
@@ -959,8 +976,10 @@ begin
     if Result <> nil then
     begin
       Result.FStreamName := StreamName;
+      Result.FStreamAbsoluteFileName := StreamAbsoluteFileName;
       Result.FBeginPosition := BeginPosition;
       Result.FEndPosition := StreamPosition;
+      Result.FLine := Line;
     end;
   end;
 end;
@@ -990,17 +1009,18 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-// Check if current char is EOL and increases `Row` counter. `PrevCh` is previously
-// taken char to not increase counter on CR-LF
-procedure HandleEOL(PrevCh, CurrCh: Char; var Row: Integer);
+{ Check if current char is EOL and increases Line counter.
+  PrevCh is previously taken char (used here to not increase counter on
+  the 2nd character in case of CR-LF line ending). }
+procedure HandleEOL(PrevCh, CurrCh: Char; var Line: Integer);
 begin
   case CurrCh of
     #10:
       // handle #13#10 case
       if PrevCh <> #13 then
-        Inc(Row);
+        Inc(Line);
     #13:
-      Inc(Row);
+      Inc(Line);
   end;
 end;
 
@@ -1014,7 +1034,7 @@ begin
     CommentContent := ''; prevC := #0;
     repeat
       if not HasData or (GetChar(c) = 0) then Exit;
-      HandleEOL(prevC, c, Row);
+      HandleEOL(prevC, c, Self.Line);
       prevC := c;
       CommentContent := CommentContent + c; // TODO: Speed up!
     until c = '}';
@@ -1038,7 +1058,7 @@ begin
     Result.CommentContent := Result.CommentContent + c;
 
     if c <> '*' then begin
-      HandleEOL(prevC, c, Row);
+      HandleEOL(prevC, c, Line);
       prevC := c;
       if not HasData or (GetChar(c) = 0) then Exit;
     end else begin
@@ -1105,7 +1125,7 @@ begin
   Result.Data := '%';
   repeat
     if (not HasData) or (not PeekChar(C)) then Exit;
-    if IsCharInSet(C, ['a'..'z', 'A'..'Z', '0'..'9']) then
+    if CharInSet(C, ['a'..'z', 'A'..'Z', '0'..'9']) then
     begin
       GetChar(C);
       Result.Data := Result.Data + C;
@@ -1127,7 +1147,7 @@ begin
   t.Data := '''';
 
   repeat
-    if not (Stream.Position < Stream.Size) then begin
+    if not HasData then begin
       FreeAndNil(t);
       DoError('Tokenizer: unexpected end of stream', []);
     end;
@@ -1167,37 +1187,67 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
-function TTokenizer.ReadToken(c: Char; const s: TCharSet; const TT:
-  TTokenType; var t: TToken): Boolean;
+function TTokenizer.ReadToken(const StartChar: Char; const AllowedChars: TCharSet;
+  const TokenType: TTokenType; out T: TToken): Boolean;
+var
+  PeekedChar: Char;
 begin
-  Assert(t=nil);
-  Result := False;
+  Result := true;
+  T := TToken.Create(TokenType);
+  T.Data := StartChar;
 
-  t := TToken.Create(TT);
-  t.Data := c;
   repeat
-    if not PeekChar(c) then begin
-      if EOS then
-        Result := True
-      else begin
-        t.Free;
-        t := nil;
+    if not PeekChar(PeekedChar) then
+    begin
+      if not EOS then
+      begin
+        FreeAndNil(T);
+        Exit(false);
       end;
       break;
     end;
-    if IsCharInSet(c, s) then begin
-      t.Data := t.Data + c;
+
+    if CharInSet(PeekedChar, AllowedChars) then
+    begin
+      T.Data := T.Data + PeekedChar;
       ConsumeChar;
-    end else begin
-      Result := True;
+    end else
+      break;
+  until false;
+
+  Assert(Result);
+  Assert(Assigned(T));
+end;
+
+function TTokenizer.ReadIdentifierToken(const StartChar: Char; out T: TToken): Boolean;
+var
+  PeekedChar: Char;
+begin
+  Result := true;
+  T := TToken.Create(TOK_IDENTIFIER);
+  T.Data := StartChar;
+
+  repeat
+    if not PeekChar(PeekedChar) then
+    begin
+      if not EOS then
+      begin
+        FreeAndNil(T);
+        Exit(false);
+      end;
       break;
     end;
-  until False;
-  if Result then begin
-    Assert(Assigned(t));
-  end else begin
-    Assert(not Assigned(t));
-  end;
+
+    if IsIdentifierOtherChar(PeekedChar) then
+    begin
+      T.Data := T.Data + PeekedChar;
+      ConsumeChar;
+    end else
+      break;
+  until false;
+
+  Assert(Result);
+  Assert(Assigned(T));
 end;
 
 function TTokenizer.SkipUntilCompilerDirective: TToken;
@@ -1214,13 +1264,13 @@ begin
   until false;
 end;
 
-procedure TTokenizer.UnGetToken(var t: TToken);
+procedure TTokenizer.UnGetToken(var T: TToken);
 begin
   if Assigned(FBufferedToken) then
     DoError('Cannot UnGet more than one token in TTokenizer', []);
 
-  FBufferedToken := t;
-  t := nil;
+  FBufferedToken := T;
+  T := nil;
 end;
 
 end.

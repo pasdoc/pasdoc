@@ -1,4 +1,4 @@
-<unit name="ok_multiple_fields.pas">
+<unit name="ok_multiple_fields">
   <variable name="F1" declaration="F1: Integer;" visibility="published">
     <description><detailed>Descr of F1, F2, F3 (multiline)</detailed></description>
   </variable>

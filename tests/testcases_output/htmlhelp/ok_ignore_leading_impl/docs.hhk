@@ -1,0 +1,15 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="testfnc">
+<param name="Local" value="ok_ignore_leading_impl.html#testfnc-Integer-String-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="testfnc_only_intf">
+<param name="Local" value="ok_ignore_leading_impl.html#testfnc_only_intf-Integer-String-">
+</object>
+</ul>
+</body></html>

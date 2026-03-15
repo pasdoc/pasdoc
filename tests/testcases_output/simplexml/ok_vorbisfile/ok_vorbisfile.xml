@@ -1,4 +1,4 @@
-<unit name="ok_vorbisfile.pas">
+<unit name="ok_vorbisfile">
   <description><detailed>API of vorbisfile library. Usually libvorbisfile.so under Unixes or vorbisfile.dll under Windows. This is just a quick translation of /usr/include/vorbis/vorbisfile.h header.</detailed></description>
   <constant name="NOTOPEN" declaration="NOTOPEN   = 0;" visibility="published">
   </constant>

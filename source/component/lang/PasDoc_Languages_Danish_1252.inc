@@ -13,6 +13,7 @@ RTransTable = (
   //tables and members
     {trClasses} 'Klasser',
       {trClass} 'Klasse',
+      {trObjcClass} strToDo,
       {trDispInterface} strToDo, //'DispInterface',
       {trInterface} strToDo, //'Interface',
     {trObjects} 'Objekter',
@@ -35,7 +36,7 @@ RTransTable = (
       {trVariables} 'Variable',
       {trAuthors} 'Forfatre',
         {trAuthor} 'Forfatter',
-      {trCreated} 'Udført',
+      {trCreated} 'Udfï¿½rt',
       {trLastModified} 'Sidst Modificieret',
     {trSubroutine} strToDo, //'Subroutine',
       {trParameters} strToDo, //'Parameters',
@@ -59,6 +60,7 @@ RTransTable = (
     {trPlatformSpecific} strToDo, //'this symbol is specific to some platform',
     {trLibrarySpecific} strToDo, //'this symbol is specific to some library',
     {trExperimental} strToDo, //'this symbol is experimental',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
   //headings
     {trOverview} 'Sammendrag',
     {trIntroduction} strToDo, //'Introduction',
@@ -92,7 +94,7 @@ RTransTable = (
     {trNoFunctions} strToDo, //'The units do not contain any functions or procedures.',
     {trNoIdentifiers} strToDo, //'The units do not contain any identifiers.',
   //misc
-    {trHelp} 'Hjælp',
+    {trHelp} 'Hjï¿½lp',
     {trLegend} 'Legende',
     {trMarker} strToDo, //'Marker',
     {trWarningOverwrite} 'Advarsel: Editer ikke denne fil, den er autogeneret og vil sansylgvis blive overskret',
@@ -104,5 +106,7 @@ RTransTable = (
     {trSeeAlso} strToDo, //'See also',
     {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
+    {trSourcePosition} strToDo, //'Source: %s (line %d).',
+    {trShowAdditionalMembers} strToDo, //'Show Additional Members',
     ''  //dummy
   );

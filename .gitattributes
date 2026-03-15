@@ -28,7 +28,18 @@ Makefile text eol=auto
 *.hhp text eol=auto
 *.php text eol=auto
 PASDOC-OUTPUT text eol=auto
+# This is important to avoid lots of modifications in "git status"
+# after "make tests" on Windows, since we generate bootstrap..js files
+# with native line endings.
+*.js text eol=auto
+*.dot text eol=auto
 
 # Test cases checking specific line endings
 tests/testcases/error_line_number_2.pas text eol=lf
 tests/testcases/error_line_number_4.pas text eol=cr
+
+# treated as binary files here, even if (parts of) look like text
+*.eps binary
+# treated as binary files, see source/component/bootstrap/Makefile for comments
+bootstrap.min.css binary
+bootstrap.bundle.min.js binary

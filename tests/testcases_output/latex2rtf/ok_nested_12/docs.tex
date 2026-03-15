@@ -1,0 +1,665 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% definitons for warning and note tag
+\usepackage[most]{tcolorbox}
+\newtcolorbox{tcbwarning}{
+ breakable,
+ enhanced jigsaw,
+ top=0pt,
+ bottom=0pt,
+ titlerule=0pt,
+ bottomtitle=0pt,
+ rightrule=0pt,
+ toprule=0pt,
+ bottomrule=0pt,
+ colback=white,
+ arc=0pt,
+ outer arc=0pt,
+ title style={white},
+ fonttitle=\color{black}\bfseries,
+ left=8pt,
+ colframe=red,
+ title={Warning:},
+}
+\newtcolorbox{tcbnote}{
+ breakable,
+ enhanced jigsaw,
+ top=0pt,
+ bottom=0pt,
+ titlerule=0pt,
+ bottomtitle=0pt,
+ rightrule=0pt,
+ toprule=0pt,
+ bottomrule=0pt,
+ colback=white,
+ arc=0pt,
+ outer arc=0pt,
+ title style={white},
+ fonttitle=\color{black}\bfseries,
+ left=8pt,
+ colframe=yellow,
+ title={Note:},
+}
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}nested{\_}1}
+\section{Description}
+Testcase of classes nested in classes. This is a reworked version of code from Castle Game Engine.
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TRepoSoundEngine\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\subsection*{TRepoSoundEngine Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TRepoSoundEngine {$>$} TSoundEngine
+%%%%Description
+\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{SoundImportanceNames}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+private property SoundImportanceNames: TStringList read FSoundImportanceNames;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{FSoundImportanceNames}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+private var FSoundImportanceNames: TStringList;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{FSounds}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+private FSounds: TSoundInfoList;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+A list of sounds used by your program. Each sound has a unique name, used to identify sound in the XML file and for SoundFromName function.
+
+At the beginning, this list always contains exactly one sound, empty. This is a special TSoundInfoBuffer that has Sound=nil and Name=''. It means "no sound" in many cases.
+
+\end{list}
+\paragraph*{FSoundGroups}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+private FSoundGroups: TSoundGroupList;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{FRepositoryUrl}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+private FRepositoryUrl: String;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{FLoopingChannels}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+private FLoopingChannels: TLoopingChannelList;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{SetRepositoryUrl}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+private procedure SetRepositoryUrl(const Value: String);\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{RestartLoopingChannels}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+private procedure RestartLoopingChannels;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{GetLoopingChannel}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+private function GetLoopingChannel(const Index: Cardinal): TLoopingChannel;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{ContextOpenCore}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+private procedure ContextOpenCore; override;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{AddSoundImportanceName}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+private procedure AddSoundImportanceName(const Name: string; Importance: Integer);\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Create}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public constructor Create;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Destroy}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public destructor Destroy; override;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\chapter{Unit ok{\_}nested{\_}2}
+\section{Description}
+Testcase of classes nested in classes. This is a reworked version of code from Castle Game Engine.
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TCastleProfiler\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\subsection*{TCastleProfiler Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TCastleProfiler {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Enabled}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public property Enabled: boolean read FEnabled write FEnabled;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Whether to gather speed measurements. When not enabled, the \begin{ttfamily}Start\end{ttfamily}(\ref{ok_nested_2.TCastleProfiler-Start}) and \begin{ttfamily}Stop\end{ttfamily}(\ref{ok_nested_2.TCastleProfiler-Stop}) methods do as little as possible to not waste time.
+
+\end{list}
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{FEnabled}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public var FEnabled: boolean;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{FFloatPrecision}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public FFloatPrecision: Cardinal;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Times}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public Times: TTimes;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Collected times tree.
+
+\end{list}
+\paragraph*{CurrentStack}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public CurrentStack: TTimeList;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+The currently started (but not stopped) TTime structures.
+
+\end{list}
+\paragraph*{DefaultFloatPrecision}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public const DefaultFloatPrecision = 2;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Create}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public constructor Create;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Destroy}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public destructor Destroy; override;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Summary}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public function Summary: string;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Summary of the gathered speed measurements.
+
+\end{list}
+\paragraph*{Clear}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure Clear; deprecated 'This method is not reliable (may cause crashes when used between Start/Stop) and also not comfortable. To display partial profile information, better use Stop with 2nd argument true.';\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Warning: this symbol is deprecated: This method is not reliable (may cause crashes when used between Start/Stop) and also not comfortable. To display partial profile information, better use Stop with 2nd argument true.
+
+Clear currently gathered times.
+
+Do not call this when some time measure is started but not yet stopped Currently, this will cause such time measure to be rejected, and stopping it will cause a one{-}time warning, but don't depend on this exact behavior in the future. We will always gracefully accept this case (not crash).
+
+\end{list}
+\paragraph*{Start}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public function Start(const Description: String): TCastleProfilerTime;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Start a task which execution time will be measured. You \textit{must} later call \begin{ttfamily}Stop\end{ttfamily}(\ref{ok_nested_2.TCastleProfiler-Stop}) with the returned TCastleProfilerTime value.
+
+Typical usage looks like this:
+
+\texttt{\\\nopagebreak[3]
+}\textbf{procedure}\texttt{~TMyClass.LoadSomething;\\\nopagebreak[3]
+}\textbf{var}\texttt{\\\nopagebreak[3]
+~~TimeStart:~TCastleProfilerTime;\\\nopagebreak[3]
+}\textbf{begin}\texttt{\\\nopagebreak[3]
+~~TimeStart~:=~Profiler.Start('Loading~something~(TMyClass)');\\\nopagebreak[3]
+~~}\textbf{try}\texttt{\\\nopagebreak[3]
+~~~~\textit{//~do~the~time-consuming~loading~now...}\\\nopagebreak[3]
+~~}\textbf{finally}\texttt{\\\nopagebreak[3]
+~~~~Profiler.Stop(TimeStart);\\\nopagebreak[3]
+~~}\textbf{end}\texttt{;\\\nopagebreak[3]
+}\textbf{end}\texttt{;\\
+}
+
+If you don't use the "finally" clause to \textit{always} call the matching \begin{ttfamily}Stop\end{ttfamily}(\ref{ok_nested_2.TCastleProfiler-Stop}), and an exception may occur in LoadSomething, then you will have an unmatched Start / Stop calls. The profiler output is undefined in this case. (However, we guarantee that the profiler will not crash or otherwise cause problems in the application.) So, you do not really have to wrap this in "try ... finally ... end" clause, if it's acceptable that the profiler output is useless in exceptional situations.
+
+\item[\textbf{See also}]
+\begin{description}
+\item[\begin{ttfamily}Stop\end{ttfamily}(\ref{ok_nested_2.TCastleProfiler-Stop})] 
+
+\end{description}
+
+
+\end{list}
+\paragraph*{Stop}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure Stop(const TimeStart: TCastleProfilerTime; const LogSummary: Boolean = false; const LogSummaryOnlyIfNonTrivial: Boolean = false);\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Stop a task. This call must match earlier \begin{ttfamily}Start\end{ttfamily}(\ref{ok_nested_2.TCastleProfiler-Start}) call.
+
+If LogSummary, and profiling is \begin{ttfamily}Enabled\end{ttfamily}(\ref{ok_nested_2.TCastleProfiler-Enabled}), we will output (to CastleLog) a summary of things that happened within this particular TCastleProfilerTime instance (between it's start and stop). This is useful when you are interested not only in adding this TCastleProfilerTime to the profiler tree, but also in immediately viewing the times in this TCastleProfilerTime subtree.
+
+If LogSummary and LogSummaryOnlyIfNonTrivial, then the summary will be output only if it's larger than some ignorable amount of time (right now: 1 milisecond). This is useful to output only things that take non{-}trivial amount of time.
+
+\item[\textbf{See also}]
+\begin{description}
+\item[\begin{ttfamily}Start\end{ttfamily}(\ref{ok_nested_2.TCastleProfiler-Start})] 
+
+\end{description}
+
+
+\end{list}
+\end{document}

@@ -27,18 +27,27 @@ unit PasDoc_Aspell;
 
 interface
 
-uses SysUtils, Classes, PasDoc_ProcessLineTalk, PasDoc_ObjectVector, PasDoc_Types;
+uses
+  SysUtils, Classes, Contnrs, Generics.Collections,
+  PasDoc_ProcessLineTalk,
+  PasDoc_Types;
 
 type
+  { Single misspelling found by @link(TAspellProcess.CheckString).
+    One instance is created per misspelled word. }
   TSpellingError = class
   public
-    { the mis-spelled word }
+    { The misspelled word exactly as it appeared in the checked text. }
     Word: string;
-    { offset inside the checked string }
+    { Offset of the misspelled word within the
+      string that was passed to @link(TAspellProcess.CheckString). }
     Offset: Integer;
-    { comma-separated list of suggestions }
+    { Comma-separated list of replacement suggestions from Aspell,
+      or empty string if Aspell offered none (the '#' response). }
     Suggestions: string;
   end;
+
+  TSpellingErrorList = {$ifdef FPC}specialize{$endif} TObjectList<TSpellingError>;
 
   { This is a class to interface with aspell through pipe.
     It uses underlying @link(TProcessLineTalk) to execute and
@@ -62,18 +71,27 @@ type
       AOnMessage: TPasDocMessageEvent);
     destructor Destroy; override;
 
+    { Aspell input mode (passed to aspell @--mode command-line option)
+      passed at construction.
+      Empty string means the Aspell default. }
     property AspellMode: string read FAspellMode;
 
+    { Language code for aspell (passed to aspell @--lang command-line option)
+      passed at construction.
+      Empty string means the Aspell default. }
     property AspellLanguage: string read FAspellLanguage;
 
+    { Tell Aspell to ignore all words in Value for subsequent
+      @link(CheckString) calls. }
     procedure SetIgnoreWords(Value: TStringList);
 
     { Spellchecks AString and returns result.
       Will create an array of TSpellingError objects,
       one entry for each misspelled word.
       Offsets of TSpellingErrors will be relative to AString. }
-    procedure CheckString(const AString: string; const AErrors: TObjectVector);
+    procedure CheckString(const AString: string; const AErrors: TSpellingErrorList);
 
+    { Callback for diagnostic messages. }
     property OnMessage: TPasDocMessageEvent read FOnMessage write FOnMessage;
   end;
 
@@ -147,7 +165,7 @@ begin
 end;
 
 procedure TAspellProcess.CheckString(const AString: string;
-  const AErrors: TObjectVector);
+  const AErrors: TSpellingErrorList);
 var
   s: string;
   p, p2: Integer;

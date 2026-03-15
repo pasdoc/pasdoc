@@ -1,4 +1,4 @@
-{ @abstract(Provides the Main procedure.) }
+{ Main procedure, that does the complete job of the command-line PasDoc. }
 unit PasDoc_Main;
 
 { Define this to see the backtrace of crashes (when compiled with FPC).
@@ -7,7 +7,12 @@ unit PasDoc_Main;
 
 interface
 
-{ This is the main procedure of PasDoc, it does everything. }
+{ Does the complete job of the command-line PasDoc.
+  @unorderedList(
+    @item(Process command-line options.)
+    @item(Create TPasDoc, set it up, run @link(TPasDoc.Execute) on it.)
+  )
+}
 procedure Main;
 
 implementation
@@ -74,7 +79,8 @@ type
     OptionIgnoreLeading: TStringOption;
     OptionCacheDir: TStringOption;
     OptionFullLink: TBoolOption;
-    OptionCSS: TStringOption; {< Using external CSS file for HTML output }
+    OptionCSS: TStringOption;
+    OptionCSSBasedOnBootstrap: TStringOption;
     OptionAutoAbstract: TBoolOption;
     OptionLinkLook: TStringOption;
     OptionUseTipueSearch: TBoolOption;
@@ -91,6 +97,9 @@ type
     OptionMarkdown: TBoolOption;
     OptionAutoBackComments: TBoolOption;
     OptionInfoMergeMode: TStringOption;
+    OptionShowSourcePosition: TBoolOption;
+    OptionSourceUrlPattern: TStringOption;
+    OptionSourceRoot: TStringOption;
   public
     constructor Create; override;
     procedure InterpretCommandline(PasDoc: TPasDoc);
@@ -300,10 +309,13 @@ begin
   OptionFullLink.Explanation := 'Obsolete name for --link-look=full';
   AddOption(OptionFullLink);
 
-  { Using external CSS file for HTML output. }
   OptionCSS := TStringOption.Create(#0, 'css');
-  OptionCSS.Explanation := 'CSS file for HTML files (copied into output tree)';
+  OptionCSS.Explanation := 'CSS file for HTML output. The given CSS file is copied into the output tree as pasdoc.css. Bootstrap CSS is not used.';
   AddOption(OptionCSS);
+
+  OptionCSSBasedOnBootstrap := TStringOption.Create(#0, 'css-based-on-bootstrap');
+  OptionCSSBasedOnBootstrap.Explanation := 'Use a custom CSS file in addition to Bootstrap for the HTML output. Cannot be used together with --css. ';
+  AddOption(OptionCSSBasedOnBootstrap);
 
   OptionAutoAbstract := TBoolOption.Create(#0, 'auto-abstract');
   OptionAutoAbstract.Explanation := 'If set, pasdoc will automatically make abstract description of every item from the first sentence of description of this item';
@@ -373,6 +385,21 @@ begin
     OptionInfoMergeMode.Explanation := OptionInfoMergeMode.Explanation + LineEnding +
       '  ' + InfoMergeTypeStr[mt] + ' - ' + InfoMergeTypeExplanation[mt] + LineEnding;
   AddOption(OptionInfoMergeMode);
+
+  OptionShowSourcePosition := TBoolOption.Create(#0, 'show-source-position');
+  OptionShowSourcePosition.Explanation := 'Show source filename and line number in documentation output';
+  AddOption(OptionShowSourcePosition);
+
+  OptionSourceUrlPattern := TStringOption.Create(#0, 'source-url-pattern');
+  OptionSourceUrlPattern.Explanation := 'URL pattern for linking source positions (only used if --show-source-position). ' +
+    'Use {FILE} for filename and {LINE} for line number. ' +
+    'Example: https://github.com/owner/repo/blob/main/{FILE}#L{LINE}';
+  AddOption(OptionSourceUrlPattern);
+
+  OptionSourceRoot := TStringOption.Create(#0, 'source-root');
+  OptionSourceRoot.Explanation := 'Root path for source files (only used if --show-source-position). ' +
+    'Leave empty to make --show-source-position just take the final filename part to show.';
+  AddOption(OptionSourceRoot);
 end;
 
 procedure TPasdocMain.PrintHeader;
@@ -416,8 +443,19 @@ procedure TPasdocOptions.InterpretCommandline(PasDoc: TPasDoc);
       Generator.HtmlBodyBegin := FileToString(OptionHtmlBodyBegin.Value);
     if OptionHtmlBodyEnd.WasSpecified then
       Generator.HtmlBodyEnd := FileToString(OptionHtmlBodyEnd.Value);
+
     if OptionCSS.WasSpecified then
+    begin
       Generator.CSS := FileToString(OptionCSS.Value);
+      Generator.Bootstrap := false;
+      if OptionCSSBasedOnBootstrap.WasSpecified then
+        raise EInvalidCommandLine.Create('Cannot use --css and --css-based-on-bootstrap together');
+    end else
+    if OptionCSSBasedOnBootstrap.WasSpecified then
+    begin
+      Generator.CSS := FileToString(OptionCSSBasedOnBootstrap.Value);
+      Generator.Bootstrap := true;
+    end;
 
     Generator.NumericFilenames := OptionNumericFilenames.TurnedOn;
 
@@ -566,9 +604,17 @@ begin
   PasDoc.AddSourceFileNames(LeftList);
 
   PasDoc.ShowVisibilities := [];
+  PasDoc.ToggleVisibilities := [];
   for Vis := Low(Vis) to High(Vis) do
+  begin
+    if OptionVisibleMembers.HasToggleValue(VisToStr(Vis)) then
+    begin
+      PasDoc.ShowVisibilities := PasDoc.ShowVisibilities + [Vis];
+      PasDoc.ToggleVisibilities := PasDoc.ToggleVisibilities + [Vis];
+    end else
     if OptionVisibleMembers.HasValue(VisToStr(Vis)) then
-      PasDoc.ShowVisibilities :=  PasDoc.ShowVisibilities + [Vis];
+      PasDoc.ShowVisibilities := PasDoc.ShowVisibilities + [Vis];
+  end;
 
   PasDoc.Generator.OutputGraphVizUses := OptionWriteGVUses.TurnedOn;
   PasDoc.Generator.OutputGraphVizClassHierarchy := OptionWriteGVClasses.TurnedOn;
@@ -654,9 +700,15 @@ begin
   PasDoc.Generator.Markdown := OptionMarkdown.TurnedOn;
   PasDoc.AutoBackComments := OptionAutoBackComments.TurnedOn;
   if OptionInfoMergeMode.Value <> '' then
+  begin
     {$ifdef FPC} {$push} {$notes off} {$endif} // do not make a note about IndexText not inlined
     PasDoc.InfoMergeType := TInfoMergeType(IndexText(OptionInfoMergeMode.Value, InfoMergeTypeStr));
     {$ifdef FPC} {$pop} {$endif}
+  end;
+
+  PasDoc.Generator.ShowSourcePosition := OptionShowSourcePosition.TurnedOn;
+  PasDoc.Generator.SourceUrlPattern := OptionSourceUrlPattern.Value;
+  PasDoc.Generator.SourceRoot := OptionSourceRoot.Value;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -710,7 +762,13 @@ begin
 {$IFNDEF FPC}
   {$IFDEF CONDITIONALEXPRESSIONS}
     {$IF CompilerVersion > 17}
+      {$IF CompilerVersion >= 20}
+        {$WARN SYMBOL_PLATFORM OFF}
+      {$IFEND}
       ReportMemoryLeaksOnShutdown := DebugHook <> 0;
+      {$IF CompilerVersion >= 20}
+        {$WARN SYMBOL_PLATFORM ON}
+      {$IFEND}
     {$IFEND}
   {$ENDIF}
 {$ENDIF}

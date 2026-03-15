@@ -1,4 +1,4 @@
-<unit name="ok_class_record_helpers.pas">
+<unit name="ok_class_record_helpers">
   <description><detailed>Test case for Delphi class and record helpers</detailed></description>
   <structure name="TSimpleRecord" name_with_generic="TSimpleRecord" type="record" visibility="published">
     <description><detailed>description of <code>TSimpleRecord</code></detailed></description>

@@ -1,4 +1,4 @@
-<unit name="ok_implicit_visibility.pas">
+<unit name="ok_implicit_visibility">
   <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
     <routine name="MyMethod" type="procedure" declaration="procedure MyMethod;" visibility="public">

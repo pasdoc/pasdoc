@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -20,7 +20,7 @@
   ----------------------------------------------------------------------------
 }
 
-{ @abstract(defines all items that can appear within a Pascal unit's interface)
+{ @abstract(All items that can appear within Pascal source code.)
   @created(11 Mar 1999)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
@@ -42,12 +42,10 @@ unit PasDoc_Items;
 interface
 
 uses
-  SysUtils,
+  SysUtils, Classes, Contnrs, Generics.Collections, Generics.Defaults,
   PasDoc_Types,
   PasDoc_StringVector,
-  PasDoc_ObjectVector,
   PasDoc_Hashes,
-  Classes,
   PasDoc_TagManager,
   PasDoc_Serialize,
   PasDoc_SortSettings,
@@ -74,7 +72,7 @@ type
     { implicit visibility, marks the implicit members if user
       used @--implicit-visibility=implicit command-line option. }
     viImplicit
-    );
+  );
 
   TVisibilities = set of TVisibility;
 
@@ -92,12 +90,14 @@ const
   );
 
   AllVisibilities: TVisibilities = [Low(TVisibility) .. High(TVisibility)];
-  DefaultVisibilities: TVisibilities =
-    [viProtected, viPublic, viPublished, viAutomated];
+
+  { Default visibility, as documented on https://pasdoc.github.io/VisibleMembers }
+  DefaultVisibilities: TVisibilities = [Low(TVisibility) .. High(TVisibility)] -
+    [viPrivate, viStrictPrivate, viImplicit];
 
 type
-  { Type of merging interface and implementaion comments.
-    See https://pasdoc.github.io/ImplementationCommentsOption . }
+  { Type of merging interface and implementation comments.
+    See @url(https://pasdoc.github.io/ImplementationCommentsOption --implementation-comments documentation). }
   TInfoMergeType = (
     { Implementation not parsed. }
     imtNone,
@@ -342,7 +342,7 @@ type
     function Signature: string; virtual;
   end;
 
-  THintDirective = (hdDeprecated, hdPlatform, hdLibrary, hdExperimental);
+  THintDirective = (hdDeprecated, hdPlatform, hdLibrary, hdExperimental, hdUnimplemented);
   THintDirectives = set of THintDirective;
 
   { This is a @link(TBaseItem) descendant that is always declared inside
@@ -370,6 +370,8 @@ type
     FCachedUnitRelativeQualifiedName: string; //< do not serialize
     FAttributes: TStringPairVector;
     FParams: TStringPairVector;
+    FSourceAbsoluteFileName: string;
+    FSourceLine: Integer;
     FRaises: TStringPairVector;
 
     procedure StoreAbstractTag(ThisTag: TTag; var ThisTagData: TObject;
@@ -482,7 +484,7 @@ type
     property Visibility: TVisibility read FVisibility write FVisibility;
 
     { Hint directives specify is this item deprecated, platform-specific,
-      library-specific, or experimental. }
+      library-specific, experimental, or unimplemented. }
     property HintDirectives: THintDirectives read FHintDirectives write FHintDirectives;
 
     { Deprecation note, specified as a string after "deprecated" directive.
@@ -491,56 +493,54 @@ type
     property DeprecatedNote: string
       read FDeprecatedNote write FDeprecatedNote;
 
-    { This recursively sorts all items inside this item,
-      and all items inside these items, etc.
-      E.g. in case of TPasUnit, this method sorts all variables,
-      consts, CIOs etc. inside (honouring SortSettings),
-      and also recursively calls Sort(SortSettings) for every CIO.
+    { Sort items inside (recursively, so it sorts within the items too).
+      E.g. in case of TPasUnit, we can sort variables,
+      constants, CIOs in the unit,
+      and then we call @code(Sort(SortSettings)) for every CIO.
 
-      Note that this does not guarantee that absolutely everything
-      inside will be really sorted. Some items may be deliberately
-      left unsorted, e.g. Members of TPasEnum are never sorted
-      (their declared order always matters,
-      so we shouldn't sort them when displaying their documentation
-      --- reader of such documentation would be seriously misleaded).
-      Sorting of other things depends on SortSettings ---
-      e.g. without ssMethods, CIOs methods will not be sorted.
+      Only the thigns listed in SortSettings will be sorted,
+      the rest will be left unsorted.
 
-      So actually this method @italic(makes sure that all things that should
-      be sorted are really sorted). }
+      Note that some things are never sorted, e.g. members of TPasEnum are never
+      sorted (since their order affects the code logic, so we should
+      not misrepresent it in the output doc). }
     procedure Sort(const SortSettings: TSortSettings); virtual;
 
-     { Full declaration of the item.
-       This is full parsed declaration of the given item.
+    { Full declaration of the item, similar to how it appears in the Pascal source code.
 
-       Note that that this is not used for some descendants.
-       Right now it's used only with
-       @unorderedList(
-         @item TPasConstant
-         @item TPasFieldVariable (includes type, default values, etc.)
-         @item TPasType
-         @item TPasRoutine (includes parameter list, procedural directives, etc.)
-         @item TPasProperty (includes read/write and storage specifiers, etc.)
-         @item(TPasEnum
+      Note that that this is not used for some descendants.
+      Right now it's used only with
 
-           But in this special case, '...' is used instead of listing individual
-           members, e.g. 'TEnumName = (...)'. You can get list of Members using
-           TPasEnum.Members. Eventual specifics of each member should be also
-           specified somewhere inside Members items, e.g.
-             @longcode# TMyEnum = (meOne, meTwo = 3); #
-           and
-             @longcode# TMyEnum = (meOne, meTwo); #
-           will both result in TPasEnum with equal FullDeclaration
-           (just @code('TMyEnum = (...)')) but this @code('= 3') should be
-           marked somewhere inside Members[1] properties.)
+      @unorderedList(
+        @item TPasConstant
+        @item TPasFieldVariable (includes type, default values, etc.)
+        @item TPasType
+        @item TPasRoutine (includes parameter list, procedural directives, etc.)
+        @item TPasProperty (includes read/write and storage specifiers, etc.)
+        @item(TPasEnum
 
-         @item TPasItem when it's a CIO's field.
-       )
+          But in this special case, '...' is used instead of listing individual
+          members, e.g. 'TEnumName = (...)'. You can get list of Members using
+          TPasEnum.Members. Eventual specifics of each member should be also
+          specified somewhere inside Members items, e.g.
 
-       The intention is that in the future all TPasItem descendants
-       will always have approprtate FullDeclaration set.
-       It all requires adjusting appropriate places in PasDoc_Parser to
-       generate appropriate FullDeclaration. }
+          @longcode# TMyEnum = (meOne, meTwo = 3); #
+
+          and
+
+          @longcode# TMyEnum = (meOne, meTwo); #
+
+          will both result in TPasEnum with equal FullDeclaration
+          (just @code('TMyEnum = (...)')) but this @code('= 3') should be
+          marked somewhere inside Members[1] properties.)
+
+        @item TPasItem when it's a CIO's field.
+      )
+
+      The intention is that in the future all TPasItem descendants
+      will always have appropriate FullDeclaration set.
+      It all requires adjusting appropriate places in PasDoc_Parser to
+      generate appropriate FullDeclaration. }
     property FullDeclaration: string read FFullDeclaration write FFullDeclaration;
 
     { Items here are collected from @@seealso tags.
@@ -601,16 +601,25 @@ type
 
     { Whether this item overrides an item in an ancestor. }
     function IsOverride: Boolean; virtual;
+
+    { Source (absolute) file name where this item is declared.
+      Set by the parser when parsing the item's declaration. }
+    property SourceAbsoluteFileName: string
+      read FSourceAbsoluteFileName write FSourceAbsoluteFileName;
+
+    { Source line number (1-based) where this item is declared.
+      Set by the parser when parsing the item's declaration. }
+    property SourceLine: Integer read FSourceLine write FSourceLine;
   end;
 
   { @abstract(Pascal constant.)
 
     Precise definition of "constant" for pasdoc purposes is
     "a name associated with a value".
-    Optionally, constant type may also be specified in declararion.
+    Optionally, constant type may also be specified in declaration.
     Well, Pascal constant always has some type, but pasdoc is too weak
-    to determine the implicit type of a constant, i.e. to unserstand that
-    constand @code(const A = 1) is of type Integer. }
+    to determine the implicit type of a constant, i.e. to understand that
+    constant @code(const A = 1) is of type Integer. }
   TPasConstant = class(TPasItem)
   end;
 
@@ -688,7 +697,7 @@ type
     @orderedList(
       @item global function/procedure,
       @item method (function/procedure of a structure (TPasCio)),
-      @item pointer type to one of the above (in this case Name is the type name).
+      @item type (pointer to one of the above) (in this case Name is the type name).
     ) }
   TPasRoutine = class(TPasItem)
   protected
@@ -696,6 +705,7 @@ type
     FWhat: TRoutineType;
     FDirectives: TStandardDirectives;
     FParamTypes: TStringVector;
+    FIsType: Boolean;
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
     procedure StoreReturnsTag(ThisTag: TTag; var ThisTagData: TObject;
@@ -709,8 +719,11 @@ type
       that inits @link(Returns). }
     procedure RegisterTags(TagManager: TTagManager); override;
 
-    { }
+    { Routine type, see @link(TRoutineType). }
     property What: TRoutineType read FWhat write FWhat;
+
+    { Is this a type (pointer to routine). }
+    property IsType: Boolean read FIsType write FIsType default false;
 
     { What does the method return.
 
@@ -777,16 +790,26 @@ type
     function IsOverride: Boolean; override;
   end;
 
-  { enumeration type to determine type of @link(TPasCio) item }
-  TCIOType = (CIO_CLASS, CIO_PACKEDCLASS,
+  { Determine type of @link(TPasCio) item, like a class or record. }
+  TCIOType = (
+    CIO_CLASS, CIO_PACKEDCLASS,
+    CIO_OBJCCLASS, CIO_PACKEDOBJCCLASS,
     CIO_DISPINTERFACE, CIO_INTERFACE,
     CIO_OBJECT, CIO_PACKEDOBJECT,
     CIO_RECORD, CIO_PACKEDRECORD,
     { CIO_TYPE is used only when CIO is a type helper,
       designed by CIO.ClassDirective = CT_HELPER. }
-    CIO_TYPE);
+    CIO_TYPE
+  );
 
-  TClassDirective = (CT_NONE, CT_ABSTRACT, CT_SEALED, CT_HELPER);
+  TClassDirective = (
+    CT_NONE,
+    CT_ABSTRACT,
+    CT_SEALED,
+    CT_HELPER,
+    // external can be used with objcclass (see @url(https://wiki.freepascal.org/FPC_PasCocoa FPC PasCocoa))
+    CT_EXTERNAL
+  );
 
   { @abstract(Extends @link(TPasItem) to store all items in
     a class / an object, e.g. fields.)
@@ -991,11 +1014,7 @@ type
     function BasePath: string; override;
   end;
 
-  { @name extends @link(TObjectVector) to store non-nil instances of @link(TExternalItem)}
-  TExternalItemList = class(TObjectVector)
-  public
-    function Get(Index: Integer): TExternalItem;
-  end;
+  TExternalItemList = {$ifdef FPC}specialize{$endif} TObjectList<TExternalItem>;
 
   TAnchorItem = class(TBaseItem)
   private
@@ -1115,14 +1134,14 @@ type
   end;
 
   { Container class to store a list of @link(TBaseItem)s. }
-  TBaseItems = class(TObjectVector)
+  TBaseItems = class({$ifdef FPC}specialize{$endif} TObjectList<TBaseItem>)
   private
     FHash: TObjectHash;
   protected
     procedure Serialize(const ADestination: TStream); virtual;
     procedure Deserialize(const ASource: TStream); virtual;
   public
-    constructor Create(const AOwnsObject: Boolean); override;
+    constructor Create(const AOwnsObject: Boolean); reintroduce; virtual;
     destructor Destroy; override;
 
     { Find a given item name on a list.
@@ -1144,7 +1163,7 @@ type
 
     { During Add, AObject is associated with AObject.Name using hash table,
       so remember to set AObject.Name @italic(before) calling Add(AObject). }
-    procedure Add(const AObject: TBaseItem); virtual;
+    procedure Add(const AObject: TBaseItem); reintroduce; virtual;
 
     { This is a shortcut for doing @link(Clear) and then
       @link(Add Add(AObject)). Useful when you want the list
@@ -1152,7 +1171,7 @@ type
     procedure ClearAndAdd(const AObject: TBaseItem);
 
     procedure Delete(const AIndex: Integer);
-    procedure Clear; override;
+    procedure Clear; reintroduce; virtual;
   end;
 
   { Container class to store a list of @link(TPasItem)s. }
@@ -1238,7 +1257,20 @@ type
   TPasProperties = class(TPasItems)
   end;
 
-  { Collection of types. }
+  { List of types. Note that it may contain not only TPasType but also TPasRoutine
+    (which we use for a procedural type / callback). }
+  TPasTypes = class(TPasItems)
+    function FindListItem(const AName: string): TPasItem;
+  end;
+
+  { Collection of classes / records / interfaces. }
+  TPasNestedCios = class(TPasTypes)
+  public
+    constructor Create; reintroduce;
+  end;
+
+  { List of types. Note that it may contain not only TPasType but also TPasRoutine
+    (which we use for a procedural type / callback). }
   TPasTypes = class(TPasItems)
     function FindListItem(const AName: string): TPasItem;
   end;
@@ -1280,65 +1312,96 @@ function VisibilitiesToStr(const Visibilities: TVisibilities): string;
 
 function VisToStr(const Vis: TVisibility): string;
 
+{ Is List nil or empty. }
+function ObjectVectorIsNilOrEmpty(const List: TBaseItems): boolean; overload;
+
 implementation
 
 uses StrUtils,
   PasDoc_Utils;
 
-function ComparePasItemsByName(PItem1, PItem2: Pointer): Integer;
-var
-  P1, P2: TPasItem;
-begin
-  P1 := TPasItem(PItem1);
-  P2 := TPasItem(PItem2);
-  Result := CompareText(
-    P1.UnitRelativeQualifiedName,
-    P2.UnitRelativeQualifiedName);
-  // Sort duplicate names by unit name if available.
-  if Result = 0 then
-    Result := CompareText(
-      P1.MyUnitName,
-      P2.MyUnitName);
-  { If both name and unit are equal (so it's an overloaded routine),
-    sort by description. The goal is to make output of AllIdentifiers.html
-    and similar lists "stable", guaranteed regardless of sorting algorithm
-    used by a particular compiler version, OS etc.
+type
+  TBaseItemComparer = {$ifdef FPC}specialize{$endif} TComparer<TBaseItem>;
 
-    In case descriptions are equal, the order is still undefined,
-    but it will not matter (since everything generated for AllIdentifiers.html
-    will be equal). }
-  if Result = 0 then
-    Result := CompareText(
-      P1.DetailedDescription,
-      P2.DetailedDescription);
-end;
-
-function ComparePasMethods(PItem1, PItem2: Pointer): Integer;
+{ Compare 2 TPasRoutine instances.
+  Declared as 2 TBaseItem (because this callback is used with TObjectList<TBaseItem>). }
+function ComparePasRoutines(
+  {$ifdef GENERICS_CONSTREF}constref{$else}const{$endif}
+  PItem1, PItem2: TBaseItem): Integer;
 var
   P1: TPasRoutine;
   P2: TPasRoutine;
 begin
   P1 := TPasRoutine(PItem1);
   P2 := TPasRoutine(PItem2);
-  { compare 'method type', order is constructor > destructor > visibility > function, procedure }
-  if P1.What = P2.What then begin
-    { if 'method type' is equal, compare names }
-    if P1.Visibility = P2.Visibility then begin
-      Result := CompareText(P1.Name, P2.Name)
-    end else begin
-      if P1.Visibility < P2.Visibility then begin
-        Result := -1
-      end else begin
-        Result := 1;
-      end;
-    end;
-  end else begin
-    if P1.What < P2.What then begin
-      Result := -1
-    end else begin
-      Result := 1;
-    end;
-  end;
+
+  // first compare by method type (so that constructors are before destructors, and so on)
+  Result := Ord(P1.What) - Ord(P2.What);
+  if Result <> 0 then Exit;
+
+  // then compare by visibility (so that public methods are before private, and so on)
+  Result := Ord(P1.Visibility) - Ord(P2.Visibility);
+  if Result <> 0 then Exit;
+
+  // then compare by name
+  Result := CompareText(P1.Name, P2.Name);
+  if Result <> 0 then Exit;
+
+  { If still equal, compare the signature, i.e. overloaded routines parameters.
+
+    Note: We try hard to always have some non-zero result for different items,
+    since otherwise the resulting order is undefined, as TList.Sort doesn't
+    guarantee stability, and in fact the results differ between
+    FPC 3.2.2 and FPC 3.3.1. So if some order is undefined, we may get
+    different output from FPC 3.2.2 vs FPC 3.3.1, making also our "make tests"
+    (comparing generated output with expected output) fail when switching
+    FPC versions. }
+
+  Result := CompareText(P1.Signature, P2.Signature);
+
+  // debug: ok, this warning doesn't occur in our tests.
+  // if (Result = 0) and (P1 <> P2) then
+  //   Writeln('Warning: ComparePasRoutines: two different methods are undefined order in relation to each other: ' + P1.FullDeclaration + ' and ' + P2.FullDeclaration);
+end;
+
+{ Compare 2 TPasItem instances.
+  Declared as 2 TBaseItem (because this callback is used with TObjectList<TBaseItem>). }
+function ComparePasItemsByName(
+  {$ifdef GENERICS_CONSTREF}constref{$else}const{$endif}
+  PItem1, PItem2: TBaseItem): Integer;
+var
+  P1, P2: TPasItem;
+begin
+  P1 := TPasItem(PItem1);
+  P2 := TPasItem(PItem2);
+
+  // sort by name (in unit) first
+  Result := CompareText(
+    P1.UnitRelativeQualifiedName,
+    P2.UnitRelativeQualifiedName);
+  if Result <> 0 then Exit;
+
+  // Sort duplicate names by unit name if available.
+  Result := CompareText(
+    P1.MyUnitName,
+    P2.MyUnitName);
+  if Result <> 0 then Exit;
+
+  { If both UnitRelativeQualifiedName and MyUnitName are equal,
+    we have an overloaded routine.
+    Sort by ComparePasRoutines then.
+
+    The goal is to make output of AllIdentifiers.html, AllFunctions.html
+    and similar lists "stable", guaranteed regardless of sorting algorithm
+    used by a particular compiler version, OS etc. }
+  if (P1 is TPasRoutine) and (P2 is TPasRoutine) then
+    Result := ComparePasRoutines(P1, P2)
+  else
+    { Fallback to compare description for anything else -- should not be
+      necessary in practice now. }
+    Result := CompareText(
+      P1.DetailedDescription,
+      P2.DetailedDescription);
 end;
 
 { TBaseItem ------------------------------------------------------------------- }
@@ -1450,7 +1513,7 @@ begin
     LastMod := TrimRightSet(TagValue, ['#']);
     ReplaceStr := '';
   end else
-  { See http://svnbook.red-bean.com/en/1.7/svn.advanced.props.special.keywords.html
+  { See @url(http://svnbook.red-bean.com/en/1.7/svn.advanced.props.special.keywords.html SVN keyword substitution)
     about fixed date format in SVN. }
   if IsVersionControlTag(TagParameter, 'Author:', TagValue) then
   begin
@@ -1817,6 +1880,7 @@ function TPasItem.GetInheritedItemDescriptions: TStringPairVector;
 var
   I: Integer;
   CurrentClassAncestor: TPasCio;
+  InterfaceAncestorItem: TPasItem;
   InterfaceAncestor: TPasCio;
   ThisItemInAncestor: TPasItem;
   OverrideChainEnded: Boolean;
@@ -1825,7 +1889,11 @@ begin
   OverrideChainEnded := not IsOverride;
 
   if (Assigned(MyObject) and
-     (TPasCio(MyObject).MyType in [CIO_CLASS, CIO_PACKEDCLASS, CIO_OBJECT, CIO_PACKEDOBJECT])) then
+     (TPasCio(MyObject).MyType in [
+        CIO_CLASS, CIO_PACKEDCLASS,
+        CIO_OBJCCLASS, CIO_PACKEDOBJCCLASS,
+        CIO_OBJECT, CIO_PACKEDOBJECT
+      ])) then
   begin
     CurrentClassAncestor := MyObject;
     while Assigned(CurrentClassAncestor) do
@@ -1853,7 +1921,15 @@ begin
       { Check if any of the interfaces have a description }
       for I := 1 to CurrentClassAncestor.Ancestors.Count - 1 do
       begin
-        InterfaceAncestor := TObject(CurrentClassAncestor.Ancestors.Items[I].Data) as TPasCio;
+        InterfaceAncestorItem := TObject(CurrentClassAncestor.Ancestors.Items[I].Data) as TPasItem;
+
+        { Usually InterfaceAncestorItem should be TPasCio.
+          But in edge-cases, it may be not, see tests/testcases/ok_ancestor_not_cio.pas .
+          In this case, don't use it for resolving further ancestors. }
+        if not (InterfaceAncestorItem is TPasCio) then
+          Continue;
+
+        InterfaceAncestor := TPasCio(InterfaceAncestorItem);
         if Assigned(InterfaceAncestor) then
         begin
           ThisItemInAncestor := InterfaceAncestor.FindItem(Self.Signature) as TPasItem;
@@ -1906,8 +1982,8 @@ end;
 function TPasItem.HasOptionalInfo: boolean;
 begin
   Result :=
-    (not ObjectVectorIsNilOrEmpty(Params)) or
-    (not ObjectVectorIsNilOrEmpty(Raises));
+    (not StringPairIsNilOrEmpty(Params)) or
+    (not StringPairIsNilOrEmpty(Raises));
 end;
 
 procedure TPasItem.Sort(const SortSettings: TSortSettings);
@@ -1948,6 +2024,8 @@ begin
   DeprecatedNote := LoadStringFromStream(ASource);
   FullDeclaration := LoadStringFromStream(ASource);
   Attributes.LoadFromBinaryStream(ASource);
+  FSourceAbsoluteFileName := LoadStringFromStream(ASource);
+  ASource.Read(FSourceLine, SizeOf(FSourceLine));
 
   { No need to serialize, because it's not generated by parser:
   AbstractDescription := LoadStringFromStream(ASource);
@@ -1967,6 +2045,8 @@ begin
   SaveStringToStream(DeprecatedNote, ADestination);
   SaveStringToStream(FullDeclaration, ADestination);
   FAttributes.SaveToBinaryStream(ADestination);
+  SaveStringToStream(FSourceAbsoluteFileName, ADestination);
+  ADestination.Write(FSourceLine, SizeOf(FSourceLine));
 
   { No need to serialize, because it's not generated by parser:
   SaveStringToStream(AbstractDescription, ADestination);
@@ -2127,7 +2207,7 @@ end;
 
 constructor TBaseItems.Create(const AOwnsObject: Boolean);
 begin
-  inherited;
+  inherited Create(AOwnsObject);
   FHash := TObjectHash.Create;
 end;
 
@@ -2234,12 +2314,13 @@ begin
 
   for j := 0 to Count - 1 do
     case TPasCio(GetPasItemAt(j)).MyType of
-      CIO_CLASS, CIO_PACKEDCLASS:
+      CIO_CLASS, CIO_PACKEDCLASS, CIO_OBJCCLASS, CIO_PACKEDOBJCCLASS:
         Inc(c);
       CIO_INTERFACE:
         Inc(i);
       CIO_OBJECT, CIO_PACKEDOBJECT:
         Inc(o);
+      else ;
     end;
 end;
 
@@ -2271,7 +2352,7 @@ end;
 
 procedure TPasItems.SortShallow;
 begin
-  Sort( {$IFDEF FPC}@{$ENDIF} ComparePasItemsByName);
+  Sort(TBaseItemComparer.Construct({$IFDEF FPC}@{$ENDIF} ComparePasItemsByName));
 end;
 
 procedure TPasItems.SortOnlyInsideItems(const SortSettings: TSortSettings);
@@ -2334,7 +2415,7 @@ begin
   Signature := AItem.Signature;
   FShortNameHash.SetString(LowerCase(AItem.Name), LowerCase(Signature));
 
-  TObjectVector(Self).Add(AItem);
+  inherited Add(AItem);
   FHash.Items[LowerCase(Signature)] := AItem;
 end;
 
@@ -2361,7 +2442,13 @@ begin
 
   if not Assigned(Result) then
   begin
-    // Replace short names with the full signature
+    { Replace short names with the full signature.
+
+      This way we can find routine by a name without params,
+      e.g. @link(Foo) returns *some* overload of Foo,
+      without the need to always specify params like @link(Foo(Integer)).
+      This makes sense, since most routines are not overloaded and users
+      expect that simple @link(Foo) works. }
     Signature := FShortNameHash.GetString(NormalizedNameOrSignature);
     if Signature <> '' then
       Result := TPasRoutine(inherited FindListItem(Signature));
@@ -2509,7 +2596,7 @@ begin
   end;
 
   if (Methods <> nil) and (ssMethods in SortSettings) then
-    Methods.Sort( {$IFDEF FPC}@{$ENDIF} ComparePasMethods);
+    Methods.Sort(TBaseItemComparer.Construct({$IFDEF FPC}@{$ENDIF} ComparePasRoutines));
 
   if (Properties <> nil) and (ssProperties in SortSettings) then
     Properties.SortShallow;
@@ -2748,13 +2835,8 @@ end;
 
 function TPasUnit.FileNewerThanCache(const FileName: string): boolean;
 begin
-{$IFDEF COMPILER_10_UP}
   Result := WasDeserialized and FileExists(FileName) and
     (CacheDateTime < CheckGetFileDate(FileName));
-{$ELSE}
-  Result := WasDeserialized and FileExists(FileName) and
-    (CacheDateTime < FileDateToDateTime(FileAge(FileName)));
-{$ENDIF}
 end;
 
 procedure TPasUnit.Sort(const SortSettings: TSortSettings);
@@ -2898,6 +2980,7 @@ begin
   inherited;
   ASource.Read(FWhat, SizeOf(FWhat));
   ASource.Read(FDirectives, SizeOf(FDirectives));
+  ASource.Read(FIsType, SizeOf(FIsType));
   FParamTypes.LoadFromBinaryStream(ASource);
 
   { No need to serialize, because it's not generated by parser:
@@ -2910,6 +2993,7 @@ begin
   inherited;
   ADestination.Write(FWhat, SizeOf(FWhat));
   ADestination.Write(FDirectives, SizeOf(FDirectives));
+  ADestination.Write(FIsType, SizeOf(FIsType));
   FParamTypes.SaveToBinaryStream(ADestination);
 
   { No need to serialize, because it's not generated by parser:
@@ -2929,9 +3013,38 @@ function TPasRoutine.Signature: string;
   end;
 
 begin
-  if ParamTypes.Count > 0 then
+  { IsType determines whether we should include params in signature.
+    Reason:
+
+    - We calculate special signature for routines (global and methods),
+      IsType = false.
+
+      They are placed on TPasRoutines lists, like TPasUnit.FuncsProcs,
+      and TPasRoutines.FindListItem has special code (using FShortNameHash)
+      to allow searching routines using both full signature (with params)
+      and short name (without params).
+
+      This way both @link(Foo) and @link(Foo(Integer)) work.
+
+    - We don't calculate special signature for types (IsType = true).
+
+      They are placed on TPasTypes lists, like TPasUnit.Types.
+      TPasTypes doesn't have special code (like FShortNameHash).
+      So if TPasRoutine.Signature would include params for types,
+      then @link(TMyFunctionType) would not work, as TPasTypes.FindListItem
+      would only allow searching for @link(TMyFunctionType(Integer)),
+      i.e. full version with params.
+
+      At the same time, routine types are not overloaded.
+      We don't need @link(TMyFunctionType(Integer)) to work,
+      only @link(TMyFunctionType).
+
+    See testcase tests/testcases/ok_link_function_type.pas .
+  }
+
+  if (not IsType) and (ParamTypes.Count > 0) then
     { Note: We're not using TStringList.DelimitedText because of a bug in FPC 3.2.0 affecting quote chars.
-            See https://gitlab.com/freepascal.org/fpc/source/-/issues/37605 }
+      See @url(https://gitlab.com/freepascal.org/fpc/source/-/issues/37605 FPC issue 37605). }
     Result := Format('%s(%s)', [Name, GetParamTypesStr])
   else
     Result := Name;
@@ -3093,13 +3206,6 @@ begin
   Result := ExtractFilePath(ExpandFileName(SourceFileName));
 end;
 
-{ TExternalItemList ---------------------------------------------------------- }
-
-function TExternalItemList.Get(Index: Integer): TExternalItem;
-begin
-  Result := inherited Items[Index] as TExternalItem;
-end;
-
 { global things ------------------------------------------------------------ }
 
 function RoutineTypeToString(const RoutineType: TRoutineType): string;
@@ -3126,6 +3232,8 @@ const
   Names: array [TCIOType] of String = (
     'class',
     'packed class',
+    'objcclass',
+    'packed objcclass',
     'dispinterface',
     'interface',
     'object',
@@ -3153,6 +3261,11 @@ begin
       if Result <> '' then Result := Result + ',';
       Result := Result + VisToStr(Vis);
     end;
+end;
+
+function ObjectVectorIsNilOrEmpty(const List: TBaseItems): boolean;
+begin
+  Result := (List = nil) or (List.Count = 0);
 end;
 
 initialization

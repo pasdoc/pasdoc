@@ -1,4 +1,4 @@
-<unit name="ok_enum_field_var.pas">
+<unit name="ok_enum_field_var">
   <variable name="ApplicationStatus" declaration="ApplicationStatus: (apInitializing, apReady, apClosing, apDestroying);" visibility="published">
   </variable>
   <structure name="TServerConnController" name_with_generic="TServerConnController" type="class" visibility="published">

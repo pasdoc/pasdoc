@@ -1,4 +1,4 @@
-<unit name="introduction_relative_paths/pas/main.pas">
+<unit name="main">
   <type name="SomeType" declaration="SomeType = integer;" visibility="published">
     <description><detailed>SomeType description.</detailed></description>
   </type>

@@ -1,4 +1,4 @@
-<unit name="ok_generic_routines.pas">
+<unit name="ok_generic_routines">
   <routine name="DoSomething" type="function" declaration="function DoSomething&lt;T&gt;(const Caption: String; const Input: T): T;" visibility="published">
     <description><detailed>Test documentation for function DoSomething implementation</detailed></description>
   </routine>

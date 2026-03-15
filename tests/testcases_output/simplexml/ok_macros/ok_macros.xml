@@ -1,4 +1,4 @@
-<unit name="ok_macros.pas">
+<unit name="ok_macros">
   <description><abstract>Test of FPC macros handling.</abstract><detailed> Parts based on [http://sourceforge.net/tracker/index.php?func=detail&amp;aid=861356&amp;group_id=4213&amp;atid=354213]</detailed></description>
   <routine name="MyProc1" type="procedure" declaration="procedure MyProc1( a:Integer);" visibility="published">
     <description><detailed>Below is an example of a very bad and confusing (but valid) macro usage. Just to test pasdoc.</detailed></description>

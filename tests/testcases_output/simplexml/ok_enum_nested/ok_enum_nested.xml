@@ -1,4 +1,4 @@
-<unit name="ok_enum_nested.pas">
+<unit name="ok_enum_nested">
   <type name="TGlobalEnum" declaration="TGlobalEnum = (...);" visibility="published">
     <constant name="geOne" declaration="geOne" visibility="published">
     </constant>

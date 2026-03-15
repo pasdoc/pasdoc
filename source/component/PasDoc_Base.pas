@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -20,7 +20,8 @@
   ----------------------------------------------------------------------------
 }
 
-{ @abstract(Contains the main TPasDoc component.)
+{ @abstract(Manages parsing and documentation generation: @link(TPasDoc).)
+
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Erwin Scheuch-Heilig (ScheuchHeilig@t-online.de))
@@ -31,7 +32,7 @@
   @author(Arno Garrels <first name.name@nospamgmx.de>)
   @created(24 Sep 1999)
 
-  Unit name must be @code(PasDoc_Base) instead of just @code(PasDoc)
+  Note: Unit name must be @code(PasDoc_Base) instead of just @code(PasDoc)
   to not conflict with the name of base program name @code(pasdoc.dpr).
 }
 
@@ -43,7 +44,7 @@ interface
 
 uses
   SysUtils,
-  Classes,
+  Classes, Contnrs,
   PasDoc_Items,
   PasDoc_Languages,
   PasDoc_Gen,
@@ -51,25 +52,14 @@ uses
   PasDoc_StringVector,
   PasDoc_SortSettings,
   PasDoc_StreamUtils,
-  PasDoc_TagManager
-{$IFNDEF FPC}
-{$IFDEF WIN32}
-{$IFNDEF DELPHI_6_UP}
-  ,FileCtrl
-{$ENDIF}
-{$ENDIF}
-{$ENDIF}
-  ;
+  PasDoc_TagManager;
 
 const
   { }
   DEFAULT_VERBOSITY_LEVEL = 2;
 
 type
-  { The main object in the pasdoc application; first scans parameters, then
-    parses files.
-    All parsed units are then given to documentation generator,
-    which creates one or more documentation output files. }
+  { Manages parsing and documentation generation. }
   TPasDoc = class(TComponent)
   private
     FDescriptionFileNames: TStringVector;
@@ -91,6 +81,7 @@ type
     FIgnoreMarkers: TStringList;
     FGenerator: TDocGenerator;
     FShowVisibilities: TVisibilities;
+    FToggleVisibilities: TVisibilities;
     FMarkerOptional: boolean;
     FIgnoreLeading: string;
     FCacheDir: string;
@@ -199,10 +190,13 @@ type
 
     property Generator: TDocGenerator read FGenerator write SetGenerator;
     property ShowVisibilities: TVisibilities read FShowVisibilities write FShowVisibilities;
+    { Visibilities that should be included in HTML output but hidden by default,
+      with checkboxes to toggle their display. }
+    property ToggleVisibilities: TVisibilities read FToggleVisibilities write FToggleVisibilities;
     property CacheDir: string read FCacheDir write FCacheDir;
 
     { This determines how items inside will be sorted.
-      See [https://pasdoc.github.io/SortOption]. }
+      See @url(https://pasdoc.github.io/SortOption --sort documentation). }
     property SortSettings: TSortSettings
       read FSortSettings write FSortSettings default [];
 
@@ -215,7 +209,7 @@ type
     property AdditionalFilesNames: TStringList read FAdditionalFilesNames;
 
     { See command-line option @--implicit-visibility documentation at
-      [https://pasdoc.github.io/ImplicitVisibilityOption].
+      @url(https://pasdoc.github.io/ImplicitVisibilityOption --implicit-visibility documentation).
       This will be passed to parser instance. }
     property ImplicitVisibility: TImplicitVisibility
       read FImplicitVisibility write FImplicitVisibility default ivPublic;
@@ -224,7 +218,7 @@ type
       read FHandleMacros write FHandleMacros default true;
 
     { This controls auto-linking, see
-      [https://pasdoc.github.io/AutoLinkOption] }
+      @url(https://pasdoc.github.io/AutoLinkOption --auto-link documentation). }
     property AutoLink: boolean
       read FAutoLink write FAutoLink default false;
     property AutoBackComments: boolean
@@ -237,7 +231,6 @@ implementation
 
 uses
   PasDoc_Parser,
-  PasDoc_ObjectVector,
   PasDoc_Utils,
   PasDoc_Serialize;
 
@@ -300,7 +293,7 @@ begin
   LCacheFileName := CacheDir+ChangeFileExt(ExtractFileName(SourceFileName), '.pduc');
   p := TParser.Create(InputStream, FDirectives, FIncludeDirectories,
     {$IFDEF FPC}@{$ENDIF} GenMessage, FVerbosity,
-    SourceFileName, ExtractFilePath(SourceFileName), HandleMacros);
+    SourceFileName, ExpandFileName(SourceFileName), HandleMacros);
   try
     {$IFNDEF STRING_UNICODE}
     SkipBOM(InputStream);
@@ -329,13 +322,8 @@ begin
       DoMessage(2, pmtInformation, 'Loading data for file %s from cache...', [SourceFileName]);
       try
         U := TPasUnit(TPasUnit.DeserializeFromFile(LCacheFileName));
-        {$IFDEF COMPILER_10_UP}
         U.CacheDateTime := CheckGetFileDate(LCacheFileName);
         if U.CacheDateTime < CheckGetFileDate(SourceFileName) then
-        {$ELSE}
-        U.CacheDateTime := FileDateToDateTime(FileAge(LCacheFileName));
-        if U.CacheDateTime < FileDateToDateTime(FileAge(SourceFileName)) then
-        {$ENDIF}
         begin
           DoMessage(2, pmtInformation, 'Cache file for %s is outdated.',
             [SourceFileName]);
@@ -370,11 +358,7 @@ begin
     end else
     begin
       U.SourceFileName := SourceFileName;
-    {$IFDEF COMPILER_10_UP}
       U.SourceFileDateTime := CheckGetFileDate(SourceFileName);
-    {$ELSE}
-      U.SourceFileDateTime := FileDateToDateTime(FileAge(SourceFileName));
-    {$ENDIF}
       FUnits.Add(U);
 
       { Now we know that unit was 100% successfully parsed.
@@ -446,21 +430,12 @@ begin
   DoMessage(1, pmtInformation, 'Starting Source File Parsing ...', []);
   if FSourceFileNames.IsEmpty then Exit;
 
-  InputStream := nil;
   Count := 0;
   for i := 0 to FSourceFileNames.Count - 1 do
   begin
     p := FSourceFileNames[i];
     try
-    {$IFDEF STRING_UNICODE}
-      InputStream := TStreamReader.Create(p);
-    {$ELSE}
-    {$IFDEF USE_BUFFERED_STREAM}
-      InputStream := TBufferedStream.Create(p, fmOpenRead or fmShareDenyWrite);
-    {$ELSE}
-      InputStream := TFileStream.Create(p, fmOpenRead or fmShareDenyWrite);
-    {$ENDIF}
-    {$ENDIF}
+      InputStream := TBufferedFileStream.Create(p, fmOpenRead or fmShareDenyWrite);
     except
       on E: Exception do
       begin
@@ -501,7 +476,8 @@ var
 begin
   if c = nil then Exit;
   i := 0;
-  while (i < c.Count) do begin
+  while (i < c.Count) do
+  begin
     p := c.PasItemAt[i];
 
     { TODO -- code below checks for @exclude tag too trivially,
@@ -514,23 +490,25 @@ begin
     begin
       DoMessage(3, pmtInformation, 'Excluding item %s', [p.Name]);
       c.Delete(i);
-    end
-    else begin
-          { P has no excluded tag; but if it is a class, interface, object or
-            unit, one of its parts may be excluded }
-      if p.ClassType = TPasCio then begin
+    end else
+    begin
+      { P is not excluded itself, so process it recursively to exclude its parts.  }
+      if P is TPasCio then
+      begin
         RemoveExcludedItems(TPasCio(p).Fields);
-        RemoveExcludedItems(TPasItems(TPasCio(p).Properties));
-        RemoveExcludedItems(TPasItems(TPasCio(p).Methods));
-      end
-      else
-        if p.ClassType = TPasUnit then begin
-          RemoveExcludedItems(TPasUnit(p).CIOs);
-          RemoveExcludedItems(TPasUnit(p).Constants);
-          RemoveExcludedItems(TPasItems(TPasUnit(p).FuncsProcs));
-          RemoveExcludedItems(TPasUnit(p).Types);
-          RemoveExcludedItems(TPasUnit(p).Variables);
-        end;
+        RemoveExcludedItems(TPasCio(p).Properties);
+        RemoveExcludedItems(TPasCio(p).Methods);
+        RemoveExcludedItems(TPasCio(p).Cios);
+        RemoveExcludedItems(TPasCio(p).Types);
+      end else
+      if P is TPasUnit then
+      begin
+        RemoveExcludedItems(TPasUnit(p).CIOs);
+        RemoveExcludedItems(TPasUnit(p).Constants);
+        RemoveExcludedItems(TPasUnit(p).FuncsProcs);
+        RemoveExcludedItems(TPasUnit(p).Types);
+        RemoveExcludedItems(TPasUnit(p).Variables);
+      end;
       Inc(i);
     end;
   end;
@@ -598,6 +576,7 @@ begin
   end;
 
   Generator.Title := Title;
+  Generator.ToggleVisibilities := ToggleVisibilities;
   Generator.Units := FUnits;
   Generator.Introduction := FIntroduction;
   Generator.Conclusion := FConclusion;
@@ -680,11 +659,7 @@ begin
   FGenerator := Value;
   if Assigned(FGenerator) then begin
     FGenerator.FreeNotification(Self);
-{$IFDEF FPC}
-    FGenerator.OnMessage := @GenMessage;
-{$ELSE}
-    FGenerator.OnMessage := GenMessage;
-{$ENDIF}
+    FGenerator.OnMessage := {$IFDEF FPC}@{$endif} GenMessage;
   end;
 end;
 
@@ -788,7 +763,7 @@ begin
     { Setting ExternalItem.SourceFileName makes also ExternalItem.BasePath good,
       and this is useful to resolve relative filenames with respect to
       the introduction/conclusion files.
-      See https://github.com/pasdoc/pasdoc/issues/122 }
+      See @url(https://github.com/pasdoc/pasdoc/issues/122 pasdoc issue 122). }
     ExternalItem.SourceFileName := FileName;
   except
     FreeAndNil(ExternalItem);

@@ -15,6 +15,7 @@ RTransTable = (
   //tables and members
     {trClasses} '类',
       {trClass} '类',
+      {trObjcClass} strToDo,
       {trDispInterface} '调度接口',
       {trInterface} '接口',
     {trObjects} '对象',
@@ -61,6 +62,7 @@ RTransTable = (
     {trPlatformSpecific} '这个符号仅用于特定的平台',
     {trLibrarySpecific} '这个符号仅用于特定的库',
     {trExperimental} strToDo, //'this symbol is experimental',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
   //headings
     {trOverview} '综述',
     {trIntroduction} '前言',
@@ -106,5 +108,7 @@ RTransTable = (
     {trSeeAlso} '参见',
     {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
+    {trSourcePosition} strToDo, //'Source: %s (line %d).',
+    {trShowAdditionalMembers} strToDo, //'Show Additional Members',
     ''  //dummy
   );

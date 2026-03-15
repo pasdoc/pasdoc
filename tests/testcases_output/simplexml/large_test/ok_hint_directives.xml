@@ -1,4 +1,4 @@
-<unit name="ok_hint_directives.pas">
+<unit name="ok_hint_directives" deprecated="true" platform="true" library="true">
   <description><abstract>Test parsing &quot;platform&quot;, &quot;library&quot; and &quot;deprecated&quot; directives (called collectively &quot;hint directives&quot;) by pasdoc.</abstract><detailed> Related tracker bug: [ 1196073 ] &quot;some modifiers are not parsed&quot;. We want to support all situations where these directives are allowed in modern FPC (&gt;= 2.5.1) and Delphi. Their placement in unfortunately not consistent, thanks go to Borland. Quoting Delphi help (from Kylix 3): &quot;Hint directives can be applied to type declarations, variable declarations, class and structure declarations, field declarations within classes or records, procedure, function and method declarations, and unit declarations.&quot; Summary: 
 
 <orderedlist>
@@ -16,60 +16,64 @@
 </unorderedlist>
 
  ... then please send email about this to pasdoc-main mailing list (or directly to me, Michalis Kamburelis, &lt;kambi@users.sourceforge.net&gt;, if your comments about this do not really concern pasdoc). I will be grateful. Contrary to most units in tests/, this unit <italic>is</italic> kept at compileable by Delphi/Kylix and FPC. That's because this unit is also a test whether we really specify here hint directives in the way parseable by Delphi/Kylix.</detailed></description>
-  <routine name="TestFuncCombined" type="function" declaration="function TestFuncCombined(SomeParams: Integer): Integer; deprecated; platform;" visibility="published">
+  <routine name="TestFuncCombined" type="function" declaration="function TestFuncCombined(SomeParams: Integer): Integer; deprecated; platform;" visibility="published" deprecated="true" platform="true">
   </routine>
-  <routine name="TestFuncDeprecated" type="function" declaration="function TestFuncDeprecated: Integer; deprecated;" visibility="published">
+  <routine name="TestFuncDeprecated" type="function" declaration="function TestFuncDeprecated: Integer; deprecated;" visibility="published" deprecated="true">
   </routine>
-  <routine name="TestFuncPlatform" type="function" declaration="function TestFuncPlatform: Integer; platform;" visibility="published">
+  <routine name="TestFuncPlatform" type="function" declaration="function TestFuncPlatform: Integer; platform;" visibility="published" platform="true">
   </routine>
-  <routine name="TestProcCombined" type="procedure" declaration="procedure TestProcCombined(SomeParams: Integer); deprecated  platform;" visibility="published">
+  <routine name="TestProcCombined" type="procedure" declaration="procedure TestProcCombined(SomeParams: Integer); deprecated  platform;" visibility="published" deprecated="true" platform="true">
   </routine>
-  <routine name="TestProcDeprecated" type="procedure" declaration="procedure TestProcDeprecated; deprecated;" visibility="published">
+  <routine name="TestProcDeprecated" type="procedure" declaration="procedure TestProcDeprecated; deprecated;" visibility="published" deprecated="true">
   </routine>
-  <routine name="TestProcPlatform" type="procedure" declaration="procedure TestProcPlatform; platform;" visibility="published">
+  <routine name="TestProcExperimental" type="procedure" declaration="procedure TestProcExperimental; experimental;" visibility="published" experimental="true">
   </routine>
-  <constant name="TestConstPlatform" declaration="TestConstPlatform = 1 platform;" visibility="published">
+  <routine name="TestProcPlatform" type="procedure" declaration="procedure TestProcPlatform; platform;" visibility="published" platform="true">
+  </routine>
+  <routine name="TestProcUnimplemented" type="procedure" declaration="procedure TestProcUnimplemented; unimplemented;" visibility="published" unimplemented="true">
+  </routine>
+  <constant name="TestConstPlatform" declaration="TestConstPlatform = 1 platform;" visibility="published" platform="true">
   </constant>
-  <constant name="TestConstLibrary" declaration="TestConstLibrary = 2 library;" visibility="published">
+  <constant name="TestConstLibrary" declaration="TestConstLibrary = 2 library;" visibility="published" library="true">
   </constant>
-  <constant name="TestConstDeprecated" declaration="TestConstDeprecated = 3 deprecated;" visibility="published">
+  <constant name="TestConstDeprecated" declaration="TestConstDeprecated = 3 deprecated;" visibility="published" deprecated="true">
   </constant>
-  <constant name="TestConstCombined" declaration="TestConstCombined = 4 deprecated library platform;" visibility="published">
+  <constant name="TestConstCombined" declaration="TestConstCombined = 4 deprecated library platform;" visibility="published" deprecated="true" platform="true" library="true">
   </constant>
-  <variable name="TestVarPlatform" declaration="TestVarPlatform: Integer platform;" visibility="published">
+  <variable name="TestVarPlatform" declaration="TestVarPlatform: Integer platform;" visibility="published" platform="true">
   </variable>
-  <variable name="TestVarLibrary" declaration="TestVarLibrary: Integer library;" visibility="published">
+  <variable name="TestVarLibrary" declaration="TestVarLibrary: Integer library;" visibility="published" library="true">
   </variable>
-  <variable name="TestVarDeprecated" declaration="TestVarDeprecated: Integer deprecated;" visibility="published">
+  <variable name="TestVarDeprecated" declaration="TestVarDeprecated: Integer deprecated;" visibility="published" deprecated="true">
   </variable>
-  <variable name="TestVarCombined" declaration="TestVarCombined: Integer library deprecated platform;" visibility="published">
+  <variable name="TestVarCombined" declaration="TestVarCombined: Integer library deprecated platform;" visibility="published" deprecated="true" platform="true" library="true">
   </variable>
-  <structure name="TTestClassDeprecated" name_with_generic="TTestClassDeprecated" type="class" visibility="published">
+  <structure name="TTestClassDeprecated" name_with_generic="TTestClassDeprecated" type="class" visibility="published" deprecated="true" library="true">
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="TestMethodCombined" type="procedure" declaration="procedure TestMethodCombined; library; deprecated; platform;" visibility="public">
+    <routine name="TestMethodCombined" type="procedure" declaration="procedure TestMethodCombined; library; deprecated; platform;" visibility="public" deprecated="true" platform="true" library="true">
     </routine>
-    <routine name="TestMethodDeprecated" type="procedure" declaration="procedure TestMethodDeprecated; deprecated;" visibility="public">
+    <routine name="TestMethodDeprecated" type="procedure" declaration="procedure TestMethodDeprecated; deprecated;" visibility="public" deprecated="true">
     </routine>
-    <routine name="TestMethodLibrary" type="procedure" declaration="procedure TestMethodLibrary; library;" visibility="public">
+    <routine name="TestMethodLibrary" type="procedure" declaration="procedure TestMethodLibrary; library;" visibility="public" library="true">
     </routine>
-    <routine name="TestMethodPlatform" type="procedure" declaration="procedure TestMethodPlatform; platform;" visibility="public">
+    <routine name="TestMethodPlatform" type="procedure" declaration="procedure TestMethodPlatform; platform;" visibility="public" platform="true">
     </routine>
-    <variable name="TestFieldCombined" declaration="TestFieldCombined: Integer library deprecated platform;" visibility="public">
+    <variable name="TestFieldCombined" declaration="TestFieldCombined: Integer library deprecated platform;" visibility="public" deprecated="true" platform="true" library="true">
     </variable>
-    <variable name="TestFieldDeprecated" declaration="TestFieldDeprecated: Integer deprecated;" visibility="public">
+    <variable name="TestFieldDeprecated" declaration="TestFieldDeprecated: Integer deprecated;" visibility="public" deprecated="true">
     </variable>
-    <variable name="TestFieldLibrary" declaration="TestFieldLibrary: Integer library;" visibility="public">
+    <variable name="TestFieldLibrary" declaration="TestFieldLibrary: Integer library;" visibility="public" library="true">
     </variable>
-    <variable name="TestFieldPlatform" declaration="TestFieldPlatform: Integer platform;" visibility="public">
+    <variable name="TestFieldPlatform" declaration="TestFieldPlatform: Integer platform;" visibility="public" platform="true">
     </variable>
-    <property name="TestPropertyCombined" indexdecl="" type="Integer" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
+    <property name="TestPropertyCombined" indexdecl="" type="Integer" reader="Field" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public" deprecated="true" platform="true" library="true">
       <description><detailed>Testing on FPC 2.6.0: Hint directives for properties are allowed Ok. I don't know if this is Delphi-compatible or FPC extension, anyway PasDoc supports it too.</detailed></description>
     </property>
-    <property name="TestPropertyCombined2" indexdecl="" type="Integer" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
+    <property name="TestPropertyCombined2" indexdecl="" type="Integer" reader="Field" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public" deprecated="true" platform="true" library="true">
     </property>
   </structure>
-  <structure name="TTestRecordDeprecated" name_with_generic="TTestRecordDeprecated" type="record" visibility="published">
-    <variable name="TestFieldPlatform" declaration="TestFieldPlatform: Integer platform;" visibility="public">
+  <structure name="TTestRecordDeprecated" name_with_generic="TTestRecordDeprecated" type="record" visibility="published" deprecated="true">
+    <variable name="TestFieldPlatform" declaration="TestFieldPlatform: Integer platform;" visibility="public" platform="true">
     </variable>
   </structure>
 </unit>

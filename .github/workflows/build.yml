@@ -2,7 +2,6 @@
 # GitHub Actions workflow to build and test PasDoc.
 #
 # Uses GitHub-hosted runners.
-# Uses https://github.com/gcarreno/setup-lazarus to get FPC and Lazarus.
 #
 # See https://docs.github.com/en/actions for docs.
 # ----------------------------------------------------------------------------
@@ -10,40 +9,72 @@
 name: Build
 on: [push, pull_request]
 
+env:
+  # To which GitHub release tag should we upload artifacts.
+  # Can be "snapshot" or "vX.Y.Z" (latter when we make stable release).
+  release_tag: snapshot
+  #release_tag: vX.Y.Z
+
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build:
     name: Build and Test
     strategy:
       matrix:
-        operating-system: [windows-latest,ubuntu-latest,macos-latest]
-        # Pick a few Lazarus versions to also test compilation with older FPC versions,
-        # see https://github.com/gcarreno/setup-lazarus for a table with Lazarus->FPC versions mapping.
-        lazarus-versions: [dist, stable, 2.2.2, 2.0.12]
+        operating-system: [
+          windows-latest,
+          ubuntu-latest,
+          macos-15-intel,
+          macos-latest
+        ]
+        include:
+        - operating-system: windows-latest
+          pasdoc_make_target: win64
+        - operating-system: ubuntu-latest
+          pasdoc_make_target: linux-x86_64
+        - operating-system: macos-15-intel
+          pasdoc_make_target: darwin-x86_64
+        - operating-system: macos-latest
+          pasdoc_make_target: darwin-aarch64
     runs-on: ${{ matrix.operating-system }}
     steps:
       - name: Checkout PasDoc
-        uses: actions/checkout@v4
-      - name: Install FPC+Lazarus
-        uses: gcarreno/setup-lazarus@v3.2
-        with:
-          lazarus-version: ${{ matrix.lazarus-versions }}
-          # Do not use cache, not advised for Windows by https://github.com/gcarreno/setup-lazarus
-          with-cache: false
+        uses: actions/checkout@v6
+
+      # We use https://github.com/castle-engine/castle-build-ci/
+      # to get FPC + Lazarus on all platforms.
+      #
+      # Reasons:
+      # - Useful on macOS. This works on latest macOS GH-hosted runners.
+      #   Alternatives don't work (lazarus is removed from HomeBrew on latest mac,
+      #   gcarreno/setup-lazarus does not support latest macos-latest or macos-15-intel).
+      # - Does not put ancient cp.exe and other tools from FPC on $PATH for
+      #   execution.
+      # - It is simpler to use the same on all platforms.
+      - name: "Install FPC+Lazarus (using castle-build-ci)"
+        run: |
+          cd /tmp/ # temporary directory, to be separate from the current project files
+          git clone https://github.com/castle-engine/castle-build-ci.git \
+            --depth=1 --single-branch --branch=master
+          castle-build-ci/install_dependencies
+          castle-build-ci/setup_castle_engine --install-fpc=true --install-lazarus=true --install-castle-engine=false
+
+      - name: Install Windows Prerequisites
+        if: ${{ runner.os == 'Windows' }}
+        run: choco install zip php
+      - name: Install macOS Prerequisites
+        if: ${{ runner.os == 'macOS' }}
+        run: brew install php
+
       - name: Build
         run: make
       - name: Build Tools
         run: make build-tools
       - name: Test
-
-        # TODO: testing on Windows fails now, weird error at diff call from check_cache:
-        #
-        # Comparing two outputs:
-        # scripts/check_cache_tmp/1/: No such file or directory
-        # scripts/check_cache_tmp/2/: No such file or directory
-        # D:\a\_temp\installers\lazarus\fpc\3.2.0\bin\x86_64-win64\diff.exe: D:\a\_temp\installers\lazarus\fpc\3.2.0\bin\x86_64-win64\diff.exe: D:\a\_temp\installers\lazarus\fpc\3.2.0\bin\x86_64-win64\make.exe: *** [tests] Error 2
-
-        if: ${{ matrix.operating-system == 'ubuntu-latest' }}
-        run: make tests
+        run: make tests-no-build
 
       # Test HTML validity using
       # https://github.com/marketplace/actions/html5-validator
@@ -77,23 +108,131 @@ jobs:
       #   with:
       #     root: tests/testcases_output/html/
 
-      - name: Package macOS
-        if: ${{ matrix.operating-system == 'macos-latest' }}
-        run: make dist-darwin-x86_64
-      - name: Package Linux
-        if: ${{ matrix.operating-system == 'ubuntu-latest' }}
-        run: make dist-linux-x86_64
-      - name: Prepare Windows
-        if: ${{ matrix.operating-system == 'windows-latest' }}
-        run: choco install zip
-      - name: Package Windows (64)
-        if: ${{ matrix.operating-system == 'windows-latest' }}
-        run: make dist-win64
+      - name: "Package"
+        run: make dist-${{ matrix.pasdoc_make_target }}
+
       - name: Archive Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: build ${{ matrix.operating-system }} lazarus ${{ matrix.lazarus-versions }}
+          name: build ${{ matrix.operating-system }} lazarus
           path: |
             *.zip
             *.tar.gz
           if-no-files-found: error
+
+  # Build for Raspberry Pi using https://github.com/marketplace/actions/arm-runner .
+  # See https://github.com/michaliskambi/test-arm-runner-for-cge/ .
+  build-rpi:
+    name: Build for Raspberry Pi (Linux/Arm)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [armv7l, aarch64]
+        include:
+        - arch: armv7l
+          cpu: cortex-a7
+          base_image: raspios_lite:latest
+        - arch: aarch64
+          cpu: cortex-a53
+          base_image: raspios_lite_arm64:latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pguyot/arm-runner-action@v2
+        with:
+          base_image: ${{ matrix.base_image }}
+          cpu: ${{ matrix.cpu }}
+          shell: /bin/bash -eo pipefail
+          image_additional_mb: 4096
+          # Avoids the need for copy_artifact_path later.
+          bind_mount_repository: true
+          commands: |
+            # Show system info
+            uname -a
+
+            # Install FPC and other Linux dependencies
+            sudo apt-get update
+            sudo apt-get --no-install-recommends -y install libgl-dev fpc lazarus-ide lcl-utils lcl-gtk2 lcl lcl-units git make sed zip php-cli
+
+            # Build and test
+            make
+            make build-tools
+            make tests-no-build
+
+            # Make release
+            FPC_CPU=`fpc -iTP`
+            make dist-linux-"${FPC_CPU}"
+
+      - name: Archive Artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: build raspberry-pi ${{ matrix.arch }}
+          path: |
+            *.zip
+            *.tar.gz
+          if-no-files-found: error
+
+  delphi-test:
+    name: Test Building and Running with Delphi
+    strategy:
+      matrix:
+        delphi_runner_version: [delphi_10, delphi_12]
+        include:
+        - delphi_runner_version: delphi_10
+          delphi_directory: "C:/Program Files (x86)/Embarcadero/Studio/19.0/"
+        - delphi_runner_version: delphi_12
+          delphi_directory: "C:/Program Files (x86)/Embarcadero/Studio/23.0/"
+    runs-on: ${{ matrix.delphi_runner_version }}
+    steps:
+      - name: Checkout PasDoc
+        uses: actions/checkout@v6
+      - name: Build Using Delphi
+        shell: cmd
+        # Note: It seems that only the last command in the "run" section
+        # is considered for error code with cmd shell. So keep it always msbuild.
+        run: |
+          call "${{ matrix.delphi_directory }}/bin/rsvars.bat"
+          msbuild source/console/pasdoc.dproj
+      # Note: This runs on self-hosted runners with limited permissions,
+      # "choco install ..." will just fail if package is not already installed.
+      # Still it's useful to run -- to make sure it is installed.
+      - name: Install Windows Prerequisites
+        run: choco install php xsltproc
+      - name: Test Using Delphi
+        run: make tests-no-build
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    # Only upload release if all builds succeeded.
+    needs: [build, build-rpi, delphi-test]
+    steps:
+    - name: Download packaged releases
+      uses: actions/download-artifact@v8
+      with:
+        merge-multiple: true
+    - name: List downloaded files
+      run: ls -R
+    - name: GH CLI status
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: gh auth status
+    # Releases files in the GitHub release.
+    - name: Release Artifacts
+      if: ${{ github.ref == 'refs/heads/master' }}
+      run: gh release --repo ${{ github.repository }} upload ${{ env.release_tag }} --clobber *.zip *.tar.gz
+      env:
+        GH_TOKEN: ${{ github.token }}
+
+  update-release-tag:
+    name: Update Release Tag (make release tag point to the build commit on master branch)
+    runs-on: ubuntu-latest
+    needs: [release]
+    steps:
+    - uses: actions/checkout@v6
+    - name: Update Release Tag
+      if: ${{ github.ref == 'refs/heads/master' }}
+      run: |
+        # --force allows to overwrite previous tag
+        git tag --force ${{ env.release_tag }}
+        # --force allows to push with overwritten tag
+        git push --force origin ${{ env.release_tag }}

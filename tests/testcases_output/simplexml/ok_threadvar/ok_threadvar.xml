@@ -1,4 +1,4 @@
-<unit name="ok_threadvar.pas">
+<unit name="ok_threadvar">
   <description><detailed>Check parsing of threadvar sections</detailed></description>
   <variable name="A" declaration="A: Byte;" visibility="published">
   </variable>

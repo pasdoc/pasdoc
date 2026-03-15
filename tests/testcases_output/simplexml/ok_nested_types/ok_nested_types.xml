@@ -1,4 +1,4 @@
-<unit name="ok_nested_types.pas">
+<unit name="ok_nested_types">
   <description><abstract>Test case for Delphi nested types</abstract><detailed>  </detailed></description>
   <constant name="GlobalConst" declaration="GlobalConst = 123456;" visibility="published">
     <description><detailed>Description of <code>GlobalConst</code></detailed></description>

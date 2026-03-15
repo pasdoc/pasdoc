@@ -1,4 +1,4 @@
-<unit name="ok_if_directive.pas">
+<unit name="ok_if_directive">
   <constant name="MathQNaN" declaration="MathQNaN : tdoublearray = (255,252,0,0,0,0,0,0);" visibility="published">
   </constant>
   <constant name="MathInf" declaration="MathInf : tdoublearray = (127,240,0,0,0,0,0,0);" visibility="published">

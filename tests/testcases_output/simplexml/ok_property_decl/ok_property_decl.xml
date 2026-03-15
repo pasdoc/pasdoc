@@ -1,4 +1,4 @@
-<unit name="ok_property_decl.pas">
+<unit name="ok_property_decl">
   <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
     <property name="MyProperty" indexdecl="[S:string]" type="Integer" reader="GetMyProperty" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">

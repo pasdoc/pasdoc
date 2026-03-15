@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -20,7 +20,7 @@
   ----------------------------------------------------------------------------
 }
 
-{ @abstract(Provides HTML document generator object.)
+{ @abstract(HTML documentation generator in @link(TGenericHTMLDocGenerator).)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Alexander Lisnevsky (alisnevsky@yandex.ru))
@@ -34,10 +34,7 @@
   @author(Michalis Kamburelis)
   @author(Richard B. Winston <rbwinst@usgs.gov>)
   @author(Ascanio Pressato)
-  @author(Arno Garrels <first name.name@nospamgmx.de>)
-
-  Implements an object to generate HTML documentation, overriding many of
-  @link(TDocGenerator)'s virtual methods. }
+  @author(Arno Garrels <first name.name@nospamgmx.de>) }
 
 unit PasDoc_GenHtml;
 
@@ -52,21 +49,21 @@ uses
   PasDoc_Languages,
   PasDoc_StringVector,
   PasDoc_Types,
-  Classes,
+  Classes, Contnrs,
   PasDoc_StringPairVector;
 
 type
-  { @abstract(generates HTML documentation)
+  { @abstract(HTML documentation generator.)
     Extends @link(TDocGenerator) and overwrites many of its methods to generate
-    output in HTML (HyperText Markup Language) format. }
+    output in HTML format. }
   TGenericHTMLDocGenerator = class(TDocGenerator)
   private
     FUseTipueSearch: boolean;
     FNumericFilenames: boolean;
     FLinkCount: Integer;
     FHeader, FFooter, FHtmlBodyBegin, FHtmlBodyEnd, FHtmlHead: string;
-    { The content of the CSS file. }
     FCSS: string;
+    FBootstrap: boolean;
     FOddTableRow: boolean;
 
     FImages: TStringList;
@@ -148,13 +145,14 @@ type
     { Starts an HTML table with a css class }
     procedure WriteStartOfTable(const CssClass: string);
 
-    procedure WriteStartOfTableCell; overload;
     procedure WriteStartOfTableCell(const CssClass: string); overload;
 
     procedure WriteStartOfTable1Column(const CssClass: string);
     procedure WriteStartOfTable2Columns(const CssClass: string; const t1, t2: string);
     procedure WriteStartOfTable3Columns(const CssClass: string; const t1, t2, t3: string);
-    procedure WriteStartOfTableRow(const CssClass: string);
+
+    procedure WriteStartOfTableRow(const CssClass: string); overload;
+    procedure WriteStartOfTableRow(const CssClass, ExtraClass: string); overload;
 
     { Writes a cell into a table row with the Item's visibility image. }
     procedure WriteVisibilityCell(const Item: TPasItem);
@@ -165,9 +163,6 @@ type
     { output the index.html file }
     procedure WriteIndex;
 
-    { write the legend file for visibility markers }
-    procedure WriteVisibilityLegendFile;
-    function MakeImage(const src, alt, CssClass: string): string;
     { writes a link
       @param href is the link's reference
       @param caption is the link's caption (must already been converted)
@@ -328,12 +323,16 @@ type
     property HtmlBodyBegin: string read FHtmlBodyBegin write FHtmlBodyBegin;
     property HtmlBodyEnd: string read FHtmlBodyEnd write FHtmlBodyEnd;
     property HtmlHead: string read FHtmlHead write FHtmlHead;
-    { the content of the cascading stylesheet }
+    { Contents of the main CSS file (pasdoc.css). }
     property CSS: string read FCSS write FCSS;
+    { If true, add Bootstrap CSS and JS. Definitions in @link(CSS) will be
+      evaluated after Bootstrap's ones. }
+    property Bootstrap: boolean read FBootstrap write FBootstrap default true;
     { if set to true, numeric filenames will be used rather than names with multiple dots }
     property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames
       default false;
-    { Enable Tipue fulltext search. See [https://pasdoc.github.io/UseTipueSearchOption] }
+    { Enable Tipue fulltext search. See
+      @url(https://pasdoc.github.io/UseTipueSearchOption --use-tipue-search documentation). }
     property UseTipueSearch: boolean read FUseTipueSearch write FUseTipueSearch
       default False;
   end;
@@ -348,6 +347,8 @@ type
   end;
 
 const
+  { Default pasdoc.css contents.
+    @exclude }
   DefaultPasdocCss = {$I pasdoc.css.inc};
 
 function SignatureToHtmlId(const Signature: string): string;
@@ -356,20 +357,33 @@ implementation
 
 uses
   SysUtils,
-  StrUtils, { if you are using Delphi 5 or fpc 1.1.x you must add ..\component\strutils to your search path }
+  StrUtils,
   PasDoc_Base,
-  PasDoc_ObjectVector,
   PasDoc_HierarchyTree,
   PasDoc_Tipue,
   PasDoc_Aspell,
   PasDoc_Versions;
 
+function VisibilityTranslationId(const Vis: TVisibility): TTranslationID;
 const
-  img_automated : {$I automated.gif.inc};
-  img_private   : {$I private.gif.inc};
-  img_public    : {$I public.gif.inc};
-  img_published : {$I published.gif.inc};
-  img_protected : {$I protected.gif.inc};
+  VisibilityTranslation: array[TVisibility] of TTranslationID =
+  ( trPublished,
+    trPublic,
+    trProtected,
+    trStrictProtected,
+    trPrivate,
+    trStrictPrivate,
+    trAutomated,
+    trImplicit
+  );
+begin
+  Result := VisibilityTranslation[Vis];
+end;
+
+const
+  { Bootstrap CSS and JS, written to the output directory by WriteBinaryFiles. }
+  DefaultBootstrapCss: {$I bootstrap/bootstrap.min.css.inc};
+  DefaultBootstrapJs: {$I bootstrap/bootstrap.bundle.min.js.inc};
 
 function SignatureToHtmlId(const Signature: string): string;
 const
@@ -389,6 +403,7 @@ begin
   inherited Create(AOwner);
   FLinkCount := 1;
   FCSS := DefaultPasdocCss;
+  FBootstrap := true;
   FImages := TStringList.Create;
 end;
 
@@ -592,6 +607,8 @@ const
   CIO_NAMES: TCIONames = (
     'class',
     'packed class',
+    'objcclass',
+    'packed objcclass',
     'dispinterface',
     'interface',
     'object',
@@ -715,6 +732,7 @@ var
   Section: TSections;
   AnyItem: boolean;
   Fv: TPasFieldVariable;
+  Vis: TVisibility;
 begin
   if not Assigned(CIO) then Exit;
 
@@ -763,20 +781,15 @@ begin
 
   WriteDirectLine('<div class="sections">');
   for Section := Low(TSections) to High(TSections) do
-    begin
-      { Most classes don't contain nested types so exclude this stuff
-        if not available in order to keep it simple. }
-      if (not (Section in SectionsAvailable)) and
-        (Section in [dsEnclosingClass..dsNestedTypes]) then
-        Continue;
+  begin
+    { Don't show sections that don't exist in content. }
+    if not (Section in SectionsAvailable) then
+      Continue;
 
-      WriteDirect('<div class="one_section">');
-      if Section in SectionsAvailable then
-        WriteLink('#'+SectionAnchors[Section], SectionHeads[Section], 'section')
-      else
-        WriteConverted(SectionHeads[Section]);
-      WriteDirect('</div>');
-    end;
+    WriteDirect('<div class="one_section">');
+    WriteLink('#'+SectionAnchors[Section], SectionHeads[Section], 'section');
+    WriteDirect('</div>');
+  end;
   WriteDirectLine('</div>');
 
   WriteAnchor(SectionAnchors[dsDescription]);
@@ -853,6 +866,30 @@ begin
     and "Description" when there are no items. }
   if AnyItem then
   begin
+    { Write toggle checkboxes for toggleable visibilities }
+    if ToggleVisibilities <> [] then
+    begin
+      WriteDirectLine('<div class="visibility-toggles">');
+      WriteDirectLine('<span class="visibility-toggles-label">' +
+        ConvertString(FLanguage.Translation[trShowAdditionalMembers]) + ':</span>');
+      for Vis := Low(TVisibility) to High(TVisibility) do
+        if Vis in ToggleVisibilities then
+          WriteDirectLine(
+            { autocomplete="off" below is necessary to prevent checkboxes
+              from being selected (on) after reloading the page (Ctrl+R, F5 etc.).
+              Browsers remember state of checkboxes by default, but we want them
+              to be always toggled off on page reload, since we always hide the
+              relevant items on page reload. }
+            '<label><input type="checkbox" autocomplete="off"' +
+            ' onchange="pasdocToggleVisibility(''visibility-' +
+            VisToStr(Vis) +
+            ''', this)"> ' +
+            ConvertString(FLanguage.Translation[
+              VisibilityTranslationId(Vis)]) +
+            '</label>');
+      WriteDirectLine('</div>');
+    end;
+
     WriteHeading(HL + 1, 'overview', FLanguage.Translation[trOverview]);
     WriteNestedCioSummary;
     WriteNestedTypesSummary;
@@ -877,6 +914,8 @@ end;
 procedure TGenericHTMLDocGenerator.WriteCIOs(HL: integer; c: TPasItems);
 
   procedure LocalWriteCio(const HL: Integer; const ACio: TPasCio);
+  var
+    CioFileNameFinal: String;
   begin
     if (ACio.MyUnit <> nil) and
        ACio.MyUnit.FileNewerThanCache(DestinationDirectory + ACio.OutputFileName) then
@@ -887,7 +926,25 @@ procedure TGenericHTMLDocGenerator.WriteCIOs(HL: integer; c: TPasItems);
       Exit;
     end;
 
-    if not CreateStream(ACio.OutputFileName) then Exit;
+    CioFileNameFinal := ACio.OutputFileName;
+
+    {$if (not defined(STRING_UNICODE)) and defined(MSWINDOWS)}
+    { If input is in UTF-8, convert using UTF8Encode to get correct file name
+      in OS-specific encoding (this is likely already UTF-8 on Linux,
+      and in fact doing UTF8Decode breaks the tests (TODO: why?),
+      but something else on Windows, like local ANSI encoding.)
+      This fixes FPC with ok_unicode_identifiers_utf8.pas working on Windows:
+      it has to write a filename with German umlaults, in Ansi encoding,
+      since class name contains them.
+
+      Note that we don't do this when setting ACio.OutputFileName,
+      as that value is also placed in HtmlHelp HHP, let it remain in
+      encoding equal to source code (input encoding, which is UTF-8. }
+    if SameText(FLanguage.CharSet, 'utf-8') then
+      CioFileNameFinal := AnsiString(UTF8Decode(CioFileNameFinal));
+    {$endif}
+
+    if not CreateStream(CioFileNameFinal) then Exit;
     DoMessage(3, pmtInformation, 'Creating Class/Interface/Object file for "%s"...', [ACio.Name]);
     WriteCIO(HL, ACio);
   end;
@@ -992,7 +1049,6 @@ begin
   WriteUnits(1);
   WriteBinaryFiles;
   WriteOverviewFiles;
-  WriteVisibilityLegendFile;
   WriteIntroduction;
   WriteConclusion;
   WriteAdditionalFiles;
@@ -1085,11 +1141,10 @@ procedure TGenericHTMLDocGenerator.WriteItemTableRow(
   Item: TPasItem; ShowVisibility: boolean;
   WriteItemLink: boolean; MakeAnchor: boolean);
 begin
-  WriteStartOfTableRow('');
+  WriteStartOfTableRow('', 'visibility-' + VisToStr(Item.Visibility));
 
   if ShowVisibility then
     WriteVisibilityCell(Item);
-  { todo: assign a class }
   WriteStartOfTableCell('itemcode');
 
   if MakeAnchor then WriteAnchor(SignatureToHtmlId(Item.Signature));
@@ -1140,7 +1195,7 @@ begin
     ColumnsCount := 1;
     if ShowVisibility then Inc(ColumnsCount);
 
-    WriteStartOfTable('detail');
+    WriteStartOfTable('detail visibility-' + VisToStr(Item.Visibility));
     WriteItemTableRow(Item, ShowVisibility, false, true);
 
     { Using colspan="0" below would be easier, but Konqueror and IE
@@ -1203,9 +1258,9 @@ begin
       (AItem.AbstractDescription <> '') or
       (AItem.DetailedDescription <> '') or
       (AItem is TPasCio) or
-      (not ObjectVectorIsNilOrEmpty(AItem.Attributes)) or
+      (not StringPairIsNilOrEmpty(AItem.Attributes)) or
       (AItem is TPasRoutine) or
-      (not ObjectVectorIsNilOrEmpty(AItem.SeeAlso)) or
+      (not StringPairIsNilOrEmpty(AItem.SeeAlso)) or
       (AItem is TPasEnum)
     );
 end;
@@ -1298,7 +1353,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     i: integer;
     ParamName: string;
   begin
-    if ObjectVectorIsNilOrEmpty(List) then
+    if StringPairIsNilOrEmpty(List) then
       Exit;
 
     WriteDescriptionSectionHeading(Caption);
@@ -1325,7 +1380,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     SeeAlsoItem: TBaseItem;
     SeeAlsoLink: string;
   begin
-    if ObjectVectorIsNilOrEmpty(SeeAlso) then
+    if StringPairIsNilOrEmpty(SeeAlso) then
       Exit;
 
     WriteDescriptionSectionHeading(trSeeAlso);
@@ -1354,8 +1409,9 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     name, value: string;
     AttributesItem: TBaseItem;
     AttributesLink: string;
+    ExtendedAttrLink: string;
   begin
-    if ObjectVectorIsNilOrEmpty(Attributes) then
+    if StringPairIsNilOrEmpty(Attributes) then
       Exit;
 
     WriteDescriptionSectionHeading(trAttributes);
@@ -1372,13 +1428,28 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
       begin
         AttributesLink := name;
         AttributesItem := nil;
-      end else
+      end
+      else begin
         AttributesLink := SearchLink(
           name,
           AItem,
           name,
-          lnfWarnIfNotInternal,
+          lnfIgnore,
           AttributesItem);
+
+        if not Assigned(AttributesItem) then
+        begin
+          ExtendedAttrLink := SearchLink(
+            name + 'Attribute',
+            AItem,
+            name,
+            lnfIgnore,
+            AttributesItem);
+
+          if Assigned(AttributesItem) then
+            AttributesLink := ExtendedAttrLink;
+        end;
+      end;
       WriteDirect(AttributesLink);
 
       WriteConverted(value);
@@ -1418,6 +1489,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
 var
   EnumMember: TPasItem;
   i: Integer;
+  ItemName, ItemFilenameInRoot, ItemUrl: string;
 begin
   if not Assigned(AItem) then Exit;
 
@@ -1429,6 +1501,8 @@ begin
     WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);
   if hdExperimental in AItem.HintDirectives then
     WriteHintDirective(FLanguage.Translation[trExperimental]);
+  if hdUnimplemented in AItem.HintDirectives then
+    WriteHintDirective(FLanguage.Translation[trUnimplemented]);
 
   if AItem.AbstractDescription <> '' then
   begin
@@ -1486,6 +1560,17 @@ begin
       WriteDirectLine('</li>');
     end;
     WriteDirectLine('</ul>');
+  end;
+
+  if HasSourcePosition(AItem, ItemName, ItemFilenameInRoot, ItemUrl) then
+  begin
+    WriteDirect('<p class="source_position">');
+    if ItemUrl <> '' then
+      WriteDirect('<a href="' + ConvertString(ItemUrl) + '">');
+    WriteConverted(ItemName);
+    if ItemUrl <> '' then
+      WriteDirect('</a>');
+    WriteDirect('</p>');
   end;
 end;
 
@@ -1756,6 +1841,8 @@ end;
 { ---------------------------------------------------------------------------- }
 
 function TGenericHTMLDocGenerator.MakeHead: string;
+var
+  Vis: TVisibility;
 begin
   Result := '<meta name="viewport" content="width=device-width, initial-scale=1">' + LineEnding;
 
@@ -1768,9 +1855,37 @@ begin
   if UseTipueSearch then
     Result := Result + TipueSearchButtonHead + LineEnding;
 
-  // StyleSheet
+  // Bootstrap CSS (must load before pasdoc.css so our styles override)
+  if Bootstrap then
+    Result := Result + '<link rel="StyleSheet" type="text/css" href="' +
+      EscapeURL('bootstrap.min.css') + '">' + LineEnding;
+
+  // PasDoc custom StyleSheet
   Result := Result + '<link rel="StyleSheet" type="text/css" href="' +
     EscapeURL('pasdoc.css') + '">' + LineEnding;
+
+  // CSS and JavaScript for toggleable visibility
+  if ToggleVisibilities <> [] then
+  begin
+    Result := Result + '<style>' + LineEnding;
+    for Vis := Low(TVisibility) to High(TVisibility) do
+      if Vis in ToggleVisibilities then
+        Result := Result + '.visibility-' + VisToStr(Vis) +
+          ' { display: none; }' + LineEnding;
+    Result := Result +
+      '</style>' + LineEnding;
+    Result := Result +
+      '<script>' + LineEnding +
+      'function pasdocToggleVisibility(className, checkbox) {' + LineEnding +
+      '  var elements = document.getElementsByClassName(className);' + LineEnding +
+      '  var show = checkbox.checked;' + LineEnding +
+      '  for (var i = 0; i < elements.length; i++) {' + LineEnding +
+      // We use "revert" instead of nothing, to override "display: none" in CSS.
+      '    elements[i].style.display = show ? "revert" : "none";' + LineEnding +
+      '  }' + LineEnding +
+      '}' + LineEnding +
+      '</script>' + LineEnding;
+  end;
 
   Result := Result + FHtmlHead;
 end;
@@ -1873,23 +1988,29 @@ begin
   WriteDirect(s+'>');
 end;
 
-procedure TGenericHTMLDocGenerator.WriteStartOfTableCell;
+procedure TGenericHTMLDocGenerator.WriteStartOfTableRow(const CssClass: string);
 begin
-  WriteStartOfTableCell('');
+  WriteStartOfTableRow(CssClass, '');
 end;
 
-procedure TGenericHTMLDocGenerator.WriteStartOfTableRow(const CssClass: string);
+procedure TGenericHTMLDocGenerator.WriteStartOfTableRow(
+  const CssClass, ExtraClass: string);
 var
   s: string;
 begin
   if CssClass <> '' then begin
-    s := Format('<tr class="%s"', [CssClass])
+    s := Format('<tr class="%s', [CssClass]);
+    if ExtraClass <> '' then
+      s := s + ' ' + ExtraClass;
+    s := s + '"';
   end else begin
     s := '<tr class="list';
     if FOddTableRow then begin
       s := s + '2';
     end;
     FOddTableRow := not FOddTableRow;
+    if ExtraClass <> '' then
+      s := s + ' ' + ExtraClass;
     s := s + '"';
   end;
   WriteDirectLine(s + '>');
@@ -2043,14 +2164,15 @@ begin
 
   WriteDirectLine('<div class="sections">');
   for Section := Low(TSections) to High(TSections) do
-    begin
-      WriteDirect('<div class="one_section">');
-      if Section in SectionsAvailable then
-        WriteLink('#'+SectionAnchors[Section], SectionHeads[Section], 'section')
-      else
-        WriteConverted(SectionHeads[Section]);
-      WriteDirect('</div>');
-    end;
+  begin
+    { Don't show sections that don't exist in content. }
+    if not (Section in SectionsAvailable) then
+      Continue;
+
+    WriteDirect('<div class="one_section">');
+    WriteLink('#'+SectionAnchors[Section], SectionHeads[Section], 'section');
+    WriteDirect('</div>');
+  end;
   WriteDirectLine('</div>');
 
   WriteAnchor(SectionAnchors[dsDescription]);
@@ -2099,102 +2221,25 @@ begin
   WriteCIOs(HL, U.CIOs);
 end;
 
-function TGenericHTMLDocGenerator.MakeImage(const src, alt, CssClass: string): string;
-begin
-  Result := Format('<img %s src="%s" alt="%s" title="%s">',
-    [IfThen(CssClass = '', '', 'class="' + CssClass + '"'),
-     src, alt, alt]);
-end;
-
-const
-  VisibilityImageName: array[TVisibility] of string =
-  ( 'published.gif',
-    'public.gif',
-    'protected.gif',
-    'protected.gif',
-    'private.gif',
-    'private.gif',
-    'automated.gif',
-    { Implicit visibility uses published visibility image, for now }
-    'published.gif'
-  );
-  VisibilityTranslation: array[TVisibility] of TTranslationID =
-  ( trPublished,
-    trPublic,
-    trProtected,
-    trStrictProtected,
-    trPrivate,
-    trStrictPrivate,
-    trAutomated,
-    trImplicit
-  );
-
 procedure TGenericHTMLDocGenerator.WriteVisibilityCell(const Item: TPasItem);
-
-  procedure WriteVisibilityImage(Vis: TVisibility);
-  begin
-    WriteLink('legend.html', MakeImage(VisibilityImageName[Vis],
-      ConvertString(FLanguage.Translation[
-        VisibilityTranslation[Vis]]), ''), '');
-  end;
-
+const
+  VisibilityCssClass: array[TVisibility] of string =
+  ( 'vis-published',
+    'vis-public',
+    'vis-protected',
+    'vis-protected',
+    'vis-private',
+    'vis-private',
+    'vis-automated',
+    { Implicit visibility uses published style }
+    'vis-published'
+  );
 begin
   WriteStartOfTableCell('visibility');
-  WriteVisibilityImage(Item.Visibility);
+  WriteDirect('<span class="badge ' + VisibilityCssClass[Item.Visibility] + '">' +
+    ConvertString(FLanguage.Translation[VisibilityTranslationId(Item.Visibility)]) +
+    '</span>');
   WriteEndOfTableCell;
-end;
-
-{ ---------------------------------------------------------------------------- }
-
-procedure TGenericHTMLDocGenerator.WriteVisibilityLegendFile;
-
-  procedure WriteLegendEntry(Vis: TVisibility);
-  var VisTrans: string;
-  begin
-    VisTrans := FLanguage.Translation[VisibilityTranslation[Vis]];
-    WriteStartOfTableRow('');
-    WriteStartOfTableCell('legendmarker');
-    WriteDirect(MakeImage(VisibilityImageName[Vis],
-      ConvertString(VisTrans), ''));
-    WriteEndOfTableCell;
-    WriteStartOfTableCell('legenddesc');
-    WriteConverted(VisTrans);
-    WriteEndOfTableCell;
-    WriteEndOfTableRow;
-  end;
-
-const
-  Filename = 'legend';
-begin
-  if not CreateStream(Filename + GetFileextension) then
-    Abort;
-
-  try
-    WriteStartOfDocument(FLanguage.Translation[trLegend]);
-
-    WriteHeading(1, 'markerlegend', FLanguage.Translation[trLegend]);
-
-    WriteStartOfTable2Columns('markerlegend',
-      FLanguage.Translation[trMarker],
-      FLanguage.Translation[trVisibility]);
-
-    { Order of entries below is important (because it is shown to the user),
-      so we don't just write all TVisibility values in the order they
-      were declared in TVisibility type. }
-    WriteLegendEntry(viStrictPrivate);
-    WriteLegendEntry(viPrivate);
-    WriteLegendEntry(viStrictProtected);
-    WriteLegendEntry(viProtected);
-    WriteLegendEntry(viPublic);
-    WriteLegendEntry(viPublished);
-    WriteLegendEntry(viAutomated);
-    WriteLegendEntry(viImplicit);
-    WriteEndOfTable;
-
-    WriteFooter;
-    WriteAppInfo;
-    WriteEndOfDocument;
-  finally CloseStream; end;
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -2215,11 +2260,12 @@ procedure TGenericHTMLDocGenerator.WriteSpellChecked(const AString: string);
   This doesn't really matter. }
 
 var
-  LErrors: TObjectVector;
+  LErrors: TSpellingErrorList;
   i, temp: Integer;
   LString, s: string;
+  Err: TSpellingError;
 begin
-  LErrors := TObjectVector.Create(True);
+  LErrors := TSpellingErrorList.Create(True);
   CheckString(AString, LErrors);
   if LErrors.Count = 0 then begin
     WriteDirect(AString);
@@ -2229,16 +2275,17 @@ begin
     LString := AString;
     for i := LErrors.Count-1 downto 0 do
     begin
+      Err := LErrors.Items[i];
       // everything after the offending word
-      temp := TSpellingError(LErrors.Items[i]).Offset+Length(TSpellingError(LErrors.Items[i]).Word) + 1;
-      s := ( '">' + TSpellingError(LErrors.Items[i]).Word +  '</acronym>' + Copy(LString, temp, MaxInt)) + s; // insert into string
-      if Length(TSpellingError(LErrors.Items[i]).Suggestions) > 0 then begin
-        s := 'suggestions: '+TSpellingError(LErrors.Items[i]).Suggestions + s;
+      temp := Err.Offset+Length(Err.Word) + 1;
+      s := ( '">' + Err.Word +  '</acronym>' + Copy(LString, temp, MaxInt)) + s; // insert into string
+      if Length(Err.Suggestions) > 0 then begin
+        s := 'suggestions: '+Err.Suggestions + s;
       end else begin
         s := 'no suggestions' + s;
       end;
       s := '<acronym class="mispelling" title="' + s;
-      SetLength(LString, TSpellingError(LErrors.Items[i]).Offset);
+      SetLength(LString, Err.Offset);
     end;
     WriteDirect(LString);
     WriteDirect(s);
@@ -2248,11 +2295,11 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteBinaryFiles;
 begin
-  DataToFile(DestinationDirectory + 'automated.gif', img_automated);
-  DataToFile(DestinationDirectory + 'private.gif'  , img_private  );
-  DataToFile(DestinationDirectory + 'protected.gif', img_protected);
-  DataToFile(DestinationDirectory + 'public.gif'   , img_public   );
-  DataToFile(DestinationDirectory + 'published.gif', img_published);
+  if Bootstrap then
+  begin
+    DataToFile(DestinationDirectory + 'bootstrap.min.css', DefaultBootstrapCss);
+    DataToFile(DestinationDirectory + 'bootstrap.bundle.min.js', DefaultBootstrapJs);
+  end;
   StringToFile(DestinationDirectory + 'pasdoc.css', CSS);
 end;
 
@@ -2287,28 +2334,88 @@ begin
 end;
 
 function TGenericHTMLDocGenerator.EscapeURL(const AString: string): string;
-var
-  i: Integer;
+
+  { Escape URL from input in UnicodeString -> to String
+    (which is UnicodeString in STRING_UNICODE case and AnsiString otherwise).
+
+    Using UnicodeString makes sense for both STRING_UNICODE and non-STRING_UNICODE cases.
+    This way we cab deconstruct into Unicode characters, and write out correct %xx
+    for Unicode characters.
+    Testcase: tests/testcases/ok_unicode_identifiers_utf8.pas
+    which must produce equal result with both FPC and Delphi. }
+  function EscapeUrlUnicode(const UString: UnicodeString): String;
+  var
+    C: WideChar;
+  begin
+    Result := '';
+    for C in UString do
+    begin
+      { Michalis old note, reason for special & check:
+        It's obvious that we must escape '&'.
+        I don't know why, but escaping it using '%26' does not work
+        (tested with Mozilla 1.7.7, Firefox 1.0.3, Konqueror 3.3.2,
+        and finally even IE, so it's certainly not a bug of some browser).
+        But escaping it using '&amp;' works OK.
+
+        On the other hand, escaping '~' using '&tilde;' does not work.
+        (So EscapeURL function still *must* be something different than
+        ConvertString.) }
+
+      if C = '&' then
+        Result := Result + '&amp;'
+      else
+      if CharInSet(C, [AnsiChar($21)..AnsiChar($7E)]) then
+        Result := Result + {$ifndef STRING_UNICODE} AnsiChar {$endif} (C)
+      else
+        Result := Result + '%' + IntToHex(Ord(C), 2);
+    end;
+  end;
+
+  {$ifndef STRING_UNICODE}
+  { Escape URL from input in AnsiString -> to String
+    (which is UnicodeString in STRING_UNICODE case and AnsiString otherwise). }
+  function EscapeUrlAnsi(const AString: AnsiString): String;
+  var
+    C: AnsiChar;
+  begin
+    Result := '';
+    for C in AString do
+    begin
+      { Michalis old note, reason for special & check:
+        It's obvious that we must escape '&'.
+        I don't know why, but escaping it using '%26' does not work
+        (tested with Mozilla 1.7.7, Firefox 1.0.3, Konqueror 3.3.2,
+        and finally even IE, so it's certainly not a bug of some browser).
+        But escaping it using '&amp;' works OK.
+
+        On the other hand, escaping '~' using '&tilde;' does not work.
+        (So EscapeURL function still *must* be something different than
+        ConvertString.) }
+
+      if C = '&' then
+        Result := Result + '&amp;'
+      else
+      if CharInSet(C, [AnsiChar($21)..AnsiChar($7E)]) then
+        Result := Result + C
+      else
+        Result := Result + '%' + IntToHex(Ord(C), 2);
+    end;
+  end;
+  {$endif}
+
 begin
   Result := '';
-  for i := 1 to Length(AString) do
-  begin
-    { Kambi: It's obvious that we must escape '&'.
-      I don't know why, but escaping it using '%26' does not work
-      (tested with Mozilla 1.7.7, Firefox 1.0.3, Konqueror 3.3.2,
-      and finally even IE, so it's certainly not a bug of some browser).
-      But escaping it using '&amp;' works OK.
 
-      On the other hand, escaping '~' using '&tilde;' does not work.
-      (So EscapeURL function still *must* be something different than
-      ConvertString.) }
-
-    if AString[i] = '&' then
-      Result := Result + '&amp;' else
-    if IsCharInSet(AString[i], [AnsiChar($21)..AnsiChar($7E)]) then
-      Result := Result + AString[i] else
-      Result := Result + '%' + IntToHex(Ord(AString[i]), 2);
-  end;
+  {$ifdef STRING_UNICODE}
+  // With STRING_UNICODE, we assume input is UTF-8
+  Result := EscapeUrlUnicode(AString);
+  {$else}
+  // Without STRING_UNICODE, we assume input is in FLanguage.CharSet encoding
+  if SameText(FLanguage.CharSet, 'utf-8') then
+    Result := EscapeUrlUnicode(UTF8Decode(AString))
+  else
+    Result := EscapeUrlAnsi(AString);
+  {$endif}
 end;
 
 function TGenericHTMLDocGenerator.FormatPascalCode(const Line: string): string;
@@ -2322,7 +2429,7 @@ begin
     Besides the feeling of being "clean", specifying explicit paragraph
     endings is also important because IE sometimes reacts stupidly
     when paragraph is not explicitly closed, see
-    [http://sourceforge.net/mailarchive/message.php?msg_id=11388479].
+    @url(http://sourceforge.net/mailarchive/message.php?msg_id=11388479).
     In order to fix it, WriteItemLongDescription always wraps
     what it writes between <p> ... </p>
 
@@ -2503,7 +2610,6 @@ const
   ListClass: array[TListItemSpacing]of string =
   ( 'compact_spacing', 'paragraph_spacing' );
 var
-  i: Integer;
   ListItem: TListItemData;
   Attributes: string;
 begin
@@ -2519,10 +2625,8 @@ begin
     Result := Result + Format('<%s class="%s">',
       [ListTag[ListData.ListType], ListClass[ListData.ItemSpacing]]) + LineEnding;
 
-    for i := 0 to ListData.Count - 1 do
+    for ListItem in ListData do
     begin
-      ListItem := ListData.Items[i] as TListItemData;
-
       if ListData.ListType = ltDefinition then
       begin
         { Note: We're not writing <p> .. </p> inside <dt>, because
@@ -2574,7 +2678,7 @@ begin
   NormalRowOdd := true;
   for RowNum := 0 to Table.Count - 1 do
   begin
-    Row := Table.Items[RowNum] as TRowData;
+    Row := Table.Items[RowNum];
 
     if Row.Head then
       RowClass := 'head' else
@@ -2625,19 +2729,16 @@ function THTMLDocGenerator.MakeBodyBegin: string;
 
   function MakeNavigation: string;
 
-    function LocalMakeLink(const Filename, Caption: string): string;
+    function LocalMakeNavLink(const Filename, Caption: string): string;
     begin
-      Result := '<a href="' + EscapeURL(Filename) + '">' + ConvertString(Caption) + '</a>';
+      Result := '<li class="nav-item">' +
+        '<a class="nav-link px-2 py-1" href="' + EscapeURL(Filename) + '">' +
+        ConvertString(Caption) + '</a></li>';
     end;
 
-    function LocalMakeListItemLink(const Filename, Caption: string): string; overload;
+    function LocalMakeNavLinkTr(const Filename: string; CaptionId: TTranslationID): string;
     begin
-      Result := '<li>' + LocalMakeLink(Filename, Caption) + '</li>';
-    end;
-
-    function LocalMakeListItemLink(const Filename: string; CaptionId: TTranslationID): string; overload;
-    begin
-      Result := LocalMakeListItemLink(Filename, FLanguage.Translation[CaptionId]);
+      Result := LocalMakeNavLink(Filename, FLanguage.Translation[CaptionId]);
     end;
 
   var
@@ -2667,28 +2768,30 @@ function THTMLDocGenerator.MakeBodyBegin: string;
         Otherwise the link would not be visible and introduction would not be visible. }
       Assert(IndexLinkText <> '');
 
-      Result := Result + '<h2>' + LocalMakeLink('index.html', IndexLinkText) + '</h2>';
+      Result := Result + '<h2><a href="' +
+        EscapeURL('index.html') + '">' + ConvertString(IndexLinkText) +
+        '</a></h2>';
     end;
 
-    Result := Result + '<ul>';
+    Result := Result + '<ul class="nav flex-column px-3">';
 
     for Overview := LowCreatedOverviewFile to HighCreatedOverviewFile do
     begin
-      Result := Result + LocalMakeListItemLink(
+      Result := Result + LocalMakeNavLinkTr(
         OverviewFilesInfo[Overview].BaseFileName + GetFileExtension,
         OverviewFilesInfo[Overview].TranslationId);
     end;
 
     if LinkGraphVizUses <> '' then
     begin
-      Result := Result + LocalMakeListItemLink(
+      Result := Result + LocalMakeNavLinkTr(
         OverviewFilesInfo[ofGraphVizUses].BaseFileName + '.' + LinkGraphVizUses,
         OverviewFilesInfo[ofGraphVizUses].TranslationId);
     end;
 
     if LinkGraphVizClasses <> '' then
     begin
-      Result := Result + LocalMakeListItemLink(
+      Result := Result + LocalMakeNavLinkTr(
         OverviewFilesInfo[ofGraphVizClasses].BaseFileName + '.' + LinkGraphVizClasses,
         OverviewFilesInfo[ofGraphVizClasses].TranslationId);
     end;
@@ -2697,34 +2800,116 @@ function THTMLDocGenerator.MakeBodyBegin: string;
     begin
       for i := 0 to AdditionalFiles.Count - 1 do
       begin
-        if AdditionalFiles.Get(i).ShortTitle = '' then
-          Result := Result + LocalMakeListItemLink(AdditionalFiles.Get(i).OutputFileName, trAdditionalFile) else
-          Result := Result + LocalMakeListItemLink(AdditionalFiles.Get(i).OutputFileName, AdditionalFiles.Get(i).ShortTitle);
+        if AdditionalFiles[i].ShortTitle = '' then
+          Result := Result + LocalMakeNavLinkTr(
+            AdditionalFiles[i].OutputFileName, trAdditionalFile)
+        else
+          Result := Result + LocalMakeNavLink(
+            AdditionalFiles[i].OutputFileName,
+            AdditionalFiles[i].ShortTitle);
       end;
     end;
 
     if Conclusion <> nil then
     begin
       if Conclusion.ShortTitle = '' then
-        Result := Result + LocalMakeListItemLink(Conclusion.OutputFileName, trConclusion) else
-        Result := Result + LocalMakeListItemLink(Conclusion.OutputFileName, Conclusion.ShortTitle);
+        Result := Result + LocalMakeNavLinkTr(
+          Conclusion.OutputFileName, trConclusion)
+      else
+        Result := Result + LocalMakeNavLink(
+          Conclusion.OutputFileName, Conclusion.ShortTitle);
     end;
 
     if UseTipueSearch then
-      Result := Result + '<li>' + Format(TipueSearchButton, [ConvertString(FLanguage.Translation[trSearch])]) + '</li>';
+      Result := Result + '<li class="nav-item pt-2 px-2">' +
+        Format(TipueSearchButton, [ConvertString(FLanguage.Translation[trSearch])]) + '</li>';
+
+    Result := Result + '</ul>';
   end;
 
+var
+  TitleText: string;
 begin
   Result := inherited;
-  { TODO: get rid of <table> layout, use <div> for navigation instead }
-  Result := Result + '<div class="container"><div class="navigation">' + LineEnding;
+
+  if Title <> '' then
+    TitleText := ConvertString(Title)
+  else
+    TitleText := 'Documentation';
+
+  if Bootstrap then
+  begin
+    { Mobile navbar with toggle button for offcanvas sidebar }
+    Result := Result +
+      // to make navbar in dark mode: "navbar-dark bg-dark" instead of "bg-body-tertiary"
+      '<nav class="navbar d-md-none sticky-top bg-body-tertiary">' + LineEnding +
+      '  <div class="container-fluid">' + LineEnding +
+      '    <a class="navbar-brand" href="' + EscapeURL('index.html') + '">' + TitleText + '</a>' + LineEnding +
+      '    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarNav" aria-controls="sidebarNav">' + LineEnding +
+      '      <span class="navbar-toggler-icon"></span>' + LineEnding +
+      '    </button>' + LineEnding +
+      '  </div>' + LineEnding +
+      '</nav>' + LineEnding;
+
+    { Offcanvas sidebar: fixed on md+ screens, slides out on mobile.
+      "navigation" class is for backward compat with old/custom CSS files. }
+    Result := Result +
+      { data-bs-scroll="true" is necessary to avoid <button class="navbar-toggler"...>
+        from moving down when the offcanvas opens.
+
+        Explanation (Claude -- don't trust blindly, though experiments confirm):
+        When Bootstrap's offcanvas opens (on mobile < 768px),
+        it sets overflow: hidden on the <body> to prevent background scrolling.
+        This breaks position: sticky on the navbar (sticky needs a scrollable ancestor),
+        and Bootstrap also adds padding-right to compensate for the disappearing
+        scrollbar, which can cause the navbar content to reflow and the button
+        to shift down.
+
+        Adding data-bs-scroll="true" to the offcanvas div tells Bootstrap
+        to leave body scrolling alone when the offcanvas is
+        open. This prevents the overflow: hidden and padding-right changes
+        that cause the layout shift. The background remains
+        scrollable while the sidebar is open, which is actually reasonable
+        UX for a sidebar navigation. }
+      '<div class="offcanvas-md offcanvas-start navigation" tabindex="-1" id="sidebarNav" data-bs-scroll="true">' + LineEnding +
+      '  <div class="offcanvas-header">' + LineEnding +
+      '    <h5 class="offcanvas-title">' + TitleText + '</h5>' + LineEnding +
+      '    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebarNav" aria-label="Close"></button>' + LineEnding +
+      '  </div>' + LineEnding +
+      '  <div class="offcanvas-body py-2">' + LineEnding;
+  end else
+  begin
+    { Without Bootstrap: simple sidebar structure,
+      use .navigation that is relied on by old CSS like
+      alternative_css/pasdoc-up-to-0.16.0.css  }
+    Result := Result +
+      '<div class="navigation">' + LineEnding;
+  end;
+
   Result := Result + MakeNavigation;
-  Result := Result + '</ul></div><div class="content">' + LineEnding;
+
+  if Bootstrap then
+    { close <div>s with classes "offcanvas-body" and "offcanvas-start" }
+    Result := Result + '</div></div>' + LineEnding
+  else
+    { close <div> with class "navigation" }
+    Result := Result + '</div>' + LineEnding;
+
+  { Main content area }
+  Result := Result +
+    '<main class="pasdoc-content content">' + LineEnding +
+    '<div class="container-fluid py-3 px-4">' + LineEnding;
 end;
 
 function THTMLDocGenerator.MakeBodyEnd: string;
 begin
-  Result := '</div></div>'; // end <table class="container">
+  Result := '</div></main>' + LineEnding;
+  if Bootstrap then
+  begin
+    { Bootstrap JS bundle for offcanvas sidebar toggle }
+    Result := Result + '<script src="' + EscapeURL('bootstrap.bundle.min.js') +
+      '"></script>' + LineEnding;
+  end;
   Result := Result + inherited;
 end;
 

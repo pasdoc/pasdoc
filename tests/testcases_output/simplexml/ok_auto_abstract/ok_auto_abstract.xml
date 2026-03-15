@@ -1,4 +1,4 @@
-<unit name="ok_auto_abstract.pas">
+<unit name="ok_auto_abstract">
   <description><abstract>This is the 1st sentence, it will be turned into @abstact description of this item.</abstract><detailed> This is the 2nd sentence of the description.</detailed></description>
   <structure name="TTest1" name_with_generic="TTest1" type="class" visibility="published">
     <description><abstract>This is the explicit abstract section</abstract><detailed>This is the 1st sentence of description. This is the 2nd sentence of description. </detailed></description>

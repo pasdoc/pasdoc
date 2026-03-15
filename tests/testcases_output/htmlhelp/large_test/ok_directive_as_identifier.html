@@ -4,12 +4,13 @@
 <title>ok_directive_as_identifier</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="bootstrap.min.css">
 <link rel="StyleSheet" type="text/css" href="pasdoc.css">
 </head>
 <body>
 <h1 class="unit">Unit ok_directive_as_identifier</h1>
 <div class="sections">
-<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section">Types</div><div class="one_section">Constants</div><div class="one_section">Variables</div></div>
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div></div>
 <span id="PasDoc-Description"></span><h2 class="description">Description</h2>
 <p>
 All calling-convention specifiers must *not* be made links in docs. But &quot;Register&quot; procedure name must be made a link. Yes, the difficulty is here that &quot;register&quot; is once a calling-convention specifier and once a procedure name.
@@ -29,47 +30,47 @@ All calling-convention specifiers must *not* be made links in docs. But &quot;Re
 </table>
 <span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
 <table class="summary wide_list">
-<tr class="list">
+<tr class="list visibility-published">
 <td class="itemcode"><code>procedure <strong><a href="ok_directive_as_identifier.html#Bar">Bar</a></strong>; cdecl;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list2 visibility-published">
 <td class="itemcode"><code>procedure <strong><a href="ok_directive_as_identifier.html#Cdecl">Cdecl</a></strong>; register;</code></td>
 </tr>
-<tr class="list">
+<tr class="list visibility-published">
 <td class="itemcode"><code>procedure <strong><a href="ok_directive_as_identifier.html#Foo">Foo</a></strong>; register;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list2 visibility-published">
 <td class="itemcode"><code>procedure <strong><a href="ok_directive_as_identifier.html#Foo1-string-TMyClass-">Foo1</a></strong>(const S: string = 'register'; MyClass: <a href="ok_directive_as_identifier.TMyClass.html">TMyClass</a>);</code></td>
 </tr>
-<tr class="list">
+<tr class="list visibility-published">
 <td class="itemcode"><code>procedure <strong><a href="ok_directive_as_identifier.html#Register">Register</a></strong>; register;</code></td>
 </tr>
 </table>
 <h2 class="description">Description</h2>
 <h3 class="detail">Functions and Procedures</h3>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="Bar"></span><code>procedure <strong>Bar</strong>; cdecl;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="nodescription">This item has no description.</p></td></tr>
 </table>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="Cdecl"></span><code>procedure <strong>Cdecl</strong>; register;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="nodescription">This item has no description.</p></td></tr>
 </table>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="Foo"></span><code>procedure <strong>Foo</strong>; register;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="nodescription">This item has no description.</p></td></tr>
 </table>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="Foo1-string-TMyClass-"></span><code>procedure <strong>Foo1</strong>(const S: string = 'register'; MyClass: <a href="ok_directive_as_identifier.TMyClass.html">TMyClass</a>);</code></td>
 </tr>
 <tr><td colspan="1">
@@ -79,8 +80,8 @@ Some other test for THTMLDocGenerator.WriteCodeWithLinks, while I'm at it:
 <p>Note that link to TMyClass should be correctly made. 'register' should be displayed as a string, of course, and not linked.</p>
 </td></tr>
 </table>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="Register"></span><code>procedure <strong>Register</strong>; register;</code></td>
 </tr>
 <tr><td colspan="1">

@@ -1,4 +1,4 @@
-<unit name="ok_link_tag_overloads.pas">
+<unit name="ok_link_tag_overloads">
   <routine name="TopLevelFunc" type="function" declaration="function TopLevelFunc(MyStr: string): integer; overload;" visibility="published">
   </routine>
   <routine name="TopLevelFunc" type="function" declaration="function TopLevelFunc(MyInt: Integer): Integer; overload;" visibility="published">

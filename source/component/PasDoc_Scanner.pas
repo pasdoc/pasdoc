@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -20,22 +20,13 @@
   ----------------------------------------------------------------------------
 }
 
-{
+{ @abstract(Scanner for Pascal, producing tokens and interpreting conditionals.)
+
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Marco Schmidt (marcoschmidt@geocities.com))
   @author(Michalis Kamburelis)
-  @author(Arno Garrels <first name.name@nospamgmx.de>)
-
-  @abstract(Simple Pascal scanner.)
-
-  The scanner object @link(TScanner) returns tokens from a Pascal language
-  character input stream. It uses the @link(PasDoc_Tokenizer) unit to get tokens,
-  regarding conditional directives that might lead to including another files
-  or will add or delete conditional symbols. Also handles FPC macros
-  (when HandleMacros is true). So, this scanner is a combined
-  tokenizer and pre-processor. }
-
+  @author(Arno Garrels <first name.name@nospamgmx.de>) }
 unit PasDoc_Scanner;
 
 {$I pasdoc_defines.inc}
@@ -44,13 +35,12 @@ interface
 
 uses
   SysUtils,
-  Classes,
+  Classes, Contnrs, Types,
   PasDoc_Types,
   PasDoc_Tokenizer,
   PasDoc_StringVector,
   PasDoc_StreamUtils,
-  PasDoc_StringPairVector,
-  PasDoc_ObjectVector;
+  PasDoc_StringPairVector;
 
 const
   { maximum number of streams we can recurse into; first one is the unit
@@ -72,16 +62,30 @@ type
     DT_IFNDEF, DT_IFOPT, DT_INCLUDE_FILE, DT_UNDEF, DT_INCLUDE_FILE_2,
     DT_IF, DT_ELSEIF, DT_IFEND);
 
-  { This class scans one unit using one or more @link(TTokenizer) objects
-    to scan the unit and all nested include files. }
+  { Scanner for Pascal, producing tokens and interpreting conditionals
 
+    Returns tokens from a Pascal language source code input stream.
+    Uses the @link(PasDoc_Tokenizer) unit to get tokens,
+    processes directives that might lead to
+
+    @unorderedList(
+      @item(including other files)
+      @item(define / undefine symbols)
+      @item(processes conditional directives)
+      @item(handles FPC macros (when HandleMacros is true).)
+    )
+
+    Effectively this is a combined tokenizer and pre-processor.
+
+    Single TScanner instance scans one unit using one or more @link(TTokenizer)
+    instances (to scan the unit and all nested include files). }
   TScanner = class(TObject)
   private
     FCurrentTokenizer: Integer;
     FDirectiveLevel: Integer;
     FTokenizers: array[0..MAX_TOKENIZERS - 1] of TTokenizer;
     FSwitchOptions: TSwitchOptions;
-    FBufferedTokens: TObjectVector;
+    FBufferedTokens: TTokenList;
 
     { For each symbol:
         Name is the unique Name,
@@ -114,7 +118,7 @@ type
       owned by created Tokenizer, and created Tokenizer will be managed
       as part of FTokenizers list. }
     procedure OpenNewTokenizer(Stream: TStream;
-      const StreamName, StreamPath: string);
+      const StreamName, StreamAbsoluteFileName: string);
 
     procedure OpenIncludeFile(n: string);
 
@@ -164,7 +168,7 @@ type
       const s: TStream;
       const OnMessageEvent: TPasDocMessageEvent;
       const VerbosityLevel: Cardinal;
-      const AStreamName, AStreamPath: string;
+      const AStreamName, AStreamAbsoluteFileName: string;
       const AHandleMacros: boolean);
     destructor Destroy; override;
 
@@ -344,7 +348,7 @@ constructor TScanner.Create(
   const s: TStream;
   const OnMessageEvent: TPasDocMessageEvent;
   const VerbosityLevel: Cardinal;
-  const AStreamName, AStreamPath: string;
+  const AStreamName, AStreamAbsoluteFileName: string;
   const AHandleMacros: boolean);
 var
   c: TUpperCaseLetter;
@@ -373,9 +377,9 @@ begin
   FSymbols := TStringPairVector.Create(true);
 
   FTokenizers[0] := TTokenizer.Create(s, OnMessageEvent, VerbosityLevel,
-    AStreamName, AStreamPath);
+    AStreamName, AStreamAbsoluteFileName);
   FCurrentTokenizer := 0;
-  FBufferedTokens := TObjectVector.Create(true);
+  FBufferedTokens := TTokenList.Create(true);
 
   FIncludeFilePaths := TStringVector.Create;
 end;
@@ -451,7 +455,7 @@ end;
 
 procedure TScanner.ConsumeToken;
 var
-  LastToken: TObject;
+  LastToken: TToken;
 begin
   if FBufferedTokens.Count > 0 then
   Begin
@@ -524,8 +528,8 @@ function TScanner.GetToken: TToken;
         OpenNewTokenizer(TStringStream.Create(
           FSymbols[SymbolIndex].Value),
           '<' + FSymbols[SymbolIndex].Name + ' macro>',
-          { Expanded macro text inherits current StreamPath }
-          FTokenizers[FCurrentTokenizer].StreamPath);
+          { Expanded macro text inherits current StreamAbsoluteFileName }
+          FTokenizers[FCurrentTokenizer].StreamAbsoluteFileName);
     end;
   end;
 
@@ -613,7 +617,7 @@ begin
   if FBufferedTokens.Count > 0 then
   begin
     { we have a token buffered, we'll return this one }
-    Result := FBufferedTokens.Last as TToken;
+    Result := FBufferedTokens.Last;
     FBufferedTokens.Extract(Result);
     Exit;
   end;
@@ -700,7 +704,7 @@ begin
                   begin
                     (* Then this is FPC's feature, see
                       "$I or $INCLUDE : Include compiler info" on
-                      [http://www.freepascal.org/docs-html/prog/progsu30.html].
+                      @url(http://www.freepascal.org/docs-html/prog/progsu30.html FPC $I compiler info documentation).
 
                       Unlike FPC, PasDoc will not expand the %variable%
                       (for reasoning, see comments in
@@ -788,7 +792,7 @@ end;
 { ---------------------------------------------------------------------------- }
 
 procedure TScanner.OpenNewTokenizer(Stream: TStream;
-  const StreamName, StreamPath: string);
+  const StreamName, StreamAbsoluteFileName: string);
 var
   Tokenizer: TTokenizer;
 begin
@@ -803,7 +807,7 @@ begin
   end;
 
   Tokenizer := TTokenizer.Create(Stream, FOnMessage, FVerbosity,
-    StreamName, StreamPath);
+    StreamName, StreamAbsoluteFileName);
 
   { add new tokenizer }
   Inc(FCurrentTokenizer);
@@ -825,8 +829,7 @@ var
 
     Check both N and NLowerCase
     (on case-sensitive system, filename may be written in exact
-    case (like for Kylix) or lowercase (like for FPC 1.0.x),
-    FPC >= 2.x accepts both). }
+    case or lowercase). }
   function TryOpen(const Path: string): boolean;
   var
     Name: string;
@@ -846,19 +849,13 @@ var
     if Result then
     begin
       { create new tokenizer with stream }
-      {$IFDEF STRING_UNICODE}
-      IncludeStream := TStreamReader.Create(Name);
-      {$ELSE}
-        {$IFDEF USE_BUFFERED_STREAM}
-        IncludeStream := TBufferedStream.Create(Name, fmOpenRead or fmShareDenyWrite);
-        {$ELSE}
-        IncludeStream := TFileStream.Create(Name, fmOpenRead or fmShareDenyWrite);
-        {$ENDIF}
+      IncludeStream := TBufferedFileStream.Create(Name, fmOpenRead or fmShareDenyWrite);
+      {$ifndef STRING_UNICODE}
       { SkipBOM is only used when we don't use TStreamReader.
         TStreamReader handles BOM already by itself. }
       SkipBOM(IncludeStream);
-      {$ENDIF}
-      OpenNewTokenizer(IncludeStream, Name, ExtractFilePath(Name));
+      {$endif}
+      OpenNewTokenizer(IncludeStream, Name, ExpandFileName(Name));
     end;
   end;
 
@@ -895,10 +892,15 @@ begin
     may be costly when generating large docs from many files) }
   UseLowerCase := NLowerCase <> N;
 
-  if not TryOpen(FTokenizers[FCurrentTokenizer].StreamPath) then
-    if not TryOpenIncludeFilePaths then
-      if not TryOpen('') then
-        DoError('%s: could not open include file %s', [GetStreamInfo, n]);
+  // try various paths, make error if none works
+  if (FTokenizers[FCurrentTokenizer].StreamAbsoluteFileName <> '') and
+     TryOpen(ExtractFilePath(FTokenizers[FCurrentTokenizer].StreamAbsoluteFileName)) then
+    Exit;
+  if TryOpenIncludeFilePaths then
+    Exit;
+  if TryOpen('') then
+    Exit;
+  DoError('%s: could not open include file %s', [GetStreamInfo, n]);
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1051,10 +1053,10 @@ begin
     if l < 3 then Exit;
 
     c := p^;
-    if IsCharInSet(c, ['a'..'z']) then
+    if CharInSet(c, ['a'..'z']) then
       Dec(c, 32);
 
-    if not IsCharInSet(c, ['A'..'Z']) or not IsCharInSet(p[1], ['-', '+']) then
+    if not CharInSet(c, ['A'..'Z']) or not CharInSet(p[1], ['-', '+']) then
       Exit;
 
     FSwitchOptions[c] := p[1] = '+';
@@ -1218,7 +1220,7 @@ var
   end;
 
   { Consume tokens constituting a function, like "defined(xxx)".
-    See https://freepascal.org/docs-html/current/prog/progsu127.html . }
+    See @url(https://freepascal.org/docs-html/current/prog/progsu127.html FPC $IF expressions). }
   function ParseFunction: Variant;
   var
     T: TToken;
@@ -1427,7 +1429,7 @@ var
   end;
 
   { Consume tokens constituting an expression, like "defined(xxx) or defined(yyy)".
-    See https://freepascal.org/docs-html/current/prog/progsu127.html . }
+    See @url(https://freepascal.org/docs-html/current/prog/progsu127.html FPC $IF expressions). }
   function ParseExpression: Variant;
   var
     T: TToken;

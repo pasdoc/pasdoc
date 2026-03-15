@@ -13,6 +13,7 @@
   //tables and members
     {trClasses} 'Triedy',
       {trClass} 'Trieda',
+      {trObjcClass} strToDo,
       {trDispInterface} strToDo, //'DispInterface',
       {trInterface} 'Interfejs',
     {trObjects} 'Objekty',
@@ -59,6 +60,7 @@
     {trPlatformSpecific} strToDo, //'this symbol is specific to some platform',
     {trLibrarySpecific} strToDo, //'this symbol is specific to some library',
     {trExperimental} strToDo, //'this symbol is experimental',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
   //headings
     {trOverview} strToDo, //'Overview',
     {trIntroduction} strToDo, //'Introduction',
@@ -104,5 +106,7 @@
     {trSeeAlso} strToDo, //'See also',
     {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
+    {trSourcePosition} strToDo, //'Source: %s (line %d).',
+    {trShowAdditionalMembers} strToDo, //'Show Additional Members',
     ''  //dummy
   );

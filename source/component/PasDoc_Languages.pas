@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -20,7 +20,7 @@
   ----------------------------------------------------------------------------
 }
 
-{ @abstract(PasDoc language definitions and translations.)
+{ @abstract(Language definitions and translations.)
   @author(Johannes Berg <johannes AT sipsolutions.de>)
   @author(Ralf Junker <delphi AT zeitungsjunge.de>)
   @author(Andrew Andreev <andrew AT alteragate.net> (Bulgarian translation))
@@ -136,6 +136,7 @@ type
   //tables and members
     trClasses,
       trClass,
+      trObjcClass,
       trDispInterface,
       trInterface,
     trObjects,
@@ -183,6 +184,7 @@ type
     trPlatformSpecific,
     trLibrarySpecific,
     trExperimental,
+    trUnimplemented,
 
   //headings
     trOverview,
@@ -235,6 +237,8 @@ type
     trNested,
   //add more here
     trAttributes,
+    trSourcePosition,
+    trShowAdditionalMembers,
     trDummy
   );
 
@@ -256,7 +260,7 @@ type
     Syntax: string;
     CharSet: string;
     { Name of this language as used by Aspell, see
-      http://aspell.net/man-html/Supported.html .
+      @url(http://aspell.net/man-html/Supported.html Aspell supported languages).
 
       Set this to empty string if it's the same as our Syntax up to a dot.
       So a Syntax = 'pl' or Syntax = 'pl.iso-8859-2' already indicates
@@ -264,7 +268,7 @@ type
 
       TODO: In the future, it would be nice if all language names used by PasDoc
       and Aspell matched. Aspell language naming follows the standard
-      http://en.wikipedia.org/wiki/ISO_639-1 as far as I see,
+      @url(http://en.wikipedia.org/wiki/ISO_639-1 ISO 639-1) as far as I see,
       and we should probably follow it too (currently, we deviate for
       some languages).
 
@@ -292,10 +296,10 @@ type
     procedure SetLanguage(const Value: TLanguageID);
   protected
     FCharSet: string;
-    { @abstract(gets a translation token) }
+    { Translation for given ATranslationID. }
     function GetTranslation(ATranslationID: TTranslationID): string;
   public
-    { Charset for current language }
+    { Charset for current language. }
     property CharSet: string read FCharSet;
   {$IFDEF STRING_UNICODE}
     property CodePage: LongWord read FCodePage;
@@ -336,12 +340,8 @@ function LanguageCode(const Language: TLanguageID): string;
 
 implementation
 
-{$IFDEF fpc}
-{$ELSE}
-//Delphi
-uses
-  SysUtils;
-{$ENDIF}
+// Needed by Delphi for LowerCase
+uses SysUtils;
 
 { TODO: This whole approach to translations should be simplified to
 
@@ -350,7 +350,7 @@ uses
 
   This approach is standard (also for translators), and proved in Lazarus,
   Castle Game Engine and other projects.
-  See https://github.com/pasdoc/pasdoc/issues/87 }
+  See @url(https://github.com/pasdoc/pasdoc/issues/87 pasdoc issue 87). }
 
 const
   { Translation markers.
@@ -498,7 +498,7 @@ begin
 {$IFNDEF STRING_UNICODE}
   FCharSet  := LANGUAGE_ARRAY[Value].Charset;
 {$ELSE} // String is UTF-16 so get rid of this ANSI stuff.
-  FCharSet  := 'UTF-8';
+  FCharSet  := 'utf-8';
   FCodePage := 65001;
 {$ENDIF}
 end;

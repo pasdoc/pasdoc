@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -20,7 +20,7 @@
   ----------------------------------------------------------------------------
 }
 
-{ @abstract(Serializing/deserializing cached information.)
+{ @abstract(Serializing / deserializing cached information.)
   @author(Arno Garrels <first name.name@nospamgmx.de>) }
 unit PasDoc_Serialize;
 
@@ -151,12 +151,7 @@ var
   LF: TStream;
   CacheFormatVersionFromFile: string;
 begin
-  Result := nil; // makes the Delphi compiler happy
-{$IFDEF USE_BUFFERED_STREAM}
-  LF := TBufferedStream.Create(AFileName, fmOpenRead or fmShareDenyWrite);
-{$ELSE}
-  LF := TFileStream.Create(AFileName, fmOpenRead or fmShareDenyWrite);
-{$ENDIF}
+  LF := TBufferedFileStream.Create(AFileName, fmOpenRead or fmShareDenyWrite);
   try
     try
       CacheFormatVersionFromFile := LoadStringFromStream(LF);
@@ -263,11 +258,7 @@ procedure TSerializable.SerializeToFile(const AFileName: string);
 var
   LF: TStream;
 begin
-{$IFDEF USE_BUFFERED_STREAM}
-  LF := TBufferedStream.Create(AFileName, fmCreate);
-{$ELSE}
-  LF := TFileStream.Create(AFileName, fmCreate);
-{$ENDIF}
+  LF := TBufferedFileStream.Create(AFileName, fmCreate);
   try
     SaveStringToStream(CacheFormatVersion, LF);
     SerializeObject(Self, LF);

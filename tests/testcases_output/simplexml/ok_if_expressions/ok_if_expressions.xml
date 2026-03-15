@@ -1,4 +1,4 @@
-<unit name="ok_if_expressions.pas">
+<unit name="ok_if_expressions">
   <description><detailed>Testcase for various conditional directives, primarily $if and $elseif.</detailed></description>
   <routine name="Windows_IFDEF" type="procedure" declaration="procedure Windows_IFDEF;" visibility="published">
   </routine>

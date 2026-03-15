@@ -13,6 +13,7 @@ RTransTable = (
   //tables and members
     {trClasses} strKeep,
       {trClass} 'Classe',
+      {trObjcClass} strToDo,
       {trDispInterface} strKeep,
       {trInterface} strKeep,
     {trObjects} 'Objetos',
@@ -59,6 +60,7 @@ RTransTable = (
     {trPlatformSpecific} 'este símbolo é específico de uma plataforma',
     {trLibrarySpecific} 'este símbolo é específico de uma biblioteca',
     {trExperimental} 'este símbolo é experimental',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
   //headings
     {trOverview} 'Visão Geral',
     {trIntroduction} 'Introdução',
@@ -100,9 +102,11 @@ RTransTable = (
     {trGeneratedBy} 'Gerado por',
     {trGeneratedOn} 'Gerado em',
     {trOnDateTime} 'às',
-    {trSearch} 'Pesquisar', 
+    {trSearch} 'Pesquisar',
     {trSeeAlso} 'Veja também',
     {trNested} strKeep,
     {trAttributes} 'Atributos',
+    {trSourcePosition} strToDo, //'Source: %s (line %d).',
+    {trShowAdditionalMembers} strToDo, //'Show Additional Members',
     ''  //dummy
   );

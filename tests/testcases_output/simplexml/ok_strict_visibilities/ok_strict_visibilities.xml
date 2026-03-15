@@ -1,4 +1,4 @@
-<unit name="ok_strict_visibilities.pas">
+<unit name="ok_strict_visibilities">
   <structure name="TStrictVisibility" name_with_generic="TStrictVisibility" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
     <variable name="StrictPrivateInteger" declaration="StrictPrivateInteger: integer;" visibility="strictprivate">

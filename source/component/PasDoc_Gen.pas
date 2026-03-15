@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -20,7 +20,7 @@
   ----------------------------------------------------------------------------
 }
 
-{ @abstract(basic doc generator object)
+{ @abstract(Base generator class @link(TDocGenerator), to be specialized for specific output formats.)
   @author(Johannes Berg <johannes@sipsolutions.de>)
   @author(Ralf Junker (delphi@zeitungsjunge.de))
   @author(Ivan Montes Velencoso (senbei@teleline.es))
@@ -47,13 +47,12 @@ unit PasDoc_Gen;
 interface
 
 uses
+  SysUtils, Classes, Contnrs, Generics.Collections,
   PasDoc_Items,
   PasDoc_Languages,
   PasDoc_StringVector,
-  PasDoc_ObjectVector,
   PasDoc_HierarchyTree,
   PasDoc_Types,
-  Classes,
   PasDoc_TagManager,
   PasDoc_Aspell,
   PasDoc_StreamUtils,
@@ -110,7 +109,7 @@ const
     Same for Low(TCreatedOverviewFile).
 
     This is submitted as FPC bug 4140,
-    [http://www.freepascal.org/bugs/showrec.php3?ID=4140].
+    @url(http://www.freepascal.org/bugs/showrec.php3?ID=4140 FPC bug 4140).
     Fixed in FPC 2.0.1 and FPC 2.1.1. }
   LowCreatedOverviewFile = Low(TCreatedOverviewFile);
   HighCreatedOverviewFile = High(TCreatedOverviewFile);
@@ -173,9 +172,8 @@ type
   end;
 
   { Collected information about @@xxxList content. Passed to
-    @link(TDocGenerator.FormatList). Every item of this list
-    should be non-nil instance of @link(TListItemData). }
-  TListData = class(TObjectVector)
+    @link(TDocGenerator.FormatList). }
+  TListData = class({$ifdef FPC}specialize{$endif} TObjectList<TListItemData>)
   private
     { This is used inside list tags' handlers
       to calculate TListItemData.Index fields. }
@@ -192,7 +190,7 @@ type
   public
     property ItemSpacing: TListItemSpacing read FItemSpacing;
     property ListType: TListType read FListType;
-    constructor Create(const AOwnsObject: boolean); override;
+    constructor Create(const AOwnsObject: boolean);
   end;
 
   { Collected information about @@row (or @@rowHead). }
@@ -211,9 +209,8 @@ type
   end;
 
   { Collected information about @@table. Passed to
-    @link(TDocGenerator.FormatTable). Every item of this list
-    should be non-nil instance of @link(TRowData). }
-  TTableData = class(TObjectVector)
+    @link(TDocGenerator.FormatTable). }
+  TTableData = class({$ifdef FPC}specialize{$endif} TObjectList<TRowData>)
   private
     FMaxCellCount: Cardinal;
     FMinCellCount: Cardinal;
@@ -226,7 +223,7 @@ type
     property MinCellCount: Cardinal read FMinCellCount;
   end;
 
-  { @abstract(basic documentation generator object)
+  { Base generator class, to be specialized for specific output formats.
     This abstract object will do the complete process of writing
     documentation files.
     It will be given the collection of units that was the result of the
@@ -258,6 +255,9 @@ type
     FAutoLink: boolean;
     FAutoLinkExclude: TStringList;
     FMarkdown: boolean;
+    FShowSourcePosition: boolean;
+    FSourceRoot: string;
+    FSourceUrlPattern: string;
 
     { Name of the project to create. }
     FProjectName: string;
@@ -272,14 +272,12 @@ type
       default is false }
     FUseLowercaseKeywords: boolean;
 
-    { the output stream that is currently written to; depending on the
-      output format, more than one output stream will be necessary to
-      store all documentation }
-  {$IFDEF STRING_UNICODE}
-    FCurrentStream: TStreamWriter;
-  {$ELSE}
-    FCurrentStream: TStream;
-  {$ENDIF}
+    FCurrentStream: {$IFDEF STRING_UNICODE} TStreamWriter {$ELSE} TStream {$ENDIF};
+
+    {$ifdef STRING_UNICODE}
+    FCurrentStreamEncoding: TEncoding;
+    {$endif}
+
     { Title of documentation. }
     FTitle: string;
     { destination directory for documentation; must include terminating
@@ -296,6 +294,7 @@ type
       TableTag, RowTag, RowHeadTag: TTag;
 
     FExternalClassHierarchy: TStrings;
+    FToggleVisibilities: TVisibilities;
 
     procedure SetAbbreviations(const Value: TStringList);
     function GetLanguage: TLanguageID;
@@ -464,11 +463,11 @@ type
     procedure DoMessage(const AVerbosity: Cardinal;
       const MessageType: TPasDocMessageType; const AMessage: string;
       const AArguments: array of const);
-  {$IFDEF STRING_UNICODE}
-    property CurrentStream: TStreamWriter read FCurrentStream;
-  {$ELSE}
-    property CurrentStream: TStream read FCurrentStream;
-  {$ENDIF}
+
+    { Output stream that is currently written to; depending on the
+      output format, more than one output stream may be necessary to
+      store all documentation. }
+    property CurrentStream: {$IFDEF STRING_UNICODE} TStreamWriter {$ELSE} TStream {$ENDIF} read FCurrentStream;
 
     procedure CreateClassHierarchy;
 
@@ -494,6 +493,17 @@ type
     procedure WriteCodeWithLinksCommon(const Item: TPasItem;
       const Code: string; WriteItemLink: boolean;
       const NameLinkBegin, NameLinkEnd: string);
+
+    { Utility to process information from @link(TPasItem.SourceAbsoluteFileName)
+      and @link(TPasItem.SourceLine) and decide whether to show it.
+      If @true, then we should show it.
+
+      @param(ItemName is the name to show.)
+      @param(ItemFilenameInRoot is the filename, relative to SourceRoot,
+        using always / on any system (even on Windows).)
+      @param(ItemUrl is the URL to link to, if any (don't make a link if this is '').) }
+    function HasSourcePosition(const AItem: TPasItem;
+      out ItemName, ItemFilenameInRoot, ItemUrl: string): boolean;
   protected
     { list of all units that were successfully parsed }
     FUnits: TPasUnits;
@@ -571,11 +581,11 @@ type
     {@name returns ' abstract', or ' sealed' for classes that abstract
      or sealed respectively.  @name is used by @link(TTexDocGenerator) and
      @link(TGenericHTMLDocGenerator) in writing the declaration of the class.}
-    function GetClassDirectiveName(Directive: TClassDirective): string;
+    function GetClassDirectiveName(const Directive: TClassDirective): string;
 
     {@name writes a translation of MyType based on the current language.
      However, 'record' and 'packed record' are not translated.}
-    function GetCIOTypeName(MyType: TCIOType): string;
+    function GetCIOTypeName(const MyType: TCIOType): string;
 
     { Loads descriptions from file N and replaces or fills the corresponding
       comment sections of items. }
@@ -679,7 +689,7 @@ type
 
       Otherwise this just clears AErrors, which means that no errors
       were found. }
-    procedure CheckString(const AString: string; const AErrors: TObjectVector);
+    procedure CheckString(const AString: string; const AErrors: TSpellingErrorList);
 
     { closes the spellchecker }
     procedure EndSpellChecking;
@@ -743,8 +753,7 @@ type
       class returns '@-@--'. }
     function EmDash: string; virtual;
 
-    { S is guaranteed (guaranteed by the user) to be correct html content,
-      this is taken directly from parameters of @html tag.
+    { Process HTML content, like provided by the @@html tag.
       Override this function to decide what to put in output on such thing.
 
       Note that S is not processed in any way, even with ConvertString.
@@ -756,14 +765,14 @@ type
       HTML can override this with simple "Result := S". }
     function HtmlString(const S: string): string; virtual;
 
-    { This is equivalent of @link(HtmlString) for @@latex tag.
+    { Process LaTeX content, like provided by the @@latex tag.
 
       The default implementation is this class simply discards it,
       i.e. returns always ''. Generators that know what to do with raw
       LaTeX markup can override this with simple "Result := S". }
     function LatexString(const S: string): string; virtual;
 
-    { @abstract(This returns markup that forces line break in given
+    { @abstract(Markup that forces line break in given
       output format (e.g. '<br>' in html or '\\' in LaTeX).)
 
       It is used on @br tag (but may also be used on other
@@ -774,7 +783,7 @@ type
       can't be expressed in given output format. }
     function LineBreak: string; virtual;
 
-    { This should return markup upon finding URL in description.
+    { Markup to display URL in a description.
       E.g. HTML generator will want to wrap this in
       <a href="...">...</a>.
 
@@ -788,14 +797,13 @@ type
       anything like URL links. }
     function URLLink(const URL: string): string; overload; virtual;
 
-    { This returns the Text which will be shown for an URL tag.
+    { Text which will be shown for an URL tag.
 
       URL is a link to a website or e-mail address.
       LinkDisplay is an optional parameter which will be used as the display name of the URL. }
     function URLLink(const URL, LinkDisplay: string): string; overload; virtual;
 
-    {@name is used to write the introduction and conclusion
-     of the project.}
+    { Write the introduction and conclusion of the project.}
     procedure WriteExternal(const ExternalItem: TExternalItem;
       const Id: TTranslationID);
 
@@ -810,26 +818,26 @@ type
     procedure WriteExternalCore(const ExternalItem: TExternalItem;
       const Id: TTranslationID); virtual; abstract;
 
-    {@name writes a conclusion for the project.
-     See @link(WriteExternal).}
+    { Writes a conclusion for the project.
+      See @link(WriteExternal).}
     procedure WriteConclusion;
 
-    {@name writes an introduction for the project.
-     See @link(WriteExternal).}
+    { Writes an introduction for the project.
+      See @link(WriteExternal).}
     procedure WriteIntroduction;
 
-    {@name writes the other files for the project.
-     See @link(WriteExternal).}
+    { Writes the other files for the project.
+      See @link(WriteExternal).}
     procedure WriteAdditionalFiles;
 
-    // @name writes a section heading and a link-anchor;
+    // Writes a section heading and a link-anchor.
     function FormatSection(HL: integer; const Anchor: string;
       const Caption: string): string; virtual; abstract;
 
-    // @name writes a link-anchor;
+    // Writes a link-anchor.
     function FormatAnchor(const Anchor: string): string; virtual; abstract;
 
-    { This returns Text formatted using bold font.
+    { Return Text formatted using bold font.
 
       Given Text is already in the final output format
       (with characters converted using @link(ConvertString), @@-tags
@@ -842,17 +850,17 @@ type
       @seealso(FormatItalic) }
     function FormatBold(const Text: string): string; virtual;
 
-    { This returns Text formatted using italic font.
+    { Return Text formatted using italic font.
       Analogous to @link(FormatBold). }
     function FormatItalic(const Text: string): string; virtual;
 
-    { This returns Text using bold font by calling FormatBold(Text). }
+    { Return Text using bold font by calling FormatBold(Text). }
     function FormatWarning(const Text: string): string; virtual;
 
-    { This returns Text using italic font by calling FormatItalic(Text). }
+    { Return Text using italic font by calling FormatItalic(Text). }
     function FormatNote(const Text: string): string; virtual;
 
-    { This returns Text preserving spaces and line breaks.
+    { Return Text preserving spaces and line breaks.
       Note that Text passed here is not yet converted with ConvertString.
       The implementation of this method in this class just returns
       ConvertString(Text). }
@@ -875,7 +883,7 @@ type
     { Format a list from given ListData. }
     function FormatList(ListData: TListData): string; virtual; abstract;
 
-    { This should return appropriate content for given Table.
+    { Return appropriate content for given Table.
       It's guaranteed that the Table passed here will have
       at least one row and in each row there will be at least
       one cell, so you don't have to check it within descendants. }
@@ -963,7 +971,7 @@ type
         @item(pasdoc's compiler name and version,)
         @item(pasdoc's version and time of compilation)
       )
-      See [https://pasdoc.github.io/ExcludeGeneratorOption].
+      See @url(https://pasdoc.github.io/ExcludeGeneratorOption --exclude-generator documentation).
       Default value is false (i.e. show them),
       as this information is generally considered useful.
 
@@ -1016,14 +1024,14 @@ type
     property AutoAbstract: boolean read FAutoAbstract write FAutoAbstract default false;
 
     { This controls @link(SearchLink) behavior, as described in
-      [https://pasdoc.github.io/LinkLookOption]. }
+      @url(https://pasdoc.github.io/LinkLookOption --link-look documentation). }
     property LinkLook: TLinkLook read FLinkLook write FLinkLook default llDefault;
 
     property WriteUsesClause: boolean
       read FWriteUsesClause write FWriteUsesClause default false;
 
     { This controls auto-linking, see
-      [https://pasdoc.github.io/AutoLinkOption] }
+      @url(https://pasdoc.github.io/AutoLinkOption --auto-link documentation). }
     property AutoLink: boolean
       read FAutoLink write FAutoLink default false;
 
@@ -1035,12 +1043,36 @@ type
 
     property Markdown: boolean
       read FMarkdown write FMarkdown default false;
+
+    { Show source filename and line number in documentation output. }
+    property ShowSourcePosition: boolean
+      read FShowSourcePosition write FShowSourcePosition default false;
+
+    { Root path for source files.
+      Used to make relative paths, shown by
+      @link(ShowSourcePosition) and replaced by @link(SourceUrlPattern).
+      Leave empty to make
+      @link(ShowSourcePosition) and @link(SourceUrlPattern)
+      just take the final filename part to show / replace. }
+    property SourceRoot: string
+      read FSourceRoot write FSourceRoot;
+
+    (*URL pattern for linking source positions.
+      Use @code({FILE}) for filename and @code({LINE}) for line number.
+      When set, source positions in the output become clickable links.
+      Example: @code(https://github.com/owner/repo/blob/main/{FILE}#L{LINE}) *)
+    property SourceUrlPattern: string
+      read FSourceUrlPattern write FSourceUrlPattern;
+
+    { Visibilities that should be included in output but hidden by default
+      in HTML, with checkboxes to toggle their display. }
+    property ToggleVisibilities: TVisibilities
+      read FToggleVisibilities write FToggleVisibilities;
   end;
 
 implementation
 
 uses
-  SysUtils,
   StrUtils,
   PasDoc_Utils,
   PasDoc_Tokenizer;
@@ -1059,7 +1091,7 @@ end;
 
 constructor TListData.Create(const AOwnsObject: boolean);
 begin
-  inherited;
+  inherited Create(AOwnsObject);
   FItemSpacing := lisParagraph;
   NextItemIndex := 1;
 end;
@@ -1224,8 +1256,8 @@ begin
   begin
     for i := 0 to AdditionalFiles.Count - 1 do
     begin
-      AdditionalFiles.Get(i).FullLink := CreateLink(AdditionalFiles.Get(i));
-      AdditionalFiles.Get(i).OutputFileName := AdditionalFiles.Get(i).FullLink;
+      AdditionalFiles[i].FullLink := CreateLink(AdditionalFiles[i]);
+      AdditionalFiles[i].OutputFileName := AdditionalFiles[i].FullLink;
     end;
   end;
 
@@ -1331,10 +1363,10 @@ end;
 
 procedure TDocGenerator.CloseStream;
 begin
-  if Assigned(FCurrentStream) then begin
-    FCurrentStream.Free;
-    FCurrentStream := nil;
-  end;
+  FreeAndNil(FCurrentStream);
+  {$ifdef STRING_UNICODE}
+  FreeAndNil(FCurrentStreamEncoding);
+  {$endif}
 end;
 
 { ---------------------------------------------------------------------------- }
@@ -1345,25 +1377,48 @@ end;
 
 { ---------------------------------------------------------------------------- }
 
+{$ifdef STRING_UNICODE}
+type
+  { Encoding without BOM.
+    In Delphi 12, this can be achieved simpler, just TUTF8Encoding.Create(false).
+    But for Delphi 10, we need this.
+    See https://stackoverflow.com/questions/77179326/remove-utf-8-bom-from-tstream-output }
+  TUTF8EncodingNoBOM = class(TUTF8Encoding)
+  public
+    function GetPreamble: TBytes; override;
+  end;
+
+function TUTF8EncodingNoBOM.GetPreamble: TBytes;
+begin
+  Result := nil;
+end;
+{$endif}
+
 function TDocGenerator.CreateStream(const AName: string): Boolean;
 var
   S: string;
 begin
   CloseStream;
+
   DoMessage(4, pmtInformation, 'Creating output stream "' + AName + '".', []);
   Result := false;
   S := DestinationDirectory + AName;
   try
-    FCurrentStream :=
-      {$IFDEF STRING_UNICODE}
-      TStreamWriter.Create(S, false, false, FLanguage.CodePage);
-      {$ELSE}
-        {$IFDEF USE_BUFFERED_STREAM}
-        TBufferedStream.Create(S, fmCreate);
-        {$ELSE}
-        TFileStream.Create(S, fmCreate);
-        {$ENDIF}
-      {$ENDIF}
+    {$if defined(STRING_UNICODE)}
+    FCurrentStreamEncoding := TEncoding.GetEncoding(FLanguage.CodePage);
+    { Don't generate UTF-8 BOM, because that's what we do without STRING_UNICODE
+      and most of our output is just pure ASCII.
+      TODO: This should be configurable, not hardcoded here. }
+    if FCurrentStreamEncoding is TUTF8Encoding then
+    begin
+      FreeAndNil(FCurrentStreamEncoding);
+      FCurrentStreamEncoding := TUTF8EncodingNoBOM.Create;
+    end;
+    FCurrentStream := TStreamWriter.Create(S, false, FCurrentStreamEncoding);
+    {$else}
+    FCurrentStream := TBufferedFileStream.Create(S, fmCreate);
+    {$endif}
+
     Result := true;
   except
     on E: Exception do
@@ -1824,13 +1879,16 @@ procedure TDocGenerator.HandleSomeRowTag(
   ThisTag: TTag; var ThisTagData: TObject;
   EnclosingTag: TTag; var EnclosingTagData: TObject;
   const TagParameter: string; var ReplaceStr: string);
+var
+  RowData: TRowData;
 begin
   ReplaceStr := '';
 
-  (ThisTagData as TRowData).Head := ThisTag = RowHeadTag;
-  (EnclosingTagData as TTableData).Add(ThisTagData);
+  RowData := ThisTagData as TRowData;
+  RowData.Head := ThisTag = RowHeadTag;
+  (EnclosingTagData as TTableData).Add(RowData);
 
-  { Since we just added ThisTagData to EnclosingTagData,
+  { Since we just added RowData to EnclosingTagData,
     it should no longer be freed by DestroyOccurenceData.
     It will be freed when EnclosingTagData will be freed. }
   ThisTagData := nil;
@@ -2305,7 +2363,7 @@ procedure TDocGenerator.ExpandDescriptions;
     begin
       for i := 0 to AdditionalFiles.Count - 1 do
       begin
-        ExpandExternalItem(PreExpand, AdditionalFiles.Get(i));
+        ExpandExternalItem(PreExpand, AdditionalFiles[i]);
       end;
     end;
 
@@ -2348,19 +2406,19 @@ begin
   if (atPos < 2) or (atPos > Length(s) - 3) then Exit;
   { assemble address left of @ }
   i := atPos - 1;
-  while (i >= 1) and IsCharInSet(s[i], ALLOWED_CHARS) do
+  while (i >= 1) and CharInSet(s[i], ALLOWED_CHARS) do
     Dec(i);
   EmailAddress := System.Copy(s, i + 1, atPos - i - 1) + '@';
   S1 := '';
   if (i > 1) then S1 := System.Copy(s, 1, i);
   { assemble address right of @ }
   i := atPos + 1;
-  while (i <= Length(s)) and IsCharInSet(s[i], ALLOWED_CHARS) do
+  while (i <= Length(s)) and CharInSet(s[i], ALLOWED_CHARS) do
     Inc(i);
   EmailAddress := EmailAddress + System.Copy(s, atPos + 1, i - atPos - 1);
   if (Length(EmailAddress) < 6) or
-    (not IsCharInSet(EmailAddress[Length(EmailAddress)], Letters)) or
-  (not IsCharInSet(EmailAddress[Length(EmailAddress) - 1], Letters)) then Exit;
+    (not CharInSet(EmailAddress[Length(EmailAddress)], Letters)) or
+  (not CharInSet(EmailAddress[Length(EmailAddress) - 1], Letters)) then Exit;
   S2 := '';
   if (i <= Length(s)) then S2 := System.Copy(s, i, Length(s) - i + 1);
   Result := True;
@@ -2395,7 +2453,7 @@ begin
     S1 := Copy(s, 1, p - 1);
     WebAddress := Copy(s, p + 7, 255);
     p := 1;
-    while (p < Length(WebAddress)) and IsCharInSet(WebAddress[p], ALLOWED_CHARS) do
+    while (p < Length(WebAddress)) and CharInSet(WebAddress[p], ALLOWED_CHARS) do
       Inc(p);
     S2 := Copy(WebAddress, p, 255);
     WebAddress := Copy(WebAddress, 1, p - 1);
@@ -2409,7 +2467,7 @@ begin
     S1 := Copy(s, 1, p - 1);
     WebAddress := Copy(s, p, 255);
     p := 1;
-    while (p < Length(WebAddress)) and IsCharInSet(WebAddress[p], ALLOWED_CHARS) do
+    while (p < Length(WebAddress)) and CharInSet(WebAddress[p], ALLOWED_CHARS) do
       Inc(p);
     S2 := Copy(WebAddress, p, 255);
     WebAddress := Copy(WebAddress, 1, p - 1);
@@ -2492,12 +2550,12 @@ begin
         begin
           for i := 0 to AdditionalFiles.Count - 1 do
           begin
-            if  SameText(AdditionalFiles.Get(i).Name, NewNameParts[0]) then
+            if  SameText(AdditionalFiles[i].Name, NewNameParts[0]) then
             begin
-              Result := AdditionalFiles.Get(i);
+              Result := AdditionalFiles[i];
               Exit;
             end;
-            Result := AdditionalFiles.Get(i).FindItem(NewNameParts[0]);
+            Result := AdditionalFiles[i].FindItem(NewNameParts[0]);
             if Result <> nil then Exit;
           end;
         end;
@@ -2559,35 +2617,26 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-function TDocGenerator.GetClassDirectiveName(Directive: TClassDirective): string;
+function TDocGenerator.GetClassDirectiveName(const Directive: TClassDirective): string;
+const
+  Names: array[TClassDirective] of string = (
+    '',
+    ' abstract',
+    ' sealed',
+    ' helper',
+    ' external'
+  );
 begin
-  case Directive of
-    CT_NONE:
-      begin
-        result := '';
-      end;
-    CT_ABSTRACT:
-      begin
-        result := ' abstract';
-      end;
-    CT_SEALED:
-      begin
-        result := ' sealed';
-      end;
-    CT_HELPER:
-      begin
-        result := ' helper';
-      end;
-  else
-    Assert(False);
-  end;
+  Result := Names[Directive];
 end;
 
-function TDocGenerator.GetCIOTypeName(MyType: TCIOType): string;
+function TDocGenerator.GetCIOTypeName(const MyType: TCIOType): string;
 begin
   case MyType of
     CIO_CLASS: Result := FLanguage.Translation[trClass];
     CIO_PACKEDCLASS: Result := FLanguage.Translation[trPacked] + ' ' + FLanguage.Translation[trClass];
+    CIO_OBJCCLASS: Result := FLanguage.Translation[trObjcClass];
+    CIO_PACKEDOBJCCLASS: Result := FLanguage.Translation[trPacked] + ' ' + FLanguage.Translation[trObjcClass];
     CIO_DISPINTERFACE: Result := FLanguage.Translation[trDispInterface];
     CIO_INTERFACE: Result := FLanguage.Translation[trInterface];
     CIO_OBJECT: Result := FLanguage.Translation[trObject];
@@ -2622,39 +2671,52 @@ begin
   {$IFDEF STRING_UNICODE}
     f := TStreamReader.Create(n);
   {$ELSE}
-  {$IFDEF USE_BUFFERED_STREAM}
-    f := TBufferedStream.Create(n, fmOpenRead or fmShareDenyWrite);
-  {$ELSE}
-    f := TFileStream.Create(n, fmOpenRead or fmShareDenyWrite);
+    f := TBufferedFileStream.Create(n, fmOpenRead or fmShareDenyWrite);
   {$ENDIF}
-  {$ENDIF}
-    // Assert(Assigned(f)); useless here
-
     try
       {$IFDEF STRING_UNICODE}
-      while f.ReadLine(S) do begin
+      while not f.EndOfStream do
+      begin
+        { We add LineEnding, as logic of multi-line Description handling
+          relies on these newlines. The StreamReadLine, used when not
+          STRING_UNICODE, also adds them by itself. }
+        S := f.ReadLine + LineEnding;
       {$ELSE}
-      while f.Position < f.Size do begin
+      while f.Position < f.Size do
+      begin
         s := StreamReadLine(f);
       {$ENDIF}
-        if s[1] = '#' then begin
+        if SCharIs(S, 1, '#') then
+        begin
+          // skip whitespace after #
           i := 2;
-          while IsCharInSet(s[i], [' ', #9]) do Inc(i);
-          { Make sure we read a valid name - the user might have used # in his
-            description. }
-          if IsCharInSet(s[i], IdentChars) then begin
+          while SCharIs(s, i, [' ', #9]) do Inc(i);
+
+          { Read item name.
+            If does not start with IdentChars, we assume this line is a normal
+            Description line, not a new item name. }
+          if SCharIs(s, i, IdentChars) then
+          begin
+            // store last ItemName and Description (if any)
             if ItemName <> '' then StoreDescription(ItemName, Description);
-            { Read item name and beginning of the description }
+
+            { Read next item name and beginning of the description }
             ItemName := '';
+            Description := '';
             repeat
               ItemName := ItemName + s[i];
               Inc(i);
-            until not IsCharInSet(s[i], IdentChars);
-            while IsCharInSet(s[i], [' ', #9]) do Inc(i);
-            Description := Copy(s, i, MaxInt);
-            Continue;
+            until not SCharIs(s, i, IdentChars);
+
+            // skip whitespace after item name
+            while SCharIs(s, i, [' ', #9]) do Inc(i);
+
+            // change S to be the beginning of the description
+            S := Copy(S, i, MaxInt);
           end;
         end;
+
+        // regular line -> just add to Description
         Description := Description + s;
       end;
 
@@ -2789,23 +2851,26 @@ begin
         end;
       else Assert(false, 'LinkLook = ??');
     end;
-  end else
-  if (WarningIfLinkNotFound = lnfWarnIfNotInternal) and
-     (FExternalClassHierarchy.IndexOfName(S) <> -1) then begin
-    DoMessage(
-      6,
-      pmtInformation,
-      'Link "%s" resolved as reference to external class hierarchy (from description of "%s")',
-      [S, Item.QualifiedName]);
-    Result := CodeString(ConvertString(S));
   end
-  else if (WarningIfLinkNotFound <> lnfIgnore) then
+  else
   begin
-    DoMessage(1, pmtWarning, 'Could not resolve link "%s" (from description of "%s")',
-      [S, Item.QualifiedName]);
+    if (WarningIfLinkNotFound = lnfWarnIfNotInternal) and
+       (FExternalClassHierarchy.IndexOfName(S) <> -1) then
+    begin
+      DoMessage(
+        6,
+        pmtInformation,
+        'Link "%s" resolved as reference to external class hierarchy (from description of "%s")',
+        [S, Item.QualifiedName]);
+    end else
+    if (WarningIfLinkNotFound <> lnfIgnore) then
+    begin
+      DoMessage(1, pmtWarning, 'Could not resolve link "%s" (from description of "%s")',
+        [S, Item.QualifiedName]);
+    end;
+
     Result := CodeString(ConvertString(S));
-  end else
-    Result := '';
+  end;
 end;
 
 function TDocGenerator.SearchLink(s: string; const Item: TBaseItem;
@@ -2876,7 +2941,7 @@ begin
 {$IFDEF STRING_UNICODE}
   CurrentStream.Write(t);
 {$ELSE}
-  StreamWriteString(CurrentStream, AnsiString(t));
+  StreamWriteString(CurrentStream, t);
 {$ENDIF}
 end;
 
@@ -2885,7 +2950,7 @@ begin
 {$IFDEF STRING_UNICODE}
   CurrentStream.WriteLine(t);
 {$ELSE}
-  StreamWriteLine(CurrentStream, AnsiString(t));
+  StreamWriteLine(CurrentStream, t);
 {$ENDIF}
 end;
 
@@ -2952,7 +3017,7 @@ begin
   FLanguage.Free;
   FClassHierarchy.Free;
   FAbbreviations.Free;
-  FCurrentStream.Free;
+  CloseStream;
   inherited;
 end;
 
@@ -3115,6 +3180,8 @@ procedure TDocGenerator.WriteGVClasses;
 var
   LNode: TPasItemNode;
   OverviewFileName: string;
+  LCio: TPasCio;
+  I: Integer;
 begin
   CreateClassHierarchy;
   LNode := FClassHierarchy.FirstItem;
@@ -3136,8 +3203,14 @@ begin
 
       if Assigned(LNode.Item) and (LNode.Item is TPasCio) then
       begin
+        LCio := TPasCio(LNode.Item);
         WriteDirectLine('  "' + LNode.Name +
-          '" [href="' + TPasCio(LNode.Item).OutputFileName + '"]');
+          '" [href="' + LCio.OutputFileName + '"]');
+
+        { Add edges for implemented interfaces (ancestors at index 1+) }
+        for I := 1 to LCio.Ancestors.Count - 1 do
+          WriteDirectLine('  "' + LNode.Name + '" -> "' +
+            LCio.Ancestors.Items[I].Name + '" [style=dashed]');
       end;
 
       LNode := FClassHierarchy.NextItem(LNode);
@@ -3217,7 +3290,7 @@ begin
 end;
 
 procedure TDocGenerator.CheckString(const AString: string;
-  const AErrors: TObjectVector);
+  const AErrors: TSpellingErrorList);
 var i: Integer;
 begin
   if FCheckSpelling and (FAspellProcess <> nil) then
@@ -3225,7 +3298,7 @@ begin
     FAspellProcess.CheckString(AString, AErrors);
     for i := 0 to AErrors.Count - 1 do
       DoMessage(2, pmtWarning, 'Word misspelled "%s"',
-        [TSpellingError(AErrors[i]).Word]);
+        [AErrors[i].Word]);
   end else
     AErrors.Clear;
 end;
@@ -3333,8 +3406,8 @@ begin
       begin
         for i := 0 to AdditionalFiles.Count - 1 do
         begin
-          WordsToIgnore.Add(AdditionalFiles.Get(i).Name);
-          AddSubItems(AdditionalFiles.Get(i).Anchors);
+          WordsToIgnore.Add(AdditionalFiles[i].Name);
+          AddSubItems(AdditionalFiles[i].Anchors);
         end;
       end;
       AddSubItems(Units);
@@ -3481,13 +3554,13 @@ begin
             HexBeginning := CharIndex;
             EndOfCode := True;
           end else
-          if IsCharInSet(Line[CharIndex], NumericStart) then
+          if CharInSet(Line[CharIndex], NumericStart) then
           begin
             CodeType := ctNumeric;
             NumBeginning := CharIndex;
             EndOfCode := True;
           end else
-          if IsCharInSet(Line[CharIndex], AlphaNumeric) then
+          if CharInSet(Line[CharIndex], AlphaNumeric) then
           begin
             CodeType := ctCode;
             CodeBeginning := CharIndex;
@@ -3528,7 +3601,7 @@ begin
           begin
             EndOfCode := True;
           end
-          else if not IsCharInSet(Line[CharIndex], AlphaNumeric) then
+          else if not CharInSet(Line[CharIndex], AlphaNumeric) then
           begin
             EndOfCode := True;
             CodeType := ctWhiteSpace;
@@ -3555,12 +3628,12 @@ begin
             CodeType := ctHex;
             HexBeginning := CharIndex;
           End
-          else if IsCharInSet(Line[CharIndex], NumericStart) then
+          else if CharInSet(Line[CharIndex], NumericStart) then
           begin
             CodeType := ctNumeric;
             NumBeginning := CharIndex;
           end
-          else if IsCharInSet(Line[CharIndex], AlphaNumeric) then
+          else if CharInSet(Line[CharIndex], AlphaNumeric) then
           begin
             CodeType := ctCode;
             CodeBeginning := CharIndex;
@@ -3581,7 +3654,7 @@ begin
           begin
             // do nothing
           end
-          else if IsCharInSet(Line[CharIndex], Separators) then
+          else if CharInSet(Line[CharIndex], Separators) then
           begin
             result := result + FormatString(Copy(Line, StringBeginning,
               CharIndex - StringBeginning));
@@ -3624,7 +3697,7 @@ begin
         end;
       ctSlashComment:
         begin
-          if IsCharInSet(Line[CharIndex], LineEnd) then
+          if CharInSet(Line[CharIndex], LineEnd) then
           begin
             CodeType := ctWhiteSpace;
             result := result + FormatComment(Copy(Line, CommentBegining,
@@ -3634,8 +3707,8 @@ begin
         end;
       ctHex:
         Begin
-          If IsCharInSet(Line[CharIndex], Separators) Or
-              Not IsCharInSet(Line[CharIndex], Hexadec) then
+          If CharInSet(Line[CharIndex], Separators) Or
+              Not CharInSet(Line[CharIndex], Hexadec) then
           begin
             CodeType := ctEndHex;
             result := result + FormatHex(Copy(Line, HexBeginning,
@@ -3645,8 +3718,8 @@ begin
         End;
       ctNumeric:
         begin
-          if IsCharInSet(Line[CharIndex], (Separators - NumericOther)) or
-              not IsCharInSet(Line[CharIndex], NumericOther) then
+          if CharInSet(Line[CharIndex], (Separators - NumericOther)) or
+              not CharInSet(Line[CharIndex], NumericOther) then
           begin
             CodeType := ctEndNumeric;
             NumberSubBlock := Copy(Line, NumBeginning, CharIndex - NumBeginning);
@@ -3680,12 +3753,12 @@ begin
           begin
             // do nothing
           end
-          else if IsCharInSet(Line[CharIndex], NumericOther) then
+          else if CharInSet(Line[CharIndex], NumericOther) then
           begin
             CodeType := ctNumeric;
             NumBeginning := CharIndex;
           end
-          else if IsCharInSet(Line[CharIndex], AlphaNumeric) then
+          else if CharInSet(Line[CharIndex], AlphaNumeric) then
           begin
             CodeType := ctCode;
             CodeBeginning := CharIndex;
@@ -3711,7 +3784,7 @@ begin
             CodeType := ctHex;
             HexBeginning := CharIndex;
           End
-          else if IsCharInSet(Line[CharIndex], AlphaNumeric) then
+          else if CharInSet(Line[CharIndex], AlphaNumeric) then
           begin
             CodeType := ctCode;
             CodeBeginning := CharIndex;
@@ -3936,7 +4009,7 @@ begin
           repeat
             Inc(i);
           until (i > l) or
-            (not IsCharInSet(Code[i], ['.', '_', '0'..'9', 'A'..'Z', 'a'..'z']));
+            (not CharInSet(Code[i], ['.', '_', '0'..'9', 'A'..'Z', 'a'..'z']));
           s := Copy(Code, j, i - j);
 
           if not NameFound and (s = Item.Name) then
@@ -4027,6 +4100,53 @@ begin
   WriteEndOfCode;
 end;
 
+function TDocGenerator.HasSourcePosition(const AItem: TPasItem;
+  out ItemName, ItemFilenameInRoot, ItemUrl: string): boolean;
+begin
+  ItemName := '';
+  ItemFilenameInRoot := '';
+  ItemUrl := '';
+
+  Result := ShowSourcePosition and
+    (AItem.SourceAbsoluteFileName <> '') and
+    (AItem.SourceLine <> 0) and
+    { Don't show source position for enum members.
+      It works -- but it looks very verbose in doc output to show this for
+      every enum member, and usually is not helpful (since in most cases,
+      enum members are defined right next to the enum type containing them). }
+    (AItem.MyEnum = nil);
+
+  if Result then
+  begin
+    if SourceRoot <> '' then
+    begin
+      ItemFilenameInRoot := ExtractRelativePath(
+        // Use ExpandFileName(SourceRoot) since user may provide SourceRoot
+        // as relative, like "."
+        IncludeTrailingPathDelimiter(ExpandFileName(SourceRoot)),
+        AItem.SourceAbsoluteFileName);
+      { Make sure ItemFilenameInRoot uses /, as it will be used for URL and ItemName,
+        as we want output to be consistent across platforms. }
+      {$ifdef MSWINDOWS}
+      ItemFilenameInRoot := StringReplace(ItemFilenameInRoot, '\', '/', [rfReplaceAll]);
+      {$endif}
+    end else
+      ItemFilenameInRoot := ExtractFileName(AItem.SourceAbsoluteFileName);
+
+    ItemName := Format(FLanguage.Translation[trSourcePosition], [
+      ItemFilenameInRoot,
+      AItem.SourceLine
+    ]);
+
+    if SourceUrlPattern <> '' then
+    begin
+      ItemUrl := SourceUrlPattern;
+      ItemUrl := StringReplace(ItemUrl, '{FILE}', ItemFilenameInRoot, [rfReplaceAll]);
+      ItemUrl := StringReplace(ItemUrl, '{LINE}', IntToStr(AItem.SourceLine), [rfReplaceAll]);
+    end;
+  end;
+end;
+
 procedure TDocGenerator.WriteExternal(
   const ExternalItem: TExternalItem;
   const Id: TTranslationID);
@@ -4068,7 +4188,7 @@ var
 begin
   for i := 0 to AdditionalFiles.Count - 1 do
   begin
-    WriteExternal(AdditionalFiles.Get(i), trAdditionalFile);
+    WriteExternal(AdditionalFiles[i], trAdditionalFile);
   end;
 end;
 

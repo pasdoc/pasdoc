@@ -1,4 +1,4 @@
-<unit name="ok_link_explicite_name.pas">
+<unit name="ok_link_explicite_name">
   <routine name="MyProc" type="procedure" declaration="procedure MyProc;" visibility="published">
     <description><detailed>Some testing proc. Have you seen my method ?</detailed></description>
   </routine>

@@ -1,4 +1,4 @@
-<unit name="ok_static_member.pas">
+<unit name="StaticMember">
   <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
     <routine name="StaticProcedure" type="procedure" declaration="Class Procedure StaticProcedure; static;" visibility="public">

@@ -85,6 +85,9 @@
 \index{ok{\_}attributes}
 \section{Overview}
 \begin{description}
+\item[\texttt{\begin{ttfamily}NonEmptyString\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}MinimumIntegerAttribute\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}MaximumIntegerAttribute\end{ttfamily} Class}]
 \item[\texttt{\begin{ttfamily}TPerson\end{ttfamily} Class}]
 \item[\texttt{\begin{ttfamily}IUIContainer\end{ttfamily} Interface}]
 \item[\texttt{\begin{ttfamily}TMyClass1\end{ttfamily} Class}]
@@ -92,6 +95,117 @@
 \item[\texttt{\begin{ttfamily}IEnumerator\end{ttfamily} Interface}]
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{NonEmptyString Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{NonEmptyString Class}
+\fi
+\label{ok_attributes.NonEmptyString}
+\index{NonEmptyString}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+NonEmptyString {$>$} TCustomAttribute
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Delphi attributes test from \href{http://www.malcolmgroves.com/blog/?p=530}{http://www.malcolmgroves.com/blog/?p=530} Attribute class, without Attribute suffix, PasDoc should link to it\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Create}\hspace*{\fill}
+
+\label{ok_attributes.NonEmptyString-Create}
+\index{Create}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public constructor Create(const AMessage: String);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{MinimumIntegerAttribute Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MinimumIntegerAttribute Class}
+\fi
+\label{ok_attributes.MinimumIntegerAttribute}
+\index{MinimumIntegerAttribute}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+MinimumIntegerAttribute {$>$} TCustomAttribute
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Attribute class, with Attribute suffix, PasDoc should link to it too\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Create}\hspace*{\fill}
+
+\label{ok_attributes.MinimumIntegerAttribute-Create}
+\index{Create}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public constructor Create(const MinInt: Integer; const AMessage: String);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{MaximumIntegerAttribute Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MaximumIntegerAttribute Class}
+\fi
+\label{ok_attributes.MaximumIntegerAttribute}
+\index{MaximumIntegerAttribute}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+MaximumIntegerAttribute {$>$} TCustomAttribute
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+Attribute class, with Attribute suffix, PasDoc should link to it too\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Create}\hspace*{\fill}
+
+\label{ok_attributes.MaximumIntegerAttribute-Create}
+\index{Create}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public constructor Create(const MaxInt: Integer; const AMessage: String);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
 \ifpdf
 \subsection*{\large{\textbf{TPerson Class}}\normalsize\hspace{1ex}\hrulefill}
 \else
@@ -101,8 +215,8 @@
 \index{TPerson}
 \subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
 TPerson {$>$} TObject
-\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
-Delphi attributes test from \href{http://www.malcolmgroves.com/blog/?p=530}{http://www.malcolmgroves.com/blog/?p=530}\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+%%%%Description
+\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
 \begin{list}{}{
 \settowidth{\tmplength}{\textbf{Name}}
 \setlength{\itemindent}{0cm}

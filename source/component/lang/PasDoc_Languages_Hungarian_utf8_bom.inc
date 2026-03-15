@@ -13,6 +13,7 @@
   //tables and members
     {trClasses} 'Osztályok',
       {trClass} 'Osztály',
+      {trObjcClass} strToDo,
       {trDispInterface} 'Képernyő felületek',
       {trInterface} 'Kapcsolódási felület',
     {trObjects} 'Objektumok',
@@ -59,6 +60,7 @@
     {trPlatformSpecific} 'ez az azonosító szükséges némely platform számára',
     {trLibrarySpecific} 'ez az azonosító szükséges némely library számára',
     {trExperimental} strToDo, //'this symbol is experimental',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
   //headings
     {trOverview} 'Áttekintés',
     {trIntroduction} 'Bevezető',
@@ -104,5 +106,7 @@
     {trSeeAlso} 'Lásd még',
     {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
+    {trSourcePosition} strToDo, //'Source: %s (line %d).',
+    {trShowAdditionalMembers} strToDo, //'Show Additional Members',
     ''  //dummy
   );

@@ -13,6 +13,7 @@ RTransTable = (
   //tables and members
     {trClasses} 'Класове',
       {trClass} 'Клас',
+      {trObjcClass} strToDo,
       {trDispInterface} strToDo, //'DispInterface',
       {trInterface} 'Интерфейс',
     {trObjects} 'Обекти',
@@ -59,6 +60,7 @@ RTransTable = (
     {trPlatformSpecific} 'Този идентификатор е платформено зависим',
     {trLibrarySpecific} 'Този идентификатор зависи от специфични библиотеки',
     {trExperimental} 'Този идентификатор е експериментален. Използвайте го внимателно',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
 (*
     {trUnimplemented} 'Тази процедура/функция все още не е реализирана',
 *)
@@ -108,5 +110,7 @@ RTransTable = (
     {trSeeAlso} 'Виж още',
     {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
+    {trSourcePosition} strToDo, //'Source: %s (line %d).',
+    {trShowAdditionalMembers} strToDo, //'Show Additional Members',
     ''  //dummy
   );

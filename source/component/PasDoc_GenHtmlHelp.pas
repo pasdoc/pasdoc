@@ -81,7 +81,7 @@ begin
   Result := 0;
   p := Pointer(s);
   l := Length(s);
-  while (l > 0) and IsCharInSet(p^, [' ', #9]) do begin
+  while (l > 0) and CharInSet(p^, [' ', #9]) do begin
     Inc(Result);
     Inc(p);
     Dec(l);
@@ -402,7 +402,7 @@ var
     begin
       for i := 0 to AdditionalFiles.Count - 1 do
       begin
-        WriteLiObject(AdditionalFiles.Get(i).ShortTitle, AdditionalFiles.Get(i).FullLink);
+        WriteLiObject(AdditionalFiles[i].ShortTitle, AdditionalFiles[i].FullLink);
       end;
     end;
   end;
@@ -706,7 +706,7 @@ begin
   begin
     for i := 0 to AdditionalFiles.Count - 1 do
     begin
-      WriteDirectLine(AdditionalFiles.Get(i).FullLink);
+      WriteDirectLine(AdditionalFiles[i].FullLink);
     end;
   end;
 

@@ -1,4 +1,4 @@
-<unit name="ok_no_link_inside_class.pas">
+<unit name="ok_no_link_inside_class">
   <routine name="MyGlobalProcedure" type="procedure" declaration="procedure MyGlobalProcedure;" visibility="published">
     <description><detailed>This should NOT be linked: <code>MyMethod</code>. This should be linked: TMyClass.MyMethod. This should be linked: MyOtherGlobalProcedure.</detailed></description>
   </routine>

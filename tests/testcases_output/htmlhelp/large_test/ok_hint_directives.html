@@ -4,12 +4,13 @@
 <title>ok_hint_directives</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="bootstrap.min.css">
 <link rel="StyleSheet" type="text/css" href="pasdoc.css">
 </head>
 <body>
 <h1 class="unit">Unit ok_hint_directives</h1>
 <div class="sections">
-<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section">Uses</div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section">Types</div><div class="one_section"><a class="section" href="#PasDoc-Constants">Constants</a></div><div class="one_section"><a class="section" href="#PasDoc-Variables">Variables</a></div></div>
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section"><a class="section" href="#PasDoc-Classes">Classes, Interfaces, Objects and Records</a></div><div class="one_section"><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></div><div class="one_section"><a class="section" href="#PasDoc-Constants">Constants</a></div><div class="one_section"><a class="section" href="#PasDoc-Variables">Variables</a></div></div>
 <span id="PasDoc-Description"></span><h2 class="description">Description</h2>
 <p class="hint_directive">Warning: this symbol is deprecated.</p><p class="hint_directive">Warning: this symbol is specific to some platform.</p><p class="hint_directive">Warning: this symbol is specific to some library.</p><p>
 Test parsing &quot;platform&quot;, &quot;library&quot; and &quot;deprecated&quot; directives (called collectively &quot;hint directives&quot;) by pasdoc.</p>
@@ -61,152 +62,172 @@ Test parsing &quot;platform&quot;, &quot;library&quot; and &quot;deprecated&quot
 </table>
 <span id="PasDoc-FuncsProcs"></span><h3 class="summary">Functions and Procedures</h3>
 <table class="summary wide_list">
-<tr class="list">
+<tr class="list visibility-published">
 <td class="itemcode"><code>function <strong><a href="ok_hint_directives.html#TestFuncCombined-Integer-">TestFuncCombined</a></strong>(SomeParams: Integer): Integer; deprecated; platform;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list2 visibility-published">
 <td class="itemcode"><code>function <strong><a href="ok_hint_directives.html#TestFuncDeprecated">TestFuncDeprecated</a></strong>: Integer; deprecated;</code></td>
 </tr>
-<tr class="list">
+<tr class="list visibility-published">
 <td class="itemcode"><code>function <strong><a href="ok_hint_directives.html#TestFuncPlatform">TestFuncPlatform</a></strong>: Integer; platform;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list2 visibility-published">
 <td class="itemcode"><code>procedure <strong><a href="ok_hint_directives.html#TestProcCombined-Integer-">TestProcCombined</a></strong>(SomeParams: Integer); deprecated  platform;</code></td>
 </tr>
-<tr class="list">
+<tr class="list visibility-published">
 <td class="itemcode"><code>procedure <strong><a href="ok_hint_directives.html#TestProcDeprecated">TestProcDeprecated</a></strong>; deprecated;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list2 visibility-published">
+<td class="itemcode"><code>procedure <strong><a href="ok_hint_directives.html#TestProcExperimental">TestProcExperimental</a></strong>; experimental;</code></td>
+</tr>
+<tr class="list visibility-published">
 <td class="itemcode"><code>procedure <strong><a href="ok_hint_directives.html#TestProcPlatform">TestProcPlatform</a></strong>; platform;</code></td>
+</tr>
+<tr class="list2 visibility-published">
+<td class="itemcode"><code>procedure <strong><a href="ok_hint_directives.html#TestProcUnimplemented">TestProcUnimplemented</a></strong>; unimplemented;</code></td>
 </tr>
 </table>
 <span id="PasDoc-Constants"></span><h3 class="summary">Constants</h3>
 <table class="summary wide_list">
-<tr class="list">
+<tr class="list visibility-published">
 <td class="itemcode"><code><strong><a href="ok_hint_directives.html#TestConstPlatform">TestConstPlatform</a></strong> = 1 platform;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list2 visibility-published">
 <td class="itemcode"><code><strong><a href="ok_hint_directives.html#TestConstLibrary">TestConstLibrary</a></strong> = 2 library;</code></td>
 </tr>
-<tr class="list">
+<tr class="list visibility-published">
 <td class="itemcode"><code><strong><a href="ok_hint_directives.html#TestConstDeprecated">TestConstDeprecated</a></strong> = 3 deprecated;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list2 visibility-published">
 <td class="itemcode"><code><strong><a href="ok_hint_directives.html#TestConstCombined">TestConstCombined</a></strong> = 4 deprecated library platform;</code></td>
 </tr>
 </table>
 <span id="PasDoc-Variables"></span><h3 class="summary">Variables</h3>
 <table class="summary wide_list">
-<tr class="list">
+<tr class="list visibility-published">
 <td class="itemcode"><code><strong><a href="ok_hint_directives.html#TestVarPlatform">TestVarPlatform</a></strong>: Integer platform;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list2 visibility-published">
 <td class="itemcode"><code><strong><a href="ok_hint_directives.html#TestVarLibrary">TestVarLibrary</a></strong>: Integer library;</code></td>
 </tr>
-<tr class="list">
+<tr class="list visibility-published">
 <td class="itemcode"><code><strong><a href="ok_hint_directives.html#TestVarDeprecated">TestVarDeprecated</a></strong>: Integer deprecated;</code></td>
 </tr>
-<tr class="list2">
+<tr class="list2 visibility-published">
 <td class="itemcode"><code><strong><a href="ok_hint_directives.html#TestVarCombined">TestVarCombined</a></strong>: Integer library deprecated platform;</code></td>
 </tr>
 </table>
 <h2 class="description">Description</h2>
 <h3 class="detail">Functions and Procedures</h3>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="TestFuncCombined-Integer-"></span><code>function <strong>TestFuncCombined</strong>(SomeParams: Integer): Integer; deprecated; platform;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="hint_directive">Warning: this symbol is deprecated.</p><p class="hint_directive">Warning: this symbol is specific to some platform.</p><p class="nodescription">This item has no description.</p></td></tr>
 </table>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="TestFuncDeprecated"></span><code>function <strong>TestFuncDeprecated</strong>: Integer; deprecated;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="hint_directive">Warning: this symbol is deprecated.</p><p class="nodescription">This item has no description.</p></td></tr>
 </table>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="TestFuncPlatform"></span><code>function <strong>TestFuncPlatform</strong>: Integer; platform;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="hint_directive">Warning: this symbol is specific to some platform.</p><p class="nodescription">This item has no description.</p></td></tr>
 </table>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="TestProcCombined-Integer-"></span><code>procedure <strong>TestProcCombined</strong>(SomeParams: Integer); deprecated  platform;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="hint_directive">Warning: this symbol is deprecated.</p><p class="hint_directive">Warning: this symbol is specific to some platform.</p><p class="nodescription">This item has no description.</p></td></tr>
 </table>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="TestProcDeprecated"></span><code>procedure <strong>TestProcDeprecated</strong>; deprecated;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="hint_directive">Warning: this symbol is deprecated.</p><p class="nodescription">This item has no description.</p></td></tr>
 </table>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
+<td class="itemcode"><span id="TestProcExperimental"></span><code>procedure <strong>TestProcExperimental</strong>; experimental;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is experimental.</p><p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="TestProcPlatform"></span><code>procedure <strong>TestProcPlatform</strong>; platform;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="hint_directive">Warning: this symbol is specific to some platform.</p><p class="nodescription">This item has no description.</p></td></tr>
 </table>
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
+<td class="itemcode"><span id="TestProcUnimplemented"></span><code>procedure <strong>TestProcUnimplemented</strong>; unimplemented;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="hint_directive">Warning: this symbol is unimplemented.</p><p class="nodescription">This item has no description.</p></td></tr>
+</table>
 <h3 class="detail">Constants</h3>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="TestConstPlatform"></span><code><strong>TestConstPlatform</strong> = 1 platform;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="hint_directive">Warning: this symbol is specific to some platform.</p><p class="nodescription">This item has no description.</p></td></tr>
 </table>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="TestConstLibrary"></span><code><strong>TestConstLibrary</strong> = 2 library;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="hint_directive">Warning: this symbol is specific to some library.</p><p class="nodescription">This item has no description.</p></td></tr>
 </table>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="TestConstDeprecated"></span><code><strong>TestConstDeprecated</strong> = 3 deprecated;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="hint_directive">Warning: this symbol is deprecated.</p><p class="nodescription">This item has no description.</p></td></tr>
 </table>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="TestConstCombined"></span><code><strong>TestConstCombined</strong> = 4 deprecated library platform;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="hint_directive">Warning: this symbol is deprecated.</p><p class="hint_directive">Warning: this symbol is specific to some platform.</p><p class="hint_directive">Warning: this symbol is specific to some library.</p><p class="nodescription">This item has no description.</p></td></tr>
 </table>
 <h3 class="detail">Variables</h3>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="TestVarPlatform"></span><code><strong>TestVarPlatform</strong>: Integer platform;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="hint_directive">Warning: this symbol is specific to some platform.</p><p class="nodescription">This item has no description.</p></td></tr>
 </table>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="TestVarLibrary"></span><code><strong>TestVarLibrary</strong>: Integer library;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="hint_directive">Warning: this symbol is specific to some library.</p><p class="nodescription">This item has no description.</p></td></tr>
 </table>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="TestVarDeprecated"></span><code><strong>TestVarDeprecated</strong>: Integer deprecated;</code></td>
 </tr>
 <tr><td colspan="1">
 <p class="hint_directive">Warning: this symbol is deprecated.</p><p class="nodescription">This item has no description.</p></td></tr>
 </table>
-<table class="detail wide_list">
-<tr class="list">
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
 <td class="itemcode"><span id="TestVarCombined"></span><code><strong>TestVarCombined</strong>: Integer library deprecated platform;</code></td>
 </tr>
 <tr><td colspan="1">

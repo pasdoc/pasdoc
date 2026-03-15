@@ -1,4 +1,4 @@
-<unit name="ok_dispid_method.pas">
+<unit name="ok_dispid_method">
   <description><detailed>Testcase for bug &quot;[ 1403317 ] Error parsing automatically generated unit&quot;</detailed></description>
   <structure name="INetFwOpenPortsDisp" name_with_generic="INetFwOpenPortsDisp" type="dispinterface" visibility="published">
     <ancestor name="IDispInterface" declaration="IDispInterface" />

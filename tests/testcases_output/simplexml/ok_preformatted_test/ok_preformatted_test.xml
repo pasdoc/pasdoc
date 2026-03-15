@@ -1,4 +1,4 @@
-<unit name="ok_preformatted_test.pas">
+<unit name="ok_preformatted_test">
   <description><abstract>Test of @preformatted tag.</abstract><detailed> 
 Line one ?
 1111 222 ?

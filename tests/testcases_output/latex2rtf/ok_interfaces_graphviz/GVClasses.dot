@@ -1,0 +1,20 @@
+digraph Classes {
+  "IMyInterface" -> "IInterface"
+  "IMyInterface" [href="ok_interfaces_graphviz.IMyInterface"]
+  "IMyInterface2" -> "IInterface"
+  "IMyInterface2" [href="ok_interfaces_graphviz.IMyInterface2"]
+  "TBaseClass" -> "TObject"
+  "TBaseClass" [href="ok_interfaces_graphviz.TBaseClass"]
+  "TDerivedClass" -> "TBaseClass"
+  "TDerivedClass" [href="ok_interfaces_graphviz.TDerivedClass"]
+  "TDerivedClassWithInterface" -> "TBaseClass"
+  "TDerivedClassWithInterface" [href="ok_interfaces_graphviz.TDerivedClassWithInterface"]
+  "TDerivedClassWithInterface" -> "IInterface" [style=dashed]
+  "TDerivedClassWithMoreInterfaces" -> "TBaseClass"
+  "TDerivedClassWithMoreInterfaces" [href="ok_interfaces_graphviz.TDerivedClassWithMoreInterfaces"]
+  "TDerivedClassWithMoreInterfaces" -> "IMyInterface" [style=dashed]
+  "TDerivedClassWithMoreInterfaces" -> "IMyInterface2" [style=dashed]
+  "TDerivedClassWithMyInterface" -> "TBaseClass"
+  "TDerivedClassWithMyInterface" [href="ok_interfaces_graphviz.TDerivedClassWithMyInterface"]
+  "TDerivedClassWithMyInterface" -> "IMyInterface" [style=dashed]
+}

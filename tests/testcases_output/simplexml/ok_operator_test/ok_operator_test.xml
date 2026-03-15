@@ -1,4 +1,4 @@
-<unit name="ok_operator_test.pas">
+<unit name="ok_operator_test">
   <description><detailed>Operator overloads Delphi and FPC</detailed></description>
   <routine name=":=" type="operator" declaration="Operator := (C : TMyType2) z : TMyType;" visibility="published">
   </routine>

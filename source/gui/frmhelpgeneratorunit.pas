@@ -20,7 +20,7 @@
 }
 
 {
-  @abstract(@name contains the main form of Help Generator.)
+  @abstract(Main form of PasDoc GUI.)
   @author(Richard B. Winston <rbwinst@usgs.gov>)
   @author(Michalis Kamburelis)
   @created(2004-11-28)
@@ -43,9 +43,8 @@ uses
 type
   EInvalidSpellingLanguage = class(Exception);
 
-  // @abstract(TfrmHelpGenerator is the class of the main form of Help
-  // Generator.) Its published fields are mainly components that are used to
-  // save the project settings.
+  { Main form. Its published fields are mainly components that are used to
+    save the project settings. }
   TfrmHelpGenerator = class(TForm)
     BtnBrowseAdditionalFiles: TButton;
     btnBrowseIncludeDirectory: TButton;

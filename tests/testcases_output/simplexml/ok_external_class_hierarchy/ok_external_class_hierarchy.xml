@@ -1,4 +1,4 @@
-<unit name="ok_external_class_hierarchy.pas">
+<unit name="ok_external_class_hierarchy">
   <structure name="TMyClass0" name_with_generic="TMyClass0" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
   </structure>

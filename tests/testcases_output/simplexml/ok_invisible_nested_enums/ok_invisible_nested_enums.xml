@@ -1,4 +1,4 @@
-<unit name="ok_invisible_nested_enums.pas">
+<unit name="ok_invisible_nested_enums">
   <structure name="TOuterObject" name_with_generic="TOuterObject" type="class" visibility="published">
     <ancestor name="TObject" declaration="TObject" />
     <type name="TPublicInnerEnum" declaration="TPublicInnerEnum = (...);" visibility="public">

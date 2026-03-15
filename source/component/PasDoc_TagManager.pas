@@ -29,10 +29,8 @@ unit PasDoc_TagManager;
 interface
 
 uses
-  SysUtils,
-  Classes,
-  PasDoc_Types,
-  PasDoc_ObjectVector;
+  SysUtils, Classes, Contnrs, Generics.Collections,
+  PasDoc_Types;
 
 type
   TTagManager = class;
@@ -298,8 +296,8 @@ type
     function AllowedInside(EnclosingTag: TTag): boolean; override;
   end;
 
-  { All Items of this list must be non-nil TTag objects. }
-  TTagVector = class(TObjectVector)
+  { List of TTag objects (only non-nil). }
+  TTagVector = class({$ifdef FPC}specialize {$endif} TObjectList<TTag>)
     { Case of Name does @italic(not) matter (so don't bother converting it to
       lowercase or something like that before using this method).
       Returns nil if not found.
@@ -369,7 +367,7 @@ type
 
     { This will be inserted on each whitespace sequence (but not on
       paragraph break). This is consistent with
-      [https://pasdoc.github.io/WritingDocumentation]
+      @url(https://pasdoc.github.io/WritingDocumentation WritingDocumentation)
       that clearly says that "amount of whitespace does not matter".
 
       Although in some pasdoc output formats amount of whitespace also
@@ -1282,7 +1280,7 @@ var
     i := FOffset + 1;
 
     while (i <= Length(Description)) and
-          IsCharInSet(Description[i], ['A'..'Z', 'a'..'z']) do
+          CharInSet(Description[i], ['A'..'Z', 'a'..'z']) do
       Inc(i);
 
     if i = FOffset + 1 then Exit; { exit with false }
@@ -1342,7 +1340,7 @@ var
         prefixed with "line feed" char \ (just like shell scripts, C lang etc.) }
       while (i <= Length(Description)) do
       begin
-        if IsCharInSet(Description[i], WhiteSpaceNL) then
+        if CharInSet(Description[i], WhiteSpaceNL) then
           if Description[i - 1] = '\' then
           begin
             // Copy currently consumed line and start reading from found NL
@@ -1436,7 +1434,7 @@ var
     i := i + Length(URLMiddle);
     while SCharIs(Description, i, FullLinkChars + HalfLinkChars) do Inc(i);
     Dec(i);
-    while IsCharInSet(Description[i], HalfLinkChars) do Dec(i);
+    while CharInSet(Description[i], HalfLinkChars) do Dec(i);
     Inc(i);
     OffsetEnd := i;
 
@@ -1465,7 +1463,7 @@ var
   begin
     Result :=
       ( (FOffset = 1) or
-        not IsCharInSet(Description[FOffset - 1], AnyQualifiedIdentChar) ) and
+        not CharInSet(Description[FOffset - 1], AnyQualifiedIdentChar) ) and
       SCharIs(Description, FOffset, FirstIdentChar);
 
     if Result then

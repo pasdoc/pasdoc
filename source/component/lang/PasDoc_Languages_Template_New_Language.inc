@@ -37,6 +37,7 @@ RTransTable = (
   //tables and members
     {trClasses} strToDo, //'Classes',
       {trClass} strToDo, //'Class',
+      {trObjcClass} strToDo, //'ObjcClass',
       {trDispInterface} strToDo, //'DispInterface',
       {trInterface} strToDo, //'Interface',
     {trObjects} strToDo, //'Objects',
@@ -83,6 +84,7 @@ RTransTable = (
     {trPlatformSpecific} strToDo, //'this symbol is specific to some platform',
     {trLibrarySpecific} strToDo, //'this symbol is specific to some library',
     {trExperimental} strToDo, //'this symbol is experimental',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
   //headings
     {trOverview} strToDo, //'Overview',
     {trIntroduction} strToDo, //'Introduction',
@@ -128,5 +130,7 @@ RTransTable = (
     {trSeeAlso} strToDo, //'See also',
     {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
+    {trSourcePosition} strToDo, //'Source: %s (line %d).',
+    {trShowAdditionalMembers} strToDo, //'Show Additional Members',
     ''  //dummy
   );

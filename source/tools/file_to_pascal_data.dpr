@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -48,14 +48,14 @@ var
 begin
   if ParamCount() <> 2 then
   begin
-    Writeln(StdErr, 'file_to_pascal_data: Usage: file_to_pascal_data INPUT_FILE OUTPUT_FILE');
-    Writeln(StdErr, 'file_to_pascal_data: Invalid number of arguments: expected 2, got ', ParamCount());
+    Writeln(ErrOutput, 'file_to_pascal_data: Usage: file_to_pascal_data INPUT_FILE OUTPUT_FILE');
+    Writeln(ErrOutput, 'file_to_pascal_data: Invalid number of arguments: expected 2, got ', ParamCount());
     Halt(1)
   end;
   SrcFileName := ParamStr(1);
   DestFileName := ParamStr(2);
 
-  Src := TFileStream.Create(SrcFileName, fmOpenRead);
+  Src := TFileStream.Create(SrcFileName, fmOpenRead or fmShareDenyWrite);
   try
     Assign(Dest, DestFileName);
     Rewrite(Dest);

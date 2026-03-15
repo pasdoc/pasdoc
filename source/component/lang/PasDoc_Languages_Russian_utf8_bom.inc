@@ -13,6 +13,7 @@
   //tables and members
     {trClasses} 'Классы',
       {trClass} 'Класс',
+      {trObjcClass} strToDo,
       {trDispInterface} strToDo, //'DispInterface',
       {trInterface} 'Интерфейс',
     {trObjects} 'Объекты',
@@ -59,6 +60,7 @@
     {trPlatformSpecific} 'этот символ зависит от платформы',
     {trLibrarySpecific} 'этот символ зависит от библиотеки',
     {trExperimental} strToDo, //'this symbol is experimental',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
   //headings
     {trOverview} 'Обзор',
     {trIntroduction} 'Введение',
@@ -105,5 +107,7 @@
     {trSeeAlso} 'Материалы по теме',
     {trNested} strToDo, //'nested',
     {trAttributes} strToDo, //'Attributes',
+    {trSourcePosition} strToDo, //'Source: %s (line %d).',
+    {trShowAdditionalMembers} strToDo, //'Show Additional Members',
     ''  //dummy
   );

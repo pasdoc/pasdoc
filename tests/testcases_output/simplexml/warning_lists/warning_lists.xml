@@ -1,4 +1,4 @@
-<unit name="warning_lists.pas">
+<unit name="warning_lists">
   <description><abstract>Test various pasdoc warnings related to lists.</abstract><detailed> These should cause warnings: 
 
 <orderedlist>

@@ -5,6 +5,7 @@ ALL_OUTPUT := pasdoc.css.inc external_class_hierarchy.txt.inc
 .PHONY: all clean
 
 all: $(ALL_OUTPUT)
+	$(MAKE) -C bootstrap
 
 %.inc: %
 	../../bin/file_to_pascal_string $< $@

@@ -78,49 +78,20 @@ const
   {  }
   PASDOC_NAME = 'PasDoc';
 
-  { Date of last pasdoc release.
+  { Date of this pasdoc release, for stable releases.
+    Otherwise just <snapshot>.
 
-    We used to have this constant set to CVS/SVN @code($ Date) keyword, but:
-    @unorderedList(
-      @item(That's not a really correct indication of pasdoc release.
-        @code($ Date) is only the date when this file, @code(PasDoc_Base.pas),
-        was last modified.
+    We avoid using version control $ Date or such keyword, as it would only
+    indicate the date when this file was modified. So this is neither
+    the date of last stable release, nor the date of last commit.
 
-        As it happens, always when you make an official release
-        you have to manually change PASDOC_VERSION constant
-        in this file below. So PASDOC_DATE was
-        (at the time when the official release was made) updated to current date.
-        But, since you have to change PASDOC_VERSION constant manually
-        anyway, then it's not much of a problem to also update PASDOC_DATE
-        manually.
-
-        For unofficial releases (i.e. when pasdoc is simply compiled from SVN
-        by anyone, or when it's packaged for
-        [https://pasdoc.github.io/DevelopmentSnapshots]),
-        PASDOC_DATE has no clear meaning. It's not the date of this
-        release (since you don't update the PASDOC_VERSION constant)
-        and it's not the date of last official release (since some
-        commits possibly happened to @code(PasDoc_Base.pas) since
-        last release).
-      )
-
-      @item(SVN makes this date look bad for the purpose of
-        PASDOC_FULL_INFO. It's too long: contains the time,
-        day of the week, and a descriptive version. Like
-        @preformatted(2006-11-15 07:12:34 +0100 (Wed, 15 Nov 2006))
-
-        Moreover, it contains indication of local user's system time,
-        and the words (day of the week and month's name) are
-        localized. So it depends on the locale developer has set
-        (you can avoid localization of the words by doing things like
-        @code(export LANG=C) before SVN operations, but it's too
-        error-prone).
-      )
-    )
+    Also, different version control systems have different (or none) support
+    for this.
   }
-  PASDOC_DATE = '2021-02-07';
+  //PASDOC_DATE = '2021-02-07';
+  PASDOC_DATE = 'snapshot';
   { }
-  PASDOC_VERSION = '0.16.0-snapshot';
+  PASDOC_VERSION = '0.17.0.snapshot';
   { }
   PASDOC_NAME_AND_VERSION = PASDOC_NAME + ' ' + PASDOC_VERSION;
   { }
@@ -137,6 +108,9 @@ implementation
 
 uses SysUtils;
 
+// Enable FPC_VERSION etc. macros below
+{$ifdef FPC} {$macro on} {$endif}
+
 function COMPILER_NAME: string;
 begin
   COMPILER_NAME :=
@@ -144,10 +118,6 @@ begin
     'FPC ' + Format('%d.%d.%d', [FPC_VERSION, FPC_RELEASE, FPC_PATCH]);
     {$define COMPILER_VERSION_DEFINED}
     {$ENDIF}
-
-    {$IFDEF KYLIX_1}   'KYLIX 1';      {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF KYLIX_2}   'KYLIX 2';      {$define COMPILER_VERSION_DEFINED} {$ENDIF}
-    {$IFDEF KYLIX_3}   'KYLIX 3';      {$define COMPILER_VERSION_DEFINED} {$ENDIF}
 
     {$IFDEF DELPHI_6_UP}
     Format('DELPHI (Compiler Version %2.1f)', [CompilerVersion]);
@@ -170,8 +140,12 @@ end;
 function PASDOC_FULL_INFO: string;
 begin
   PASDOC_FULL_INFO :=
-    PASDOC_NAME_AND_VERSION + ' [' + PASDOC_DATE + '|' +
-      COMPILER_NAME + '|' + COMPILER_OS + '|' + COMPILER_BITS + ']';
+    PASDOC_NAME_AND_VERSION + ' [' +
+      PASDOC_DATE + '|' +
+      COMPILER_NAME + '|' +
+      {$IFDEF STRING_UNICODE} 'UnicodeString(can parse UTF-16)|' + {$ENDIF}
+      COMPILER_OS + '|' +
+      COMPILER_BITS + ']';
 end;
 
 end.

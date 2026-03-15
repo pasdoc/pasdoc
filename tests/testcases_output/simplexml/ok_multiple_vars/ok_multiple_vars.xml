@@ -1,4 +1,4 @@
-<unit name="ok_multiple_vars.pas">
+<unit name="ok_multiple_vars">
   <variable name="A" declaration="A: Integer;" visibility="published">
     <description><detailed>Docs for A and B</detailed></description>
   </variable>

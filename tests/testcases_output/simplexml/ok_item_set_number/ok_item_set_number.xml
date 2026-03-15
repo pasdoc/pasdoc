@@ -1,4 +1,4 @@
-<unit name="ok_item_set_number.pas">
+<unit name="ok_item_set_number">
   <description><abstract>Test of of @itemSetNumber tag.</abstract><detailed> 
 
 <orderedlist>

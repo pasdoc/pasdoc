@@ -9,10 +9,11 @@
     {trNestedTypes} 'Tipus anidats', // 'Nested Types',
     {trIdentifiers} 'Identificadors',
     {trGvUses} 'Gràfic de dependències d''unitats', //'Unit dependency graph',
-    {trGvClasses} 'Gràfic de gerarquia de classes', 
+    {trGvClasses} 'Gràfic de gerarquia de classes',
   //tables and members
     {trClasses} 'Classes',
       {trClass} 'Classe',
+      {trObjcClass} strToDo,
       {trDispInterface} strToDo, //'DispInterface',
       {trInterface} 'Interface', //'Interface',
     {trObjects} 'Objectes',
@@ -59,6 +60,7 @@
     {trPlatformSpecific} 'aquest símbol és específic per alguna plataforma', //'this symbol is specific to some platform',
     {trLibrarySpecific} 'aquest símbol és específic per alguna biblioteca', //'this symbol is specific to some library',
     {trExperimental} 'aquest símbol és experimental', //'this symbol is experimental',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
   //headings
     {trOverview} 'Resum',
     {trIntroduction} 'Introdicció', //'Introduction',
@@ -104,5 +106,7 @@
     {trSeeAlso} 'Veure també', //'See also',
     {trNested} 'Anidat', //'nested',
     {trAttributes} 'Atributs', //'Attributes',
+    {trSourcePosition} strToDo, //'Source: %s (line %d).',
+    {trShowAdditionalMembers} strToDo, //'Show Additional Members',
     ''  //dummy
   );

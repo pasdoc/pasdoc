@@ -5,6 +5,21 @@ interface
 // Delphi attributes test from http://www.malcolmgroves.com/blog/?p=530
 
 type
+  // Attribute class, without Attribute suffix, PasDoc should link to it
+  NonEmptyString = class(TCustomAttribute)
+    constructor Create(const AMessage: String);
+  end;
+
+  // Attribute class, with Attribute suffix, PasDoc should link to it too
+  MinimumIntegerAttribute = class(TCustomAttribute)
+    constructor Create(const MinInt: Integer; const AMessage: String);
+  end;
+
+  // Attribute class, with Attribute suffix, PasDoc should link to it too
+  MaximumIntegerAttribute = class(TCustomAttribute)
+    constructor Create(const MaxInt: Integer; const AMessage: String);
+  end;
+
   TPerson = class
   private
     FName: String;

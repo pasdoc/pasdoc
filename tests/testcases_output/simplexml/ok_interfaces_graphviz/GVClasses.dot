@@ -1,0 +1,20 @@
+digraph Classes {
+  "IMyInterface" -> "IInterface"
+  "IMyInterface" [href="IMyInterface"]
+  "IMyInterface2" -> "IInterface"
+  "IMyInterface2" [href="IMyInterface2"]
+  "TBaseClass" -> "TObject"
+  "TBaseClass" [href="TBaseClass"]
+  "TDerivedClass" -> "TBaseClass"
+  "TDerivedClass" [href="TDerivedClass"]
+  "TDerivedClassWithInterface" -> "TBaseClass"
+  "TDerivedClassWithInterface" [href="TDerivedClassWithInterface"]
+  "TDerivedClassWithInterface" -> "IInterface" [style=dashed]
+  "TDerivedClassWithMoreInterfaces" -> "TBaseClass"
+  "TDerivedClassWithMoreInterfaces" [href="TDerivedClassWithMoreInterfaces"]
+  "TDerivedClassWithMoreInterfaces" -> "IMyInterface" [style=dashed]
+  "TDerivedClassWithMoreInterfaces" -> "IMyInterface2" [style=dashed]
+  "TDerivedClassWithMyInterface" -> "TBaseClass"
+  "TDerivedClassWithMyInterface" [href="TDerivedClassWithMyInterface"]
+  "TDerivedClassWithMyInterface" -> "IMyInterface" [style=dashed]
+}

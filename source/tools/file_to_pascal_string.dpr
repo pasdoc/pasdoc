@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -52,12 +52,12 @@ const
 var
   Src, Dest: TextFile;
   SrcFileName, DestFileName, S, Next: string;
-  LenProcessed, LenNext: Cardinal;
+  LenProcessed, LenNext: Integer;
 begin
   if ParamCount() <> 2 then
   begin
-    Writeln(StdErr, 'file_to_pascal_string: Usage: file_to_pascal_string INPUT_FILE OUTPUT_FILE');
-    Writeln(StdErr, 'file_to_pascal_string: Invalid number of arguments: expected 2, got ', ParamCount());
+    Writeln(ErrOutput, 'file_to_pascal_string: Usage: file_to_pascal_string INPUT_FILE OUTPUT_FILE');
+    Writeln(ErrOutput, 'file_to_pascal_string: Invalid number of arguments: expected 2, got ', ParamCount());
     Halt(1)
   end;
   SrcFileName := ParamStr(1);

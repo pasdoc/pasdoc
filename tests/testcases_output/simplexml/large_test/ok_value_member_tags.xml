@@ -1,4 +1,4 @@
-<unit name="ok_value_member_tags.pas">
+<unit name="ok_value_member_tags">
   <type name="TMyEnum" declaration="TMyEnum = (...);" visibility="published">
     <description><detailed> </detailed></description>
     <constant name="meOne" declaration="meOne" visibility="published">

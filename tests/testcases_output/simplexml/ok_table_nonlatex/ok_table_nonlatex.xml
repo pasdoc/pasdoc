@@ -1,4 +1,4 @@
-<unit name="ok_table_nonlatex.pas">
+<unit name="ok_table_nonlatex">
   <description><abstract>Test of @table-related features that do not work in LaTeX, only in HTML.</abstract><detailed> Test that everything within @cell tag is OK: 
 
 <table>

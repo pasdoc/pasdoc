@@ -1,4 +1,4 @@
-<unit name="ok_back_comment.pas">
+<unit name="ok_back_comment">
   <description><detailed>Description of unit ok_back_comment.</detailed></description>
   <routine name="Foo" type="procedure" declaration="procedure Foo;" visibility="published">
     <description><detailed>Description of Foo, (<code>Foo</code>)</detailed></description>

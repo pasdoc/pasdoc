@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -20,45 +20,52 @@
   ----------------------------------------------------------------------------
 }
 
-{ PasDoc
+{ PasDoc is a documentation generator for Pascal code.
+  See https://pasdoc.github.io/ for more information.
 
-  * generates documentation from comments in Pascal unit source code files
-  * command line program (GUI version also available, see ../gui/,
-    as well as components for Lazarus and Delphi)
-  * written in ObjectPascal (can be compiled by FPC or Delphi)
-  * output formats Html, HtmlHelp, LaTeX
-  * try PasDoc on its own source code (see ../autodoc/)
-
-  * copyright (C) 1998-2000 by Marco Schmidt
-  * copyright (C) 2001-2003 by Ralf Junker <delphi@zeitungsjunge.de>
-  * Copyright (C) 2003 by Johannes Berg <johannes@sipsolutions.de>
-  * Copyright 2005-2021 by Michalis Kamburelis, Richard B. Winston
-    and other contributors, see ../../ChangeLog.md file
-
-  Hint:
-
-  Whenever you use PasDoc for documentations, make sure the program file
-  contains no code except for a call to a main routine in another unit or
-  the instantiation of an object / class that does all the work
-  (usually TApplication).
-
-  Pasdoc is restricted to work on unit files only, that's why the program file
-  should contain no actual program-specific code - it would not become part of
-  the documentation.
-
------------------------------------------------------------------------------- }
+  This is the main console program file,
+  which simply calls the Main procedure defined in the PasDoc_Main unit.
+  This allows the PasDoc_Main unit to be processed by PasDoc itself,
+  generating documentation for the main logic of the application.
+}
 
 program pasdoc;
 
-{$IFNDEF VPASCAL}
-  {$IFDEF MSWINDOWS}
-    {$APPTYPE CONSOLE}
-  {$ENDIF}
-{$ENDIF}
+{$ifdef MSWINDOWS}
+  {$apptype CONSOLE}
+{$endif}
 
 uses
-  {$ifdef USE_FASTMM} FastMM4, {$endif}
-  PasDoc_Main;
+  PasDoc_Main in 'PasDoc_Main.pas',
+  PasDoc_Aspell in '..\component\PasDoc_Aspell.pas',
+  PasDoc_Base in '..\component\PasDoc_Base.pas',
+  PasDoc_Gen in '..\component\PasDoc_Gen.pas',
+  PasDoc_GenHtml in '..\component\PasDoc_GenHtml.pas',
+  PasDoc_GenHtmlHelp in '..\component\PasDoc_GenHtmlHelp.pas',
+  PasDoc_GenLatex in '..\component\PasDoc_GenLatex.pas',
+  PasDoc_GenPHP in '..\component\PasDoc_GenPHP.pas',
+  PasDoc_GenSimpleXML in '..\component\PasDoc_GenSimpleXML.pas',
+  PasDoc_Hashes in '..\component\PasDoc_Hashes.pas',
+  PasDoc_HierarchyTree in '..\component\PasDoc_HierarchyTree.pas',
+  PasDoc_Items in '..\component\PasDoc_Items.pas',
+  PasDoc_Languages in '..\component\PasDoc_Languages.pas',
+  PasDoc_OptionParser in '..\component\PasDoc_OptionParser.pas',
+  PasDoc_Parser in '..\component\PasDoc_Parser.pas',
+  PasDoc_ProcessLineTalk in '..\component\PasDoc_ProcessLineTalk.pas',
+  PasDoc_Reg in '..\component\PasDoc_Reg.pas',
+  PasDoc_Scanner in '..\component\PasDoc_Scanner.pas',
+  PasDoc_Serialize in '..\component\PasDoc_Serialize.pas',
+  PasDoc_SortSettings in '..\component\PasDoc_SortSettings.pas',
+  PasDoc_StreamUtils in '..\component\PasDoc_StreamUtils.pas',
+  PasDoc_StringPairVector in '..\component\PasDoc_StringPairVector.pas',
+  PasDoc_StringVector in '..\component\PasDoc_StringVector.pas',
+  PasDoc_TagManager in '..\component\PasDoc_TagManager.pas',
+  PasDoc_Tokenizer in '..\component\PasDoc_Tokenizer.pas',
+  PasDoc_Types in '..\component\PasDoc_Types.pas',
+  PasDoc_Utils in '..\component\PasDoc_Utils.pas',
+  PasDoc_Versions in '..\component\PasDoc_Versions.pas',
+  PasDoc_Tipue in '..\component\tipue\PasDoc_Tipue.pas';
+
 begin
   Main;
 end.

@@ -26,6 +26,7 @@ RTransTable = (
   //tables and members
     {trClasses} 'Třídy',
       {trClass} 'Třída',
+      {trObjcClass} strToDo,
       {trDispInterface} 'DispInterface',
       {trInterface} 'Rozhraní',
     {trObjects} 'Objekty',
@@ -72,6 +73,7 @@ RTransTable = (
     {trPlatformSpecific} 'tato konstrukce je závislá na platformě',
     {trLibrarySpecific} 'tato konstrukce je závislá na konkrétní knihovně',
     {trExperimental} strToDo, //'this symbol is experimental',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
   //headings
     {trOverview} 'Přehled',
     {trIntroduction} 'Úvod',
@@ -117,5 +119,7 @@ RTransTable = (
     {trSeeAlso} 'Viz také',
     {trNested} strToDo, //'nested',
     {trAttributes} 'Atributy',
+    {trSourcePosition} strToDo, //'Source: %s (line %d).',
+    {trShowAdditionalMembers} strToDo, //'Show Additional Members',
     '' //dummy
   );

@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -20,11 +20,7 @@
   ----------------------------------------------------------------------------
 }
 
-{ @abstract(Provides Latex document generator object.)
-
-  Implements an object to generate latex documentation, overriding many of
-  @link(TDocGenerator)'s virtual methods. }
-
+{ @abstract(LaTeX documentation generator @link(TTexDocGenerator).) }
 unit PasDoc_GenLatex;
 
 {$I pasdoc_defines.inc}
@@ -37,10 +33,10 @@ uses
   PasDoc_Languages,
   PasDoc_StringVector,
   PasDoc_Types,
-  Classes;
+  Classes, Contnrs;
 
 type
-  { @abstract(generates latex documentation)
+  { @abstract(LaTeX documentation generator.)
     Extends @link(TDocGenerator) and overwrites many of its methods to generate
     output in LaTex format. }
   TTexDocGenerator = class(TDocGenerator)
@@ -270,11 +266,11 @@ implementation
 uses
   SysUtils,
   PasDoc_Base,
-  PasDoc_ObjectVector,
   PasDoc_Utils,
   PasDoc_StringPairVector,
   StrUtils,
-  PasDoc_Versions;
+  PasDoc_Versions,
+  PasDoc_Aspell;
 
 function TTexDocGenerator.LatexString(const S: string): string;
 begin
@@ -1028,7 +1024,7 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
     i: integer;
     ParamName: string;
   begin
-    if objectVectorIsNilOrEmpty(List) then
+    if StringPairIsNilOrEmpty(List) then
       Exit;
 
     WriteDirect('\item[\textbf{'+Caption+'}]',true);
@@ -1060,7 +1056,7 @@ procedure TTexDocGenerator.WriteItemLongDescription(const AItem: TPasItem;
     SeeAlsoItem: TBaseItem;
     SeeAlsoLink: string;
   begin
-    if ObjectVectorIsNilOrEmpty(SeeAlso) then
+    if StringPairIsNilOrEmpty(SeeAlso) then
       Exit;
 
     if not AlreadyWithinAList then
@@ -1115,6 +1111,7 @@ var
   AncestorName: string;
   EnumMember: TPasItem;
   i: Integer;
+  ItemName, ItemFilenameInRoot, ItemUrl: string;
 begin
   if not Assigned(AItem) then Exit;
 
@@ -1126,6 +1123,8 @@ begin
     WriteHintDirective(FLanguage.Translation[trLibrarySpecific]);
   if hdExperimental in AItem.HintDirectives then
     WriteHintDirective(FLanguage.Translation[trExperimental]);
+  if hdUnimplemented in AItem.HintDirectives then
+    WriteHintDirective(FLanguage.Translation[trUnimplemented]);
 
   if AItem.AbstractDescription <> '' then
   begin
@@ -1202,6 +1201,16 @@ begin
       WriteDirectLine('');
     end;
     WriteDirectLine('\end{description}');
+  end;
+
+  if HasSourcePosition(AItem, ItemName, ItemFilenameInRoot, ItemUrl) then
+  begin
+    // Note that simply outputting a newline here doesn't guarantee a paragraph, we would need to make 2 newlines
+    WriteDirect('\par', true);
+    if ItemUrl <> '' then
+      WriteDirect(URLLink(ItemUrl, ItemName))
+    else
+      WriteConverted(ItemName);
   end;
 end;
 
@@ -1499,9 +1508,9 @@ end;
 
 procedure TTexDocGenerator.WriteSpellChecked(const AString: string);
 var
-  LErrors: TObjectVector;
+  LErrors: TSpellingErrorList;
 begin
-  LErrors := TObjectVector.Create(True);
+  LErrors := TSpellingErrorList.Create(True);
   try
     CheckString(AString, LErrors);
     WriteDirect(AString);
@@ -1703,17 +1712,14 @@ const
   ( 'itemize', 'enumerate', 'description' );
 var
   ListItem: TListItemData;
-  i: Integer;
 begin
   { LaTeX doesn't allow empty lists }
   if ListData.Count <> 0 then
   begin
     Result := Format('\begin{%s}',
       [ListEnvironment[ListData.ListType]]) + LineEnding;
-    for i := 0 to ListData.Count - 1 do
+    for ListItem in ListData do
     begin
-      ListItem := ListData.Items[i] as TListItemData;
-
       if ListData.ListType = ltDefinition then
       begin
         Result := Result +
@@ -1761,7 +1767,7 @@ begin
     '\hline' + LineEnding;
   for RowNum := 0 to Table.Count - 1 do
   begin
-    Row := Table.Items[RowNum] as TRowData;
+    Row := Table.Items[RowNum];
 
     for ColNum := 0 to Row.Cells.Count - 2 do
       Result := Result + CellContent(Row, ColNum) + ' & ';

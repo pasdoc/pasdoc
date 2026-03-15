@@ -1025,7 +1025,9 @@ Contrary to most units in tests/, this unit \textit{is} kept at compileable by D
 \item[\texttt{TestFuncPlatform}]
 \item[\texttt{TestProcCombined}]
 \item[\texttt{TestProcDeprecated}]
+\item[\texttt{TestProcExperimental}]
 \item[\texttt{TestProcPlatform}]
+\item[\texttt{TestProcUnimplemented}]
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
 \subsection*{TTestClassDeprecated Class}
@@ -1052,7 +1054,7 @@ Warning: this symbol is specific to some library.
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-public property TestPropertyCombined: Integer; library deprecated platform;\end{ttfamily}
+public property TestPropertyCombined: Integer read Field; library deprecated platform;\end{ttfamily}
 
 
 \end{flushleft}
@@ -1082,7 +1084,7 @@ Testing on FPC 2.6.0: Hint directives for properties are allowed Ok. I don't kno
 \begin{flushleft}
 \item[\textbf{Declaration}\hfill]
 \begin{ttfamily}
-public property TestPropertyCombined2: Integer; library; deprecated; platform;\end{ttfamily}
+public property TestPropertyCombined2: Integer read Field; library; deprecated; platform;\end{ttfamily}
 
 
 \end{flushleft}
@@ -1476,6 +1478,31 @@ Warning: this symbol is deprecated.
  
 
 \end{list}
+\subsection*{TestProcExperimental}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure TestProcExperimental; experimental;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Warning: this symbol is experimental.
+
+ 
+
+\end{list}
 \subsection*{TestProcPlatform}
 \begin{list}{}{
 \settowidth{\tmplength}{\textbf{Description}}
@@ -1497,6 +1524,31 @@ procedure TestProcPlatform; platform;\end{ttfamily}
 \par
 \item[\textbf{Description}]
 Warning: this symbol is specific to some platform.
+
+ 
+
+\end{list}
+\subsection*{TestProcUnimplemented}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure TestProcUnimplemented; unimplemented;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Warning: this symbol is unimplemented.
 
  
 

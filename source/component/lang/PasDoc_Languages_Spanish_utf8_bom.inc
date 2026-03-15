@@ -13,6 +13,7 @@
   //tables and members
     {trClasses} 'Clases',
       {trClass} 'Clase',
+      {trObjcClass} strToDo,
       {trDispInterface} strToDo, //'DispInterface',
       {trInterface} 'Interfaz', //'Interface',
     {trObjects} 'Objetos',
@@ -59,6 +60,7 @@
     {trPlatformSpecific} 'Este símbolo es específico para alguna plataforma',
     {trLibrarySpecific} 'Este símbolo es específico para alguna biblioteca', //
     {trExperimental} strToDo, //'this symbol is experimental',
+    {trUnimplemented} strToDo, //'this symbol is unimplemented',
   //headings
     {trOverview} 'Resumen',
     {trIntroduction} 'Introducción',
@@ -104,5 +106,7 @@
     {trSeeAlso} 'Ver también', // ?
     {trNested} strToDo, //'nested',
     {trAttributes} 'Atributos', //'Attributes',
+    {trSourcePosition} strToDo, //'Source: %s (line %d).',
+    {trShowAdditionalMembers} strToDo, //'Show Additional Members',
     ''  //dummy
   );

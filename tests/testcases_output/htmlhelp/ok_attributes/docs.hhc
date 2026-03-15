@@ -19,6 +19,54 @@
 </object>
 <ul>
 <li><object type="text/sitemap">
+<param name="Name" value="NonEmptyString">
+<param name="Local" value="ok_attributes.NonEmptyString.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Methods">
+<param name="Local" value="ok_attributes.NonEmptyString.html#@Methods">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Create">
+<param name="Local" value="ok_attributes.NonEmptyString.html#Create">
+</object>
+</ul>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="MinimumIntegerAttribute">
+<param name="Local" value="ok_attributes.MinimumIntegerAttribute.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Methods">
+<param name="Local" value="ok_attributes.MinimumIntegerAttribute.html#@Methods">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Create">
+<param name="Local" value="ok_attributes.MinimumIntegerAttribute.html#Create">
+</object>
+</ul>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="MaximumIntegerAttribute">
+<param name="Local" value="ok_attributes.MaximumIntegerAttribute.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Methods">
+<param name="Local" value="ok_attributes.MaximumIntegerAttribute.html#@Methods">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Create">
+<param name="Local" value="ok_attributes.MaximumIntegerAttribute.html#Create">
+</object>
+</ul>
+</ul>
+<li><object type="text/sitemap">
 <param name="Name" value="TPerson">
 <param name="Local" value="ok_attributes.TPerson.html">
 </object>
@@ -145,6 +193,54 @@
 <param name="Local" value="ok_attributes.IUIContainer.html">
 </object>
 <ul>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="MaximumIntegerAttribute">
+<param name="Local" value="ok_attributes.MaximumIntegerAttribute.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Methods">
+<param name="Local" value="ok_attributes.MaximumIntegerAttribute.html#@Methods">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Create">
+<param name="Local" value="ok_attributes.MaximumIntegerAttribute.html#Create">
+</object>
+</ul>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="MinimumIntegerAttribute">
+<param name="Local" value="ok_attributes.MinimumIntegerAttribute.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Methods">
+<param name="Local" value="ok_attributes.MinimumIntegerAttribute.html#@Methods">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Create">
+<param name="Local" value="ok_attributes.MinimumIntegerAttribute.html#Create">
+</object>
+</ul>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="NonEmptyString">
+<param name="Local" value="ok_attributes.NonEmptyString.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Methods">
+<param name="Local" value="ok_attributes.NonEmptyString.html#@Methods">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Create">
+<param name="Local" value="ok_attributes.NonEmptyString.html#Create">
+</object>
+</ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TMyClass1">

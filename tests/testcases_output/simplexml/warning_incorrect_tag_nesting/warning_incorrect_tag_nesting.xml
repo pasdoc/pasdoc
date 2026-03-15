@@ -1,4 +1,4 @@
-<unit name="warning_incorrect_tag_nesting.pas">
+<unit name="warning_incorrect_tag_nesting">
   <routine name="TestMe" type="procedure" declaration="procedure TestMe;" visibility="published">
     <description><detailed>Now there is control inside PasDoc what tags can be embedded inside what. pasdoc should display appropriate warnings on following input: <code>This is a code .</code>    </detailed></description>
   </routine>

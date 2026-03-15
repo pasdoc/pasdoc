@@ -1,4 +1,4 @@
-<unit name="ok_longcode_indentation.pas">
+<unit name="ok_longcode_indentation">
   <routine name="Foo1" type="procedure" declaration="procedure Foo1;" visibility="published">
     <description><detailed>Should cut nothing: one
   two

@@ -37,11 +37,19 @@ PASDOC=pasdoc
 # These options will be passed to every pasdoc invocation,
 # i.e. for every output format.
 PASDOC_OPTIONS=--include ../component \
-  ../component/*.pas ../component/tipue/*.pas \
+  ../component/*.pas \
+  ../component/tipue/*.pas \
   ../console/*.pas \
-  -DFPC -DVER2 -DPASDOC \
-  --title "PasDoc's autodoc" --write-uses-list  --auto-abstract \
-  --introduction=introduction.txt
+  -DFPC \
+  -DVER3 \
+  -DPASDOC \
+  --title "PasDoc's autodoc" \
+  --write-uses-list  \
+  --auto-abstract \
+  --introduction=introduction.txt \
+  --show-source-position \
+  --source-url-pattern "https://github.com/pasdoc/pasdoc/blob/master/{FILE}\#L{LINE}" \
+  --source-root ../../
 
 GRAPHVIZ_COMMANDS=dot -Grankdir=LR -Tjpg -oGVClasses.jpg GVClasses.dot; \
                   dot -Grankdir=LR -Tjpg -oGVUses.jpg GVUses.dot

@@ -27,7 +27,7 @@ the main goals are:
   to call pasdoc in "batch" mode.
 
   This was also intention of original HelpGenerator, but now
-  we got it absolutely free, without any dependency on Delphi/Kylix,
+  we got it absolutely free, without any dependency on Delphi,
   and portable everywhere where FPC is.
 
   TODO: Although it should be easy to modify this program
@@ -48,7 +48,7 @@ Development things:
 
 - pasdoc_gui.lpi XML file contains many important project settings,
   but also many settings that you can easily modify "by accident".
-  (actually, this is the same problem as with Delphi/Kylix config files)
+  (actually, this is the same problem as with Delphi config files)
 
   We just have to live with it. So:
   when committing don't worry if you accidentaly modified something

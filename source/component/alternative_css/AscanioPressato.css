@@ -1,0 +1,405 @@
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+</snip>
+ * ***** END LICENSE BLOCK ***** */
+
+/* Ascanio Pressato pasdoc_v0.7.css compliant with CVS PasDoc 2005-06-26 */
+
+/* pasdoc.css
+   Styles used by PasDoc to generate HTML / Compiled HTML Documentation.*/
+
+body {
+	font-family: Verdana,Arial;
+	color: black;
+	background-color: White;
+	font-size: 12px;
+}
+body.navigationframe {
+	font-family: Verdana,Arial;
+	font-size: 12px;
+	background-color: #eeeeff;
+	color: Black;
+}
+img {
+	vertical-align: middle;
+	border: none;
+}
+h2 {
+	border: 1px solid #CCCCCC;
+	background-color: #f5f5f5;
+	margin-top: 30px;
+	margin-bottom: 8px;
+	margin-left: 2px;
+	margin-right: 8px;
+	padding-left: 6px;
+	padding-right: 6px;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	color: Black;
+}
+h2.description{;}
+h2.uses{;}
+h2.overview{;}
+h2.authors{;}
+h2.modified{;}
+h2.unit{;}
+h2.declaration{;}
+h2.hierarchy{;}
+body.navigationframe h2 {
+	border: 1px solid #CCCCCC;
+	background-color: #f5f5f5;
+	margin-top: 30px;
+	margin-bottom: 8px;
+	padding-left: 6px;
+	padding-right: 6px;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	color: Black;
+}
+h3 {
+  font-weight:bold;
+  color:darkblue;
+}
+a:link {
+	color: #0000FF;
+	text-decoration: none;
+}
+a:visited {
+	color: #9900cc;
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+a:active {
+	text-decoration: underline;
+}
+a.navigation:link {
+	color: #0000FF;
+	text-decoration: none;
+	font-size: 12px;
+}
+a.navigation:visited {
+	color: #0000FF;
+	text-decoration: none;
+	font-size: 12px;
+}
+a.navigation:hover {
+	color: #0000FF;
+	font-weight: bold;
+	text-decoration: none;
+	font-size: 12px;
+}
+a.navigation:active {
+	color: #0000FF;
+	text-decoration: none;
+	font-size: 12px;
+}
+a.bold:link {
+	color: #0000FF;
+	text-decoration: none;
+	font-weight: normal;
+}
+a.bold:visited {
+	color: #9900cc;
+	text-decoration: none;
+	font-weight: normal;
+}
+a.bold:hover {
+	text-decoration: underline;
+	font-weight: normal;
+}
+a.bold:active {
+	text-decoration: underline;
+	font-weight: normal;
+}
+a.section {
+	color: green;
+	text-decoration: none;
+	font-weight: bold;
+}
+a.section:hover {
+	color: green;
+	text-decoration: underline;
+	font-weight: bold;
+}
+ul {
+	list-style-type: square;
+}
+ul.useslist a:link {
+	color: #0000FF;
+	text-decoration: none;
+	font-weight: normal;
+}
+ul.useslist a:visited {
+	color: #9900cc;
+	text-decoration: none;
+	font-weight: normal;
+}
+ul.useslist a:hover {
+	text-decoration: underline;
+	font-weight: normal;
+}
+ul.useslist a:active {
+	text-decoration: underline;
+	font-weight: normal;
+}
+ul.hierarchy {
+	list-style-type: none;
+}
+ul.hierarchylevel {
+	list-style-type: none;
+}
+ul.authors{
+	font-style: italic;
+}
+li.ancestor{;}
+p.unitlink a:link {
+	color: #0000FF;
+	text-decoration: none;
+	font-weight: bold;
+}
+p.unitlink a:visited {
+	color: #9900cc;
+	text-decoration: none;
+	font-weight: bold;
+}
+p.unitlink a:hover {
+	text-decoration: underline;
+	font-weight: bold;
+}
+p.unitlink a:active {
+	text-decoration: underline;
+	font-weight: bold;
+}
+p.hint_directive {
+	color: Red;
+}
+table {
+	border-spacing: 2px;
+	padding: 4px;
+	width: 100%;
+}
+table.markerlegend {
+	width: 100%;
+}
+table.markerlegend td.legendmarker {
+	text-align: center;
+	width: 5%;
+}
+table.markerlegend td.legenddesc {
+	width: 95%;
+}
+table.sections {
+	background: White;
+}
+table.sections td {
+	background: #eeeeff;
+	text-align: center;
+}
+table.summary td.itemcode {
+	width: 100%;
+}
+table.detail td.itemcode {
+	width: 100%;
+}
+tr.list {
+	width: 100%;
+	background-color: #eeeeff;
+	border: 1px solid #b0b0b0;
+	margin: 2px;
+	padding: 2px;
+	line-height: 140%;
+}
+tr.list2 {
+	width: 100%;
+	background-color: #C7C8F7;
+	border: 1px solid #b0b0b0;
+	margin: 2px;
+	padding: 2px;
+	line-height: 140%;
+}
+tr.listheader {
+	background: #9196FF;
+	color: White;
+}
+td {
+	padding: 4px;
+}
+td.itemname {
+	white-space: nowrap;
+	background-color: #F4F4FB;
+	color: #602020;
+}
+td.itemunit {
+	white-space: nowrap;
+}
+td.itemdesc {
+	width: 100%;
+}
+div.nodescription {
+	color: Red;
+}
+dl.parameters {;}
+dt.parameters {
+	color: Blue;
+}
+dd.parameters {;}
+acronym.mispelling {
+	background-color: transparent;
+	border-bottom: thin dashed;
+	color: Red;
+	font-style: italic;
+	font-weight: normal;
+}
+
+/* :::: This is my Delphi Settings ;-) :::: */
+span.pascal_string {
+	color: Fuchsia;
+	font-style: italic;
+	font-family: "Courier New", Courier, monospace;
+	font-weight: bold;
+}
+span.pascal_keyword {
+	font-weight: bolder;
+	font-family: "Courier New", Courier, monospace;
+}
+span.pascal_comment {
+	color: Navy;
+	font-style: italic;
+	background-color: Yellow;
+	font-family: "Courier New", Courier, monospace;
+}
+span.pascal_compiler_comment {
+	color: #008000;
+	font-family: "Courier New", Courier, monospace;
+}
+span.pascal_hex {
+	color: Navy;
+	font-family: "Courier New", Courier, monospace;
+}
+span.pascal_numeric {
+	color: Red;
+	font-family: "Courier New", Courier, monospace;
+	font-weight: bold;
+}
+span.pascal_asm {/*Not Yet Implemented*/
+	color: Green;
+	font-family: "Courier New", Courier, monospace;
+}
+span.pascal_float {
+	color: Navy;
+	font-family: "Courier New", Courier, monospace;
+	font-weight: bold;
+}
+
+/* :::: Insert a <kbd> </kbd> in the HTML to view the tag content as a Keyborad Key (like Mozilla Firefox Help) :::: */
+kbd {
+	font-family: "courier new", "courier", monospace;
+	text-align: center;
+	background: #faf6f6;
+	color: #000;
+	border-color: #edd #baa #baa #eed;
+	padding: 0px 1px 0px 1px;
+	border-width: 1px 2px 2px 1px;
+	border-style: solid;
+}
+
+/* :::: Tags used by PasDoc "Created with..." line :::: */
+em{
+	BORDER-RIGHT: #9fabbb 1px solid;
+	PADDING-RIGHT: 10px;
+	BORDER-TOP: #9fabbb 1px solid;
+	PADDING-LEFT: 10px;
+	FONT-WEIGHT: bold;
+	FONT-SIZE: 8pt;
+	MARGIN-BOTTOM: 5px;
+	PADDING-BOTTOM: 1px;
+	BORDER-LEFT: #9fabbb 1px solid;
+	PADDING-TOP: 1px;
+	BORDER-BOTTOM: #9fabbb 1px solid;
+	FONT-FAMILY: arial,verdana,sans-serif;
+	BACKGROUND-COLOR: #bed2fc;
+	width: 100%;
+}
+.appinfo{;}
+
+/* :::: Buttons & Edit :::: */
+input#search_submit_button {
+	background-color: #f5f5f5;
+	color: rgb(0, 0, 0);
+	background-image: none;
+	background-repeat: repeat;
+	background-attachment: scroll;
+	-x-background-x-position: 0%;
+	-x-background-y-position: 0%;
+	-moz-background-clip: initial;
+	-moz-background-origin: initial;
+	-moz-background-inline-policy: initial;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-top-color: rgb(34, 102, 170);
+	border-right-color: rgb(34, 102, 170);
+	border-bottom-color: rgb(34, 102, 170);
+	border-left-color: rgb(34, 102, 170);
+	font-family: arial,helvetica,sans-serif;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: normal;
+	font-size: 1em;
+	line-height: normal;
+	font-size-adjust: none;
+	font-stretch: normal;
+/*	cursor: hand; */
+}
+input#search_text
+{
+	color: rgb(0, 0, 0);
+	background-color: rgb(233, 233, 255);
+	background-image: none;
+	background-repeat: repeat;
+	background-attachment: scroll;
+	-x-background-x-position: 0%;
+	-x-background-y-position: 0%;
+	-moz-background-clip: initial;
+	-moz-background-origin: initial;
+	-moz-background-inline-policy: initial;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-top-color: rgb(34, 102, 170);
+	border-right-color: rgb(34, 102, 170);
+	border-bottom-color: rgb(34, 102, 170);
+	border-left-color: rgb(34, 102, 170);
+	font-family: arial,helvetica,sans-serif;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: normal;
+	font-size: 1em;
+	line-height: normal;
+	font-size-adjust: none;
+	font-stretch: normal;
+}
+input#search_text:focus
+{
+    background-color: rgb(255, 255, 255);
+    background-image: none;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    -x-background-x-position: 0%;
+    -x-background-y-position: 0%;
+    -moz-background-clip: initial;
+    -moz-background-origin: initial;
+    -moz-background-inline-policy: initial;
+}

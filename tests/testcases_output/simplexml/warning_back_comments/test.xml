@@ -1,4 +1,4 @@
-<unit name="warning_back_comments.pas">
+<unit name="test">
   <variable name="v1" declaration="v1: integer;" visibility="published">
     <description><detailed>this is v2, v3</detailed></description>
   </variable>

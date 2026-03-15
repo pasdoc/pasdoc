@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -20,7 +20,7 @@
   ----------------------------------------------------------------------------
 }
 
-{ @abstract(SimpleXML output generator.) }
+{ @abstract(SimpleXML documentation generator @link(TSimpleXMLDocGenerator).) }
 unit PasDoc_GenSimpleXML;
 
 {$I pasdoc_defines.inc}
@@ -34,7 +34,7 @@ uses
   PasDoc_Languages,
   PasDoc_StringVector,
   PasDoc_Types,
-  Classes,
+  Classes, Contnrs,
   PasDoc_StringPairVector;
 
 type
@@ -74,6 +74,13 @@ type
 
     { Remove indentation from Space, reverting the work of last @link(Indent). }
     procedure UnIndent;
+
+    { XML attributes derived from TPasItem.SourceAbsoluteFileName and SourceLine. }
+    function SourcePositionAttributes(const Item: TPasItem): String;
+
+    { XML attributes derived from TPasItem.HintDirectives and TPasItem.DeprecatedNote. }
+    function HintDirectivesToString(const Item: TPasItem): String;
+
   public
     procedure WriteDocumentation; override;
     function GetFileExtension: string; override;
@@ -81,8 +88,43 @@ type
 
 implementation
 
-uses
-  PasDoc_ObjectVector, SysUtils;
+uses SysUtils;
+
+function TSimpleXMLDocGenerator.SourcePositionAttributes(
+  const Item: TPasItem): string;
+var
+  ItemName, ItemFilenameInRoot, ItemUrl: string;
+begin
+  if HasSourcePosition(Item, ItemName, ItemFilenameInRoot, ItemUrl) then
+    Result :=
+      // machine-specific, don't output
+      //' source-absolute-file-name="' + ConvertString(Item.SourceAbsoluteFileName) + '"' +
+      ' source-line="' + IntToStr(Item.SourceLine) + '"' +
+      ' source-relative-file-name="' + ConvertString(ItemFilenameInRoot) + '"' +
+      ' source-url="' + ConvertString(ItemUrl) + '"'
+  else
+    Result := '';
+end;
+
+function TSimpleXMLDocGenerator.HintDirectivesToString(const Item: TPasItem): String;
+const
+  HintDirectiveXmlAttribute: array[THintDirective] of string = (
+    'deprecated',
+    'platform',
+    'library',
+    'experimental',
+    'unimplemented'
+  );
+var
+  Directive: THintDirective;
+begin
+  Result := '';
+  if Item.DeprecatedNote <> '' then
+    Result := Result + ' deprecated_note="' + ConvertString(Item.DeprecatedNote) + '"';
+  for Directive := Low(THintDirective) to High(THintDirective) do
+    if Directive in Item.HintDirectives then
+      Result := Result + ' ' + HintDirectiveXmlAttribute[Directive] + '="true"';
+end;
 
 function TSimpleXMLDocGenerator.GetFileExtension:string;
 begin
@@ -149,7 +191,9 @@ begin
       '<routine name="' + ConvertString(item.name) +
             '" type="' + ConvertString(RoutineTypeToString(item.What)) +
      '" declaration="' + ConvertString(item.FullDeclaration) +
-     '" visibility="' + VisToStr(item.visibility) + '">');
+     '" visibility="' + VisToStr(item.visibility) + '"' +
+     SourcePositionAttributes(item) +
+     HintDirectivesToString(item) + '>');
     for I := 0 to item.params.count - 1 do
       WriteDirectLine(space +
         '  <param name="' + ConvertString(item.params[i].name) + '">' +
@@ -174,7 +218,9 @@ begin
    '" default_value="' + ConvertString(item.DefaultValue) +
        '" nodefault="' + ConvertString(BoolToStr(item.NoDefault, true)) +
         '"   stored="' + ConvertString(item.Stored) +
-      '" visibility="' + VisToStr(item.visibility) +'">');
+      '" visibility="' + VisToStr(item.visibility) + '"' +
+      SourcePositionAttributes(item) +
+      HintDirectivesToString(item) + '>');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</property>');
@@ -185,7 +231,9 @@ begin
   WriteDirectLine(space +
     '<constant name="' + ConvertString(item.Name) +
      '" declaration="' + ConvertString(item.FullDeclaration) +
-      '" visibility="' + VisToStr(item.visibility) + '">');
+      '" visibility="' + VisToStr(item.visibility) + '"' +
+      SourcePositionAttributes(item) +
+      HintDirectivesToString(item) + '>');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</constant>');
@@ -196,7 +244,9 @@ begin
   WriteDirectLine(space +
     '<variable name="' + ConvertString(item.Name) +
      '" declaration="' + ConvertString(item.FullDeclaration) +
-      '" visibility="' + VisToStr(item.visibility) + '">');
+      '" visibility="' + VisToStr(item.visibility) + '"' +
+      SourcePositionAttributes(item) +
+      HintDirectivesToString(item) + '>');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</variable>');
@@ -216,7 +266,9 @@ begin
   WriteDirectLine(space +
         '<type name="' + ConvertString(item.Name) +
      '" declaration="' + ConvertString(item.FullDeclaration) +
-      '" visibility="' + VisToStr(item.visibility) + '">');
+      '" visibility="' + VisToStr(item.visibility) + '"' +
+      SourcePositionAttributes(item) +
+      HintDirectivesToString(item) + '>');
   if item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   if Item is TPasEnum then
@@ -246,7 +298,9 @@ begin
       '<structure name="' + ConvertString(item.name) +
   '" name_with_generic="' + ConvertString(item.NameWithGeneric) +
                '" type="' + ConvertString(CioTypeToString(item.MyType)) +
-         '" visibility="' + VisToStr(item.visibility) + '">');
+         '" visibility="' + VisToStr(item.visibility) + '"' +
+         SourcePositionAttributes(item) +
+         HintDirectivesToString(item) + '>');
   Indent;
 
   if item.HasDescription then
@@ -282,7 +336,7 @@ var
 begin
   U.OutputFileName:=U.OutputFileName+'.xml';
   if not Assigned(U) then begin
-    DoMessage(1, pmtError, 'TGenericXMLDocGenerator.WriteUnit: ' +
+    DoMessage(1, pmtError, 'TSimpleXMLDocGenerator.WriteUnit: ' +
       'Unit variable has not been initialized.', []);
     Exit;
   end;
@@ -298,7 +352,9 @@ begin
   if not CreateStream(U.OutputFileName) then Exit;
 
   DoMessage(2, pmtInformation, 'Writing Docs for unit "%s"', [U.Name]);
-  WriteDirectLine('<unit name="' + ConvertString(U.SourceFileName) + '">');
+  WriteDirectLine('<unit name="' + ConvertString(U.Name) + '"' +
+    SourcePositionAttributes(U) +
+    HintDirectivesToString(U) +'>');
   space:='  ';
   if u.HasDescription then
     WriteDirectLine(space + ItemDescription(u));
@@ -364,7 +420,7 @@ begin
 
   for RowNum := 0 to Table.Count - 1 do
   begin
-    Row := Table.Items[RowNum] as TRowData;
+    Row := Table.Items[RowNum];
     Result := Result + '  <' + RowElement[Row.Head] + '>' + LineEnding;
     for ColNum := 0 to Row.Cells.Count - 1 do
       Result := Result +
@@ -380,15 +436,13 @@ const
   ListTag: array[TListType]of string =
   ( 'unorderedlist', 'orderedlist', 'definitionlist' );
 var
-  i: Integer;
   ListItem: TListItemData;
 begin
   Result := LineEnding + LineEnding +
     Format('<%s>', [ListTag[ListData.ListType]]) + LineEnding;
 
-  for i := 0 to ListData.Count - 1 do
+  for ListItem in ListData do
   begin
-    ListItem := ListData.Items[i] as TListItemData;
     Result := Result + '<item>';
     if ListData.ListType = ltDefinition then
       Result := Result + '<label>' + ListItem.ItemLabel + '</label>';
