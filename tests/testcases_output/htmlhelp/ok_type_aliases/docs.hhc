@@ -38,6 +38,46 @@
 </object>
 </ul>
 </ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TOriginalType2">
+<param name="Local" value="ok_type_aliases.TOriginalType2.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Fields">
+<param name="Local" value="ok_type_aliases.TOriginalType2.html#@Fields">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="x">
+<param name="Local" value="ok_type_aliases.TOriginalType2.html#x">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="y">
+<param name="Local" value="ok_type_aliases.TOriginalType2.html#y">
+</object>
+</ul>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TOriginalType3">
+<param name="Local" value="ok_type_aliases.TOriginalType3.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Fields">
+<param name="Local" value="ok_type_aliases.TOriginalType3.html#@Fields">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="x">
+<param name="Local" value="ok_type_aliases.TOriginalType3.html#x">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="y">
+<param name="Local" value="ok_type_aliases.TOriginalType3.html#y">
+</object>
+</ul>
+</ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Types">
@@ -51,6 +91,22 @@
 <li><object type="text/sitemap">
 <param name="Name" value="TStrongAliasType">
 <param name="Local" value="ok_type_aliases.html#TStrongAliasType">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TWeakAliasType2">
+<param name="Local" value="ok_type_aliases.html#TWeakAliasType2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TStrongAliasType2">
+<param name="Local" value="ok_type_aliases.html#TStrongAliasType2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TWeakAliasType3">
+<param name="Local" value="ok_type_aliases.html#TWeakAliasType3">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TStrongAliasType3">
+<param name="Local" value="ok_type_aliases.html#TStrongAliasType3">
 </object>
 </ul>
 </ul>
@@ -81,6 +137,46 @@
 <li><object type="text/sitemap">
 <param name="Name" value="y">
 <param name="Local" value="ok_type_aliases.TOriginalType.html#y">
+</object>
+</ul>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TOriginalType2">
+<param name="Local" value="ok_type_aliases.TOriginalType2.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Fields">
+<param name="Local" value="ok_type_aliases.TOriginalType2.html#@Fields">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="x">
+<param name="Local" value="ok_type_aliases.TOriginalType2.html#x">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="y">
+<param name="Local" value="ok_type_aliases.TOriginalType2.html#y">
+</object>
+</ul>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TOriginalType3">
+<param name="Local" value="ok_type_aliases.TOriginalType3.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Fields">
+<param name="Local" value="ok_type_aliases.TOriginalType3.html#@Fields">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="x">
+<param name="Local" value="ok_type_aliases.TOriginalType3.html#x">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="y">
+<param name="Local" value="ok_type_aliases.TOriginalType3.html#y">
 </object>
 </ul>
 </ul>

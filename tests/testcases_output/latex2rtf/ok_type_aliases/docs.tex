@@ -61,12 +61,104 @@
 \chapter{Unit ok{\_}type{\_}aliases}
 \section{Overview}
 \begin{description}
-\item[\texttt{\begin{ttfamily}TOriginalType\end{ttfamily} Record}]My original type description
+\item[\texttt{\begin{ttfamily}TOriginalType\end{ttfamily} Record}]My original type abstract description
+\item[\texttt{\begin{ttfamily}TOriginalType2\end{ttfamily} Record}]My original type abstract description.
+\item[\texttt{\begin{ttfamily}TOriginalType3\end{ttfamily} Record}]My original type abstract description.
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
 \subsection*{TOriginalType Record}
 \subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
-My original type description\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+My original type abstract description\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{x}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public x: integer \end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{y}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public y: integer \end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{TOriginalType2 Record}
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+My original type abstract description.\hfill\vspace*{1ex}
+
+ More and more description.\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{x}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public x: integer \end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{y}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public y: integer \end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{TOriginalType3 Record}
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+My original type abstract description.\hfill\vspace*{1ex}
+
+ More and more description.\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
 \paragraph*{x}\hspace*{\fill}
 
 \begin{list}{}{
@@ -145,5 +237,93 @@ TStrongAliasType = type TOriginalType;\end{ttfamily}
 
 
 \end{flushleft}
+\end{list}
+\subsection*{TWeakAliasType2}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+TWeakAliasType2 = TOriginalType2;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{TStrongAliasType2}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+TStrongAliasType2 = type TOriginalType2;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{TWeakAliasType3}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+TWeakAliasType3 = TOriginalType3;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Special weak alias abstract.\hfill\vspace*{1ex}
+
+ More and more description.
+
+\end{list}
+\subsection*{TStrongAliasType3}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+TStrongAliasType3 = type TOriginalType3;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Special strong alias abstract.\hfill\vspace*{1ex}
+
+ More and more description.
+
 \end{list}
 \end{document}

@@ -85,7 +85,9 @@
 \index{ok{\_}type{\_}aliases}
 \section{Overview}
 \begin{description}
-\item[\texttt{\begin{ttfamily}TOriginalType\end{ttfamily} Record}]My original type description
+\item[\texttt{\begin{ttfamily}TOriginalType\end{ttfamily} Record}]My original type abstract description
+\item[\texttt{\begin{ttfamily}TOriginalType2\end{ttfamily} Record}]My original type abstract description.
+\item[\texttt{\begin{ttfamily}TOriginalType3\end{ttfamily} Record}]My original type abstract description.
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
 \ifpdf
@@ -96,7 +98,7 @@
 \label{ok_type_aliases.TOriginalType}
 \index{TOriginalType}
 \subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
-My original type description\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+My original type abstract description\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
 \begin{list}{}{
 \settowidth{\tmplength}{\textbf{x}}
 \setlength{\itemindent}{0cm}
@@ -122,6 +124,106 @@ public x: integer \end{ttfamily}
 
 
 \par  \label{ok_type_aliases.TOriginalType-y}
+\index{y}
+\item[\textbf{y}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public y: integer \end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
+\ifpdf
+\subsection*{\large{\textbf{TOriginalType2 Record}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TOriginalType2 Record}
+\fi
+\label{ok_type_aliases.TOriginalType2}
+\index{TOriginalType2}
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+My original type abstract description.\hfill\vspace*{1ex}
+
+ More and more description.\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{x}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_type_aliases.TOriginalType2-x}
+\index{x}
+\item[\textbf{x}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public x: integer \end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_type_aliases.TOriginalType2-y}
+\index{y}
+\item[\textbf{y}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public y: integer \end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
+\ifpdf
+\subsection*{\large{\textbf{TOriginalType3 Record}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TOriginalType3 Record}
+\fi
+\label{ok_type_aliases.TOriginalType3}
+\index{TOriginalType3}
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+My original type abstract description.\hfill\vspace*{1ex}
+
+ More and more description.\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{x}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{ok_type_aliases.TOriginalType3-x}
+\index{x}
+\item[\textbf{x}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public x: integer \end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_type_aliases.TOriginalType3-y}
 \index{y}
 \item[\textbf{y}\hfill]
 \ifpdf
@@ -193,6 +295,134 @@ TStrongAliasType = type TOriginalType;\end{ttfamily}
 \ifpdf
 \end{flushleft}
 \fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TWeakAliasType2}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TWeakAliasType2}
+\fi
+\label{ok_type_aliases-TWeakAliasType2}
+\index{TWeakAliasType2}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TWeakAliasType2 = TOriginalType2;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TStrongAliasType2}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TStrongAliasType2}
+\fi
+\label{ok_type_aliases-TStrongAliasType2}
+\index{TStrongAliasType2}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TStrongAliasType2 = type TOriginalType2;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TWeakAliasType3}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TWeakAliasType3}
+\fi
+\label{ok_type_aliases-TWeakAliasType3}
+\index{TWeakAliasType3}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TWeakAliasType3 = TOriginalType3;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Special weak alias abstract.\hfill\vspace*{1ex}
+
+ More and more description.
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TStrongAliasType3}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TStrongAliasType3}
+\fi
+\label{ok_type_aliases-TStrongAliasType3}
+\index{TStrongAliasType3}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TStrongAliasType3 = type TOriginalType3;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Special strong alias abstract.\hfill\vspace*{1ex}
+
+ More and more description.
 
 \end{list}
 \end{document}
