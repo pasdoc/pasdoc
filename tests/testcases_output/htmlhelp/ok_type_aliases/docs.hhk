@@ -4,6 +4,30 @@
 </head><body>
 <ul>
 <li><object type="text/sitemap">
+<param name="Name" value="TMyClass">
+<param name="Local" value="ok_type_aliases.TMyClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyNestedClass">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TAnotherNestedClass">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TOriginalType">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="x">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType.html#x">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="y">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType.html#y">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="TOriginalType">
 <param name="Local" value="ok_type_aliases.TOriginalType.html">
 </object>
@@ -52,6 +76,10 @@
 <param name="Local" value="ok_type_aliases.html#TStrongAliasType3">
 </object>
 <li><object type="text/sitemap">
+<param name="Name" value="TStrongAliasTypeVeryNested">
+<param name="Local" value="ok_type_aliases.html#TStrongAliasTypeVeryNested">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="TWeakAliasType">
 <param name="Local" value="ok_type_aliases.html#TWeakAliasType">
 </object>
@@ -62,6 +90,10 @@
 <li><object type="text/sitemap">
 <param name="Name" value="TWeakAliasType3">
 <param name="Local" value="ok_type_aliases.html#TWeakAliasType3">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TWeakAliasTypeVeryNested">
+<param name="Local" value="ok_type_aliases.html#TWeakAliasTypeVeryNested">
 </object>
 </ul>
 </body></html>

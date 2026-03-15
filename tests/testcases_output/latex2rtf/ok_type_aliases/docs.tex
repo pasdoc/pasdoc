@@ -61,14 +61,15 @@
 \chapter{Unit ok{\_}type{\_}aliases}
 \section{Overview}
 \begin{description}
-\item[\texttt{\begin{ttfamily}TOriginalType\end{ttfamily} Record}]My original type abstract description
-\item[\texttt{\begin{ttfamily}TOriginalType2\end{ttfamily} Record}]My original type abstract description.
-\item[\texttt{\begin{ttfamily}TOriginalType3\end{ttfamily} Record}]My original type abstract description.
+\item[\texttt{\begin{ttfamily}TOriginalType\end{ttfamily} Record}]TOriginalType abstract description
+\item[\texttt{\begin{ttfamily}TOriginalType2\end{ttfamily} Record}]TOriginalType2 abstract description.
+\item[\texttt{\begin{ttfamily}TOriginalType3\end{ttfamily} Record}]TOriginalType3 abstract description.
+\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
 \subsection*{TOriginalType Record}
 \subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
-My original type abstract description\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+TOriginalType abstract description\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
 \paragraph*{x}\hspace*{\fill}
 
 \begin{list}{}{
@@ -111,7 +112,7 @@ public y: integer \end{ttfamily}
 \end{list}
 \subsection*{TOriginalType2 Record}
 \subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
-My original type abstract description.\hfill\vspace*{1ex}
+TOriginalType2 abstract description.\hfill\vspace*{1ex}
 
  More and more description.\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
 \paragraph*{x}\hspace*{\fill}
@@ -156,7 +157,7 @@ public y: integer \end{ttfamily}
 \end{list}
 \subsection*{TOriginalType3 Record}
 \subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
-My original type abstract description.\hfill\vspace*{1ex}
+TOriginalType3 abstract description.\hfill\vspace*{1ex}
 
  More and more description.\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
 \paragraph*{x}\hspace*{\fill}
@@ -199,6 +200,10 @@ public y: integer \end{ttfamily}
 
 \end{flushleft}
 \end{list}
+\subsection*{TMyClass Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass {$>$} TObject
+%%%%Description
 \section{Types}
 \subsection*{TWeakAliasType}
 \begin{list}{}{
@@ -220,7 +225,7 @@ TWeakAliasType = TOriginalType;\end{ttfamily}
 \end{flushleft}
 \par
 \item[\textbf{Description}]
-My original type abstract description
+TOriginalType abstract description
 
 \end{list}
 \subsection*{TStrongAliasType}
@@ -243,7 +248,7 @@ TStrongAliasType = type TOriginalType;\end{ttfamily}
 \end{flushleft}
 \par
 \item[\textbf{Description}]
-My original type abstract description
+TOriginalType abstract description
 
 \end{list}
 \subsection*{TWeakAliasType2}
@@ -266,7 +271,7 @@ TWeakAliasType2 = TOriginalType2;\end{ttfamily}
 \end{flushleft}
 \par
 \item[\textbf{Description}]
-My original type abstract description.\hfill\vspace*{1ex}
+TOriginalType2 abstract description.\hfill\vspace*{1ex}
 
  More and more description.
 
@@ -291,7 +296,7 @@ TStrongAliasType2 = type TOriginalType2;\end{ttfamily}
 \end{flushleft}
 \par
 \item[\textbf{Description}]
-My original type abstract description.\hfill\vspace*{1ex}
+TOriginalType2 abstract description.\hfill\vspace*{1ex}
 
  More and more description.
 
@@ -345,5 +350,43 @@ Special strong alias abstract.\hfill\vspace*{1ex}
 
  More and more description.
 
+\end{list}
+\subsection*{TWeakAliasTypeVeryNested}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+TWeakAliasTypeVeryNested = TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{TStrongAliasTypeVeryNested}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+TStrongAliasTypeVeryNested = type TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;\end{ttfamily}
+
+
+\end{flushleft}
 \end{list}
 \end{document}

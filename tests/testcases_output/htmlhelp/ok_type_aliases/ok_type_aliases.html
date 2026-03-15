@@ -21,15 +21,19 @@
 </tr>
 <tr class="list">
 <td class="itemname">Record&nbsp;<a class="bold" href="ok_type_aliases.TOriginalType.html"><code>TOriginalType</code></a></td>
-<td class="itemdesc">My original type abstract description</td>
+<td class="itemdesc">TOriginalType abstract description</td>
 </tr>
 <tr class="list2">
 <td class="itemname">Record&nbsp;<a class="bold" href="ok_type_aliases.TOriginalType2.html"><code>TOriginalType2</code></a></td>
-<td class="itemdesc">My original type abstract description.</td>
+<td class="itemdesc">TOriginalType2 abstract description.</td>
 </tr>
 <tr class="list">
 <td class="itemname">Record&nbsp;<a class="bold" href="ok_type_aliases.TOriginalType3.html"><code>TOriginalType3</code></a></td>
-<td class="itemdesc">My original type abstract description.</td>
+<td class="itemdesc">TOriginalType3 abstract description.</td>
+</tr>
+<tr class="list2">
+<td class="itemname">Class&nbsp;<a class="bold" href="ok_type_aliases.TMyClass.html"><code>TMyClass</code></a></td>
+<td class="itemdesc">&nbsp;</td>
 </tr>
 </table>
 <span id="PasDoc-Types"></span><h3 class="summary">Types</h3>
@@ -52,6 +56,12 @@
 <tr class="list2 visibility-published">
 <td class="itemcode"><code><strong><a href="ok_type_aliases.html#TStrongAliasType3">TStrongAliasType3</a></strong> = type <a href="ok_type_aliases.TOriginalType3.html">TOriginalType3</a>;</code></td>
 </tr>
+<tr class="list visibility-published">
+<td class="itemcode"><code><strong><a href="ok_type_aliases.html#TWeakAliasTypeVeryNested">TWeakAliasTypeVeryNested</a></strong> = TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;</code></td>
+</tr>
+<tr class="list2 visibility-published">
+<td class="itemcode"><code><strong><a href="ok_type_aliases.html#TStrongAliasTypeVeryNested">TStrongAliasTypeVeryNested</a></strong> = type TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;</code></td>
+</tr>
 </table>
 <h2 class="description">Description</h2>
 <h3 class="detail">Types</h3>
@@ -61,7 +71,7 @@
 </tr>
 <tr><td colspan="1">
 <p>
-My original type abstract description</p>
+TOriginalType abstract description</p>
 </td></tr>
 </table>
 <table class="detail visibility-published wide_list">
@@ -70,7 +80,7 @@ My original type abstract description</p>
 </tr>
 <tr><td colspan="1">
 <p>
-My original type abstract description</p>
+TOriginalType abstract description</p>
 </td></tr>
 </table>
 <table class="detail visibility-published wide_list">
@@ -79,7 +89,7 @@ My original type abstract description</p>
 </tr>
 <tr><td colspan="1">
 <p>
-My original type abstract description.</p>
+TOriginalType2 abstract description.</p>
 <p>
  More and more description.</p>
 </td></tr>
@@ -90,7 +100,7 @@ My original type abstract description.</p>
 </tr>
 <tr><td colspan="1">
 <p>
-My original type abstract description.</p>
+TOriginalType2 abstract description.</p>
 <p>
  More and more description.</p>
 </td></tr>
@@ -116,5 +126,19 @@ Special strong alias abstract.</p>
 <p>
  More and more description.</p>
 </td></tr>
+</table>
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
+<td class="itemcode"><span id="TWeakAliasTypeVeryNested"></span><code><strong>TWeakAliasTypeVeryNested</strong> = TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="nodescription">This item has no description.</p></td></tr>
+</table>
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
+<td class="itemcode"><span id="TStrongAliasTypeVeryNested"></span><code><strong>TStrongAliasTypeVeryNested</strong> = type TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;</code></td>
+</tr>
+<tr><td colspan="1">
+<p class="nodescription">This item has no description.</p></td></tr>
 </table>
 </body></html>

@@ -1,15 +1,15 @@
 <unit name="ok_type_aliases">
   <type name="TWeakAliasType" declaration="TWeakAliasType = TOriginalType;" visibility="published">
-    <description><abstract>My original type abstract description</abstract></description>
+    <description><abstract>TOriginalType abstract description</abstract></description>
   </type>
   <type name="TStrongAliasType" declaration="TStrongAliasType = type TOriginalType;" visibility="published">
-    <description><abstract>My original type abstract description</abstract></description>
+    <description><abstract>TOriginalType abstract description</abstract></description>
   </type>
   <type name="TWeakAliasType2" declaration="TWeakAliasType2 = TOriginalType2;" visibility="published">
-    <description><abstract>My original type abstract description.</abstract><detailed> More and more description.</detailed></description>
+    <description><abstract>TOriginalType2 abstract description.</abstract><detailed> More and more description.</detailed></description>
   </type>
   <type name="TStrongAliasType2" declaration="TStrongAliasType2 = type TOriginalType2;" visibility="published">
-    <description><abstract>My original type abstract description.</abstract><detailed> More and more description.</detailed></description>
+    <description><abstract>TOriginalType2 abstract description.</abstract><detailed> More and more description.</detailed></description>
   </type>
   <type name="TWeakAliasType3" declaration="TWeakAliasType3 = TOriginalType3;" visibility="published">
     <description><abstract>Special weak alias abstract.</abstract><detailed> More and more description.</detailed></description>
@@ -17,25 +17,45 @@
   <type name="TStrongAliasType3" declaration="TStrongAliasType3 = type TOriginalType3;" visibility="published">
     <description><abstract>Special strong alias abstract.</abstract><detailed> More and more description.</detailed></description>
   </type>
+  <type name="TWeakAliasTypeVeryNested" declaration="TWeakAliasTypeVeryNested = TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;" visibility="published">
+  </type>
+  <type name="TStrongAliasTypeVeryNested" declaration="TStrongAliasTypeVeryNested = type TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;" visibility="published">
+  </type>
   <structure name="TOriginalType" name_with_generic="TOriginalType" type="record" visibility="published">
-    <description><abstract>My original type abstract description</abstract></description>
+    <description><abstract>TOriginalType abstract description</abstract></description>
     <variable name="x" declaration="x: integer " visibility="public">
     </variable>
     <variable name="y" declaration="y: integer " visibility="public">
     </variable>
   </structure>
   <structure name="TOriginalType2" name_with_generic="TOriginalType2" type="record" visibility="published">
-    <description><abstract>My original type abstract description.</abstract><detailed> More and more description.</detailed></description>
+    <description><abstract>TOriginalType2 abstract description.</abstract><detailed> More and more description.</detailed></description>
     <variable name="x" declaration="x: integer " visibility="public">
     </variable>
     <variable name="y" declaration="y: integer " visibility="public">
     </variable>
   </structure>
   <structure name="TOriginalType3" name_with_generic="TOriginalType3" type="record" visibility="published">
-    <description><abstract>My original type abstract description.</abstract><detailed> More and more description.</detailed></description>
+    <description><abstract>TOriginalType3 abstract description.</abstract><detailed> More and more description.</detailed></description>
     <variable name="x" declaration="x: integer " visibility="public">
     </variable>
     <variable name="y" declaration="y: integer " visibility="public">
     </variable>
+  </structure>
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
+    <ancestor name="TObject" declaration="TObject" />
+    <structure name="TMyNestedClass" name_with_generic="TMyNestedClass" type="class" visibility="public">
+      <ancestor name="TObject" declaration="TObject" />
+      <structure name="TAnotherNestedClass" name_with_generic="TAnotherNestedClass" type="class" visibility="public">
+        <ancestor name="TObject" declaration="TObject" />
+        <structure name="TOriginalType" name_with_generic="TOriginalType" type="record" visibility="public">
+          <description><abstract>TOriginalType abstract description, inside nested class(es).</abstract><detailed> More and more description.</detailed></description>
+          <variable name="x" declaration="x: integer " visibility="public">
+          </variable>
+          <variable name="y" declaration="y: integer " visibility="public">
+          </variable>
+        </structure>
+      </structure>
+    </structure>
   </structure>
 </unit>

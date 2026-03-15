@@ -78,6 +78,62 @@
 </object>
 </ul>
 </ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass">
+<param name="Local" value="ok_type_aliases.TMyClass.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Nested Classes and Records">
+<param name="Local" value="ok_type_aliases.TMyClass.html#@NestedCRs">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyNestedClass">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Nested Classes and Records">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.html#@NestedCRs">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TAnotherNestedClass">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Nested Classes and Records">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.html#@NestedCRs">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TOriginalType">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Fields">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType.html#@Fields">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="x">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType.html#x">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="y">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType.html#y">
+</object>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Types">
@@ -108,6 +164,14 @@
 <param name="Name" value="TStrongAliasType3">
 <param name="Local" value="ok_type_aliases.html#TStrongAliasType3">
 </object>
+<li><object type="text/sitemap">
+<param name="Name" value="TWeakAliasTypeVeryNested">
+<param name="Local" value="ok_type_aliases.html#TWeakAliasTypeVeryNested">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TStrongAliasTypeVeryNested">
+<param name="Local" value="ok_type_aliases.html#TStrongAliasTypeVeryNested">
+</object>
 </ul>
 </ul>
 </ul>
@@ -120,6 +184,62 @@
 <param name="Local" value="AllClasses.html">
 </object>
 <ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass">
+<param name="Local" value="ok_type_aliases.TMyClass.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Nested Classes and Records">
+<param name="Local" value="ok_type_aliases.TMyClass.html#@NestedCRs">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyNestedClass">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Nested Classes and Records">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.html#@NestedCRs">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TAnotherNestedClass">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Nested Classes and Records">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.html#@NestedCRs">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TOriginalType">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Fields">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType.html#@Fields">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="x">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType.html#x">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="y">
+<param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType.html#y">
+</object>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
 <li><object type="text/sitemap">
 <param name="Name" value="TOriginalType">
 <param name="Local" value="ok_type_aliases.TOriginalType.html">

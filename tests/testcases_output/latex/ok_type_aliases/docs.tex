@@ -85,9 +85,10 @@
 \index{ok{\_}type{\_}aliases}
 \section{Overview}
 \begin{description}
-\item[\texttt{\begin{ttfamily}TOriginalType\end{ttfamily} Record}]My original type abstract description
-\item[\texttt{\begin{ttfamily}TOriginalType2\end{ttfamily} Record}]My original type abstract description.
-\item[\texttt{\begin{ttfamily}TOriginalType3\end{ttfamily} Record}]My original type abstract description.
+\item[\texttt{\begin{ttfamily}TOriginalType\end{ttfamily} Record}]TOriginalType abstract description
+\item[\texttt{\begin{ttfamily}TOriginalType2\end{ttfamily} Record}]TOriginalType2 abstract description.
+\item[\texttt{\begin{ttfamily}TOriginalType3\end{ttfamily} Record}]TOriginalType3 abstract description.
+\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
 \ifpdf
@@ -98,7 +99,7 @@
 \label{ok_type_aliases.TOriginalType}
 \index{TOriginalType}
 \subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
-My original type abstract description\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+TOriginalType abstract description\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
 \begin{list}{}{
 \settowidth{\tmplength}{\textbf{x}}
 \setlength{\itemindent}{0cm}
@@ -146,7 +147,7 @@ public y: integer \end{ttfamily}
 \label{ok_type_aliases.TOriginalType2}
 \index{TOriginalType2}
 \subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
-My original type abstract description.\hfill\vspace*{1ex}
+TOriginalType2 abstract description.\hfill\vspace*{1ex}
 
  More and more description.\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
 \begin{list}{}{
@@ -196,7 +197,7 @@ public y: integer \end{ttfamily}
 \label{ok_type_aliases.TOriginalType3}
 \index{TOriginalType3}
 \subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
-My original type abstract description.\hfill\vspace*{1ex}
+TOriginalType3 abstract description.\hfill\vspace*{1ex}
 
  More and more description.\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
 \begin{list}{}{
@@ -238,6 +239,16 @@ public y: integer \end{ttfamily}
 
 
 \par  \end{list}
+\ifpdf
+\subsection*{\large{\textbf{TMyClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyClass Class}
+\fi
+\label{ok_type_aliases.TMyClass}
+\index{TMyClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass {$>$} TObject
+%%%%Description
 \section{Types}
 \ifpdf
 \subsection*{\large{\textbf{TWeakAliasType}}\normalsize\hspace{1ex}\hrulefill}
@@ -269,7 +280,7 @@ TWeakAliasType = TOriginalType;\end{ttfamily}
 
 \par
 \item[\textbf{Description}]
-My original type abstract description
+TOriginalType abstract description
 
 \end{list}
 \ifpdf
@@ -302,7 +313,7 @@ TStrongAliasType = type TOriginalType;\end{ttfamily}
 
 \par
 \item[\textbf{Description}]
-My original type abstract description
+TOriginalType abstract description
 
 \end{list}
 \ifpdf
@@ -335,7 +346,7 @@ TWeakAliasType2 = TOriginalType2;\end{ttfamily}
 
 \par
 \item[\textbf{Description}]
-My original type abstract description.\hfill\vspace*{1ex}
+TOriginalType2 abstract description.\hfill\vspace*{1ex}
 
  More and more description.
 
@@ -370,7 +381,7 @@ TStrongAliasType2 = type TOriginalType2;\end{ttfamily}
 
 \par
 \item[\textbf{Description}]
-My original type abstract description.\hfill\vspace*{1ex}
+TOriginalType2 abstract description.\hfill\vspace*{1ex}
 
  More and more description.
 
@@ -443,6 +454,64 @@ TStrongAliasType3 = type TOriginalType3;\end{ttfamily}
 Special strong alias abstract.\hfill\vspace*{1ex}
 
  More and more description.
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TWeakAliasTypeVeryNested}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TWeakAliasTypeVeryNested}
+\fi
+\label{ok_type_aliases-TWeakAliasTypeVeryNested}
+\index{TWeakAliasTypeVeryNested}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TWeakAliasTypeVeryNested = TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TStrongAliasTypeVeryNested}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TStrongAliasTypeVeryNested}
+\fi
+\label{ok_type_aliases-TStrongAliasTypeVeryNested}
+\index{TStrongAliasTypeVeryNested}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TStrongAliasTypeVeryNested = type TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
 
 \end{list}
 \end{document}
