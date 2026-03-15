@@ -52,7 +52,6 @@ contains
   PasDoc_Types in '..\..\component\PasDoc_Types.pas',
   PasDoc_StreamUtils in '..\..\component\PasDoc_StreamUtils.pas',
   PasDoc_StringVector in '..\..\component\PasDoc_StringVector.pas',
-  PasDoc_Hashes in '..\..\component\PasDoc_Hashes.pas',
   PasDoc_Tipue in '..\..\component\tipue\PasDoc_Tipue.pas',
   PasDoc_SortSettings in '..\..\component\PasDoc_SortSettings.pas',
   PasDoc_GenHtmlHelp in '..\..\component\PasDoc_GenHtmlHelp.pas',

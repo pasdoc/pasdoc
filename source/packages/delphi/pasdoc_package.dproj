@@ -117,7 +117,6 @@
         <DCCReference Include="..\..\component\PasDoc_Types.pas"/>
         <DCCReference Include="..\..\component\PasDoc_StreamUtils.pas"/>
         <DCCReference Include="..\..\component\PasDoc_StringVector.pas"/>
-        <DCCReference Include="..\..\component\PasDoc_Hashes.pas"/>
         <DCCReference Include="..\..\component\tipue\PasDoc_Tipue.pas"/>
         <DCCReference Include="..\..\component\PasDoc_SortSettings.pas"/>
         <DCCReference Include="..\..\component\PasDoc_GenHtmlHelp.pas"/>

@@ -45,7 +45,6 @@ uses
   SysUtils, Classes, Contnrs, Generics.Collections, Generics.Defaults,
   PasDoc_Types,
   PasDoc_StringVector,
-  PasDoc_Hashes,
   PasDoc_TagManager,
   PasDoc_Serialize,
   PasDoc_SortSettings,
@@ -1133,10 +1132,12 @@ type
     function BasePath: string; override;
   end;
 
+  TBaseItemDictionary = {$ifdef FPC}specialize{$endif} TDictionary<String, TBaseItem>;
+
   { Container class to store a list of @link(TBaseItem)s. }
   TBaseItems = class({$ifdef FPC}specialize{$endif} TObjectList<TBaseItem>)
   private
-    FHash: TObjectHash;
+    FHash: TBaseItemDictionary;
   protected
     procedure Serialize(const ADestination: TStream); virtual;
     procedure Deserialize(const ASource: TStream); virtual;
@@ -1232,10 +1233,12 @@ type
     procedure SetFullDeclaration(PrefixName: boolean; const Suffix: string);
   end;
 
+  TStringStringDictionary = {$ifdef FPC}specialize{$endif} TDictionary<String, String>;
+
   { Collection of methods. }
   TPasRoutines = class(TPasItems)
   private
-    FShortNameHash: THash;
+    FShortNameHash: TStringStringDictionary;
   protected
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
@@ -2192,13 +2195,12 @@ end;
 constructor TBaseItems.Create(const AOwnsObject: Boolean);
 begin
   inherited Create(AOwnsObject);
-  FHash := TObjectHash.Create;
+  FHash := TBaseItemDictionary.Create;
 end;
 
 destructor TBaseItems.Destroy;
 begin
-  FHash.Free;
-  FHash := nil;
+  FreeAndNil(FHash);
   inherited;
 end;
 
@@ -2207,22 +2209,23 @@ var
   LObj: TBaseItem;
 begin
   LObj := TBaseItem(Items[AIndex]);
-  FHash.Delete(LowerCase(LObj.Signature));
+  FHash.Remove(LowerCase(LObj.Signature));
   inherited Delete(AIndex);
 end;
 
 function TBaseItems.FindListItem(const ASignature: string): TBaseItem;
 begin
-  Result := nil;
-  if Length(ASignature) > 0 then begin
-    result := TPasItem(FHash.Items[LowerCase(ASignature)]);
-  end;
+  if ASignature = '' then
+    Exit(nil);
+
+  if not FHash.TryGetValue(LowerCase(ASignature), Result) then
+    Result := nil;
 end;
 
 procedure TBaseItems.Add(const AObject: TBaseItem);
 begin
   inherited Add(AObject);
-  FHash.Items[LowerCase(AObject.Signature)] := AObject;
+  FHash.AddOrSetValue(LowerCase(AObject.Signature), AObject);
 end;
 
 procedure TBaseItems.InsertItems(const c: TBaseItems);
@@ -2236,11 +2239,12 @@ end;
 
 procedure TBaseItems.Clear;
 begin
-  if Assigned(FHash) then begin
-    // not assigned if destroying
-    FHash.Free;
-    FHash := TObjectHash.Create;
-  end;
+  { This is never called when FHash=nil now.
+    Note that our Destroy calls inherited Destroy, and TObjectList.Destroy
+    calls Clear, but this is non-virtual Clear in ancestor, so it doesn't
+    do anything with FHash. }
+  Assert(FHash <> nil);
+  FHash.Clear;
   inherited;
 end;
 
@@ -2370,26 +2374,32 @@ end;
 
 procedure TPasRoutines.Serialize(const ADestination: TStream);
 var
-  LCount, I : Integer;
-  Key: string;
+  LCount: Integer;
+  Pair: {$ifdef FPC} TStringStringDictionary.TDictionaryPair {$else} TPair<String, String> {$endif};
 begin
   inherited;
   LCount := FShortNameHash.Count;
   ADestination.Write(LCount, SizeOf(LCount));
-  for I := 0 to LCount -1 do begin
-    Key := FShortNameHash.Keys[I];
-    TSerializable.SaveStringToStream(Key, ADestination);
-    TSerializable.SaveStringToStream(FShortNameHash.GetString(Key), ADestination);
+  for Pair in FShortNameHash do
+  begin
+    TSerializable.SaveStringToStream(Pair.Key, ADestination);
+    TSerializable.SaveStringToStream(Pair.Value, ADestination);
   end;
 end;
+
 procedure TPasRoutines.Deserialize(const ASource: TStream);
 var
   LCount, I: Integer;
+  Key, Value: String;
 begin
   inherited;
   ASource.Read(LCount, SizeOf(LCount));
   for I := 0 to LCount - 1 do
-    FShortNameHash.SetString(TSerializable.LoadStringFromStream(ASource), TSerializable.LoadStringFromStream(ASource));
+  begin
+    Key := TSerializable.LoadStringFromStream(ASource);
+    Value := TSerializable.LoadStringFromStream(ASource);
+    FShortNameHash.AddOrSetValue(Key, Value);
+  end;
 end;
 
 procedure TPasRoutines.Add(const AItem: TBaseItem);
@@ -2397,16 +2407,16 @@ var
   Signature: string;
 begin
   Signature := AItem.Signature;
-  FShortNameHash.SetString(LowerCase(AItem.Name), LowerCase(Signature));
+  FShortNameHash.AddOrSetValue(LowerCase(AItem.Name), LowerCase(Signature));
 
   inherited Add(AItem);
-  FHash.Items[LowerCase(Signature)] := AItem;
+  FHash.AddOrSetValue(LowerCase(Signature), AItem);
 end;
 
 constructor TPasRoutines.Create(const AOwnsObject: Boolean);
 begin
   inherited;
-  FShortNameHash := THash.Create;
+  FShortNameHash := TStringStringDictionary.Create;
 end;
 
 destructor TPasRoutines.Destroy;
@@ -2433,8 +2443,8 @@ begin
       without the need to always specify params like @link(Foo(Integer)).
       This makes sense, since most routines are not overloaded and users
       expect that simple @link(Foo) works. }
-    Signature := FShortNameHash.GetString(NormalizedNameOrSignature);
-    if Signature <> '' then
+    if FShortNameHash.TryGetValue(NormalizedNameOrSignature, Signature) and
+       (Signature <> '') then
       Result := TPasRoutine(inherited FindListItem(Signature));
   end;
 end;

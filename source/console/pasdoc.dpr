@@ -45,7 +45,6 @@ uses
   PasDoc_GenLatex in '..\component\PasDoc_GenLatex.pas',
   PasDoc_GenPHP in '..\component\PasDoc_GenPHP.pas',
   PasDoc_GenSimpleXML in '..\component\PasDoc_GenSimpleXML.pas',
-  PasDoc_Hashes in '..\component\PasDoc_Hashes.pas',
   PasDoc_HierarchyTree in '..\component\PasDoc_HierarchyTree.pas',
   PasDoc_Items in '..\component\PasDoc_Items.pas',
   PasDoc_Languages in '..\component\PasDoc_Languages.pas',

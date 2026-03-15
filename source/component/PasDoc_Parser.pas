@@ -36,7 +36,7 @@ unit PasDoc_Parser;
 
 interface
 
-uses SysUtils, Classes, Contnrs, StrUtils,
+uses SysUtils, Classes, Contnrs, StrUtils, Generics.Collections,
   PasDoc_Types,
   PasDoc_Items,
   PasDoc_Scanner,
@@ -75,7 +75,7 @@ type
 
   { A stack of @link(TCioState) objects currently used to parse nested
     classes and records. }
-  TCioStateStack = class(TObjectStack)
+  TCioStateStack = class(Contnrs.TObjectStack)
   public
     { Frees all items including their CIOs and clears the stack }
     procedure Clear;
@@ -583,7 +583,7 @@ implementation
 uses
   {$ifdef FPC_RegExpr} RegExpr, {$endif}
   {$ifdef DELPHI_RegularExpressions} RegularExpressions, {$endif}
-  PasDoc_Utils, PasDoc_Hashes;
+  PasDoc_Utils;
 
 { Extend full Pascal declaration of something by NextToken.
   Makes sure to delimit by space if necessary. }
@@ -1798,6 +1798,9 @@ begin
 end;
 
 procedure TParser.ParseImplementationSection(const U: TPasUnit);
+type
+  { Map method name -> count. }
+  TMethodCountsDictionary = {$ifdef FPC}specialize{$endif} TDictionary<String, Integer>;
 
 var
   // Collector of all ignored items that won't go to `U`
@@ -1997,11 +2000,13 @@ var
   end;
 
   { Read routine header and merge its description with existing item. }
-  procedure HandleRoutine(U: TPasUnit; RoutineType: TRoutineType; IsGeneric: String; MethodCounts: THash = nil;
+  procedure HandleRoutine(U: TPasUnit; RoutineType: TRoutineType;
+    IsGeneric: String;
+    const MethodCounts: TMethodCountsDictionary = nil;
     const ClassKeyWordString: string = '');
   var
     M, ExistingRoutine: TPasRoutine;
-    Count: NativeUInt;
+    Count: Integer;
   begin
     ParseRoutine(M, ClassKeyWordString, RoutineTypeToString(RoutineType), RoutineType,
       GetLastComment, True, True, IsGeneric);
@@ -2014,11 +2019,11 @@ var
     // assume Count is 1.
     if MethodCounts <> nil then
     begin
-      Count := NativeUInt(MethodCounts.GetObject(M.Name));
+      if not MethodCounts.TryGetValue(M.Name, Count) then
+        Count := 0;
       Inc(Count);
-      MethodCounts.SetObject(M.Name, Pointer(Count));
-    end
-    else
+      MethodCounts.AddOrSetValue(M.Name, Count);
+    end else
       Count := 1;
 
     ExistingRoutine := FindExistingRoutine(U, M.Name, Count - 1);
@@ -2038,7 +2043,7 @@ var
 var
   t, t2: TToken;
   PropertyParsed: TPasProperty;
-  MethodCounts: THash;
+  MethodCounts: TMethodCountsDictionary;
 begin
   { Parsing impl section clears the comment otherwise comment before "implementation"
     keyword would descend to first item of impl section }
@@ -2049,7 +2054,7 @@ begin
   DoMessage(4, pmtInformation, 'Entering implementation section of unit %s',[U.Name]);
 
   AttributeIsPossible := False;
-  MethodCounts := THash.Create; // "[method name]=>count" hash map
+  MethodCounts := TMethodCountsDictionary.Create;
   { We can't immediately dispose parsed items because we've got to handle back
     comments. So we create dummy container that will gather all ignored items. }
   DummyUnit := TPasUnit.Create;

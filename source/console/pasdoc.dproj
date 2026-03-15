@@ -220,7 +220,6 @@
         <DCCReference Include="..\component\PasDoc_GenLatex.pas"/>
         <DCCReference Include="..\component\PasDoc_GenPHP.pas"/>
         <DCCReference Include="..\component\PasDoc_GenSimpleXML.pas"/>
-        <DCCReference Include="..\component\PasDoc_Hashes.pas"/>
         <DCCReference Include="..\component\PasDoc_HierarchyTree.pas"/>
         <DCCReference Include="..\component\PasDoc_Items.pas"/>
         <DCCReference Include="..\component\PasDoc_Languages.pas"/>

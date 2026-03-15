@@ -36,10 +36,10 @@
     </CompilerOptions>
     <Description Value="PasDoc generates documentation for Pascal code. It can use descriptions from units interface or external files. It supports a number of tags to format the output. Can generate documentation in HTML, LaTeX and other formats. See https://pasdoc.github.io/
 "/>
-    <License Value="Hashes unit licensed on GNU LGPL version >= 2. Rest of PasDoc on GNU General Public License version 2.
+    <License Value="GNU General Public License (version 2 or later).
 "/>
     <Version Minor="16"/>
-    <Files Count="28">
+    <Files Count="27">
       <Item1>
         <Filename Value="../../component/PasDoc_Aspell.pas"/>
         <AddToUsesPkgSection Value="False"/>
@@ -70,10 +70,6 @@
         <Filename Value="../../component/PasDoc_GenSimpleXML.pas"/>
         <UnitName Value="PasDoc_GenSimpleXML"/>
       </Item7>
-      <Item8>
-        <Filename Value="../../component/PasDoc_Hashes.pas"/>
-        <UnitName Value="PasDoc_Hashes"/>
-      </Item8>
       <Item9>
         <Filename Value="../../component/PasDoc_HierarchyTree.pas"/>
         <UnitName Value="PasDoc_HierarchyTree"/>
@@ -149,10 +145,10 @@
         <Filename Value="../../component/PasDoc_Versions.pas"/>
         <UnitName Value="PasDoc_Versions"/>
       </Item27>
-      <Item28>
+      <Item8>
         <Filename Value="../../component/tipue/PasDoc_Tipue.pas"/>
         <UnitName Value="PasDoc_Tipue"/>
-      </Item28>
+      </Item8>
       <Item12>
         <Filename Value="../../component/PasDoc_GenPHP.pas"/>
         <UnitName Value="PasDoc_GenPHP"/>

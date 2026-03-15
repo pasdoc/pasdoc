@@ -118,11 +118,17 @@ FPC_INCLUDE_DIRS := $(foreach units,$(INCLUDE_DIRS),-Fi$(units))
 # Using below -vm6058 to avoid this:
 #
 #   generics.collections.pas(1186,20) Note: Call to subroutine "function TEnumerable<PasDoc_Items.TBaseItem>.GetEnumerator:TEnumerator$1<PASDOC_ITEMS.TBaseItem>;" marked as inline is not inlined
+#
+# Using -vm4046 to avoid this:
+#
+#   generics.dictionaries.inc(191,92) Warning: (4046) Constructing a class "TCustomDictionaryEnumerator$4$crc858EA857" with abstract method "DoMoveNext"
+#
+# Tip: Add -vq to see FPC message numbers, to know which -vmXXX to use.
 
 FPC_COMMON_FLAGS := -FE$(BINDIR) -FU$(OUTDIR) @pasdoc-fpc.cfg \
 	$(FPC_UNIT_DIRS) $(FPC_INCLUDE_DIRS) \
 	-T$(FPC_OS) -P$(FPC_CPU) \
-	-vm5071 -vm6058
+	-vm5071 -vm6058 -vm4046
 
 FPC_DEBUG_FLAGS := $(FPC_COMMON_FLAGS)
 ifdef CHECK_MEM_LEAK
