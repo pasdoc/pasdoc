@@ -107,5 +107,6 @@
     {trNested} 'Anidat', //'nested',
     {trAttributes} 'Atributs', //'Attributes',
     {trSourcePosition} strToDo, //'Source: %s (line %d).',
+    {trShowAdditionalMembers} strToDo, //'Show Additional Members',
     ''  //dummy
   );

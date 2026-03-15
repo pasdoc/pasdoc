@@ -107,5 +107,6 @@ RTransTable = (
     {trNested} 'zagnieżdżone', //'nested',
     {trAttributes} 'Atrybuty', //'Attributes',
     {trSourcePosition} strToDo, //'Source: %s (line %d).',
+    {trShowAdditionalMembers} strToDo, //'Show Additional Members',
     ''  //dummy
   );

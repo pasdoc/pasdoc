@@ -107,5 +107,6 @@
     {trNested} strToDo, //'nested',
     {trAttributes} 'Atributos', //'Attributes',
     {trSourcePosition} strToDo, //'Source: %s (line %d).',
+    {trShowAdditionalMembers} strToDo, //'Show Additional Members',
     ''  //dummy
   );

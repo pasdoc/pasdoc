@@ -120,5 +120,6 @@ RTransTable = (
     {trNested} strToDo, //'nested',
     {trAttributes} 'Atributy',
     {trSourcePosition} strToDo, //'Source: %s (line %d).',
+    {trShowAdditionalMembers} strToDo, //'Show Additional Members',
     '' //dummy
   );

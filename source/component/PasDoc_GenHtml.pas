@@ -871,7 +871,7 @@ begin
     begin
       WriteDirectLine('<div class="visibility-toggles">');
       WriteDirectLine('<span class="visibility-toggles-label">' +
-        ConvertString(FLanguage.Translation[trVisibility]) + ':</span>');
+        ConvertString(FLanguage.Translation[trShowAdditionalMembers]) + ':</span>');
       for Vis := Low(TVisibility) to High(TVisibility) do
         if Vis in ToggleVisibilities then
           WriteDirectLine(

@@ -238,6 +238,7 @@ type
   //add more here
     trAttributes,
     trSourcePosition,
+    trShowAdditionalMembers,
     trDummy
   );
 
