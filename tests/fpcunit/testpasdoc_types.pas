@@ -32,6 +32,7 @@ type
   TTestPasDocTypes = class(TTestCase)
   published
     procedure TestSplitNameParts;
+    procedure TestStripNamePart;
   end;
 
 implementation
@@ -50,6 +51,38 @@ begin
   AssertEquals('TMyNestedClass', NameParts[2]);
   AssertEquals('TAnotherNestedClass', NameParts[3]);
   AssertEquals('TOriginalType', NameParts[4]);
+end;
+
+procedure TTestPasDocTypes.TestStripNamePart;
+var
+  NameParts, NewNameParts: TNameParts;
+begin
+  AssertTrue(SplitNameParts(
+    'MyUnit.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType', NameParts));
+
+  NewNameParts := StripNamePart(NameParts);
+  AssertEquals(4, Length(NewNameParts));
+  AssertEquals('TMyClass', NewNameParts[0]);
+  AssertEquals('TMyNestedClass', NewNameParts[1]);
+  AssertEquals('TAnotherNestedClass', NewNameParts[2]);
+  AssertEquals('TOriginalType', NewNameParts[3]);
+
+  NewNameParts := StripNamePart(NewNameParts);
+  AssertEquals(3, Length(NewNameParts));
+  AssertEquals('TMyNestedClass', NewNameParts[0]);
+  AssertEquals('TAnotherNestedClass', NewNameParts[1]);
+  AssertEquals('TOriginalType', NewNameParts[2]);
+
+  NewNameParts := StripNamePart(NewNameParts);
+  AssertEquals(2, Length(NewNameParts));
+  AssertEquals('TAnotherNestedClass', NewNameParts[0]);
+  AssertEquals('TOriginalType', NewNameParts[1]);
+
+  NewNameParts := StripNamePart(NewNameParts);
+  AssertEquals(1, Length(NewNameParts));
+  AssertEquals('TOriginalType', NewNameParts[0]);
+
+  // NewNameParts := StripNamePart(NewNameParts); // not allowed to call StripNamePart when only 1 part remains
 end;
 
 initialization

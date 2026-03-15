@@ -1477,14 +1477,6 @@ var
         while SCharIs(Description, OffsetEnd, NonFirstIdentChar) do
           Inc(OffsetEnd);
 
-        if Length(QualifiedIdentifier) = MaxNameParts then
-        begin
-          { I can't add new item to QualifiedIdentifier.
-            So Result is false. }
-          Result := false;
-          Exit;
-        end;
-
         { Append next part to QualifiedIdentifier }
         SetLength(QualifiedIdentifier, Length(QualifiedIdentifier) + 1);
         QualifiedIdentifier[Length(QualifiedIdentifier) - 1] :=

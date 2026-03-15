@@ -224,7 +224,7 @@ type
       You can override it to add more handlers. }
     procedure RegisterTags(TagManager: TTagManager); virtual;
 
-    { Search for an item called ItemName @italic(inside this Pascal item).
+    { Search for an item with name NameParts @italic(inside this Pascal item).
       For units, it searches for items declared
       @italic(inside this unit) (like a procedure, or a class in this unit).
       For classes it searches for items declared @italic(within this class)
@@ -232,18 +232,12 @@ type
       For an enumerated type, it searches for members of this enumerated type.
 
       All normal rules of ObjectPascal scope apply, which means that
-      e.g. if this item is a unit, @name searches for a class named
-      ItemName but it @italic(doesn't) search for a method named ItemName
-      inside some class of this unit. Just like in ObjectPascal
-      the scope of identifiers declared within the class always
-      stays within the class. Of course, in ObjectPascal you can
-      qualify a method name with a class name, and you can also
-      do such qualified links in pasdoc, but this is not handled
-      by this routine (see @link(FindName) instead).
+      e.g. classes have their separate namespace. When searching for Foo
+      from the unit level, we do not "look into" class namespaces.
 
       Returns nil if not found.
 
-      Note that it never compares ItemName with Self.Name.
+      Note that it never compares NameParts with Self.Name.
       You may want to check this yourself if you want.
 
       Note that for TPasItem descendants, it always returns
@@ -253,12 +247,12 @@ type
 
       Implementation in this class always returns nil.
       Override as necessary. }
-    function FindItem(const ItemName: string): TBaseItem; virtual;
+    function FindItem(const NameParts: TNameParts): TBaseItem; virtual;
 
     { This is just like @link(FindItem), but in case of classes
       or such it should also search within ancestors.
       In this class, the default implementation just calls FindItem. }
-    function FindItemMaybeInAncestors(const ItemName: string):
+    function FindItemMaybeInAncestors(const NameParts: TNameParts):
       TBaseItem; virtual;
 
     { Do all you can to find link specified by NameParts.
@@ -686,7 +680,7 @@ type
     procedure RegisterTags(TagManager: TTagManager); override;
 
     { Searches for a member of this enumerated type. }
-    function FindItem(const ItemName: string): TBaseItem; override;
+    function FindItem(const NameParts: TNameParts): TBaseItem; override;
 
     destructor Destroy; override;
     constructor Create; override;
@@ -843,19 +837,18 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    { If this class (or interface or object) contains a field, method or
-      property with the name of ItemName, the corresponding item pointer is
-      returned. }
-    function FindItem(const ItemName: string): TBaseItem; override;
+    { If this class (or interface or object) contains a member with the given name,
+      return it. }
+    function FindItem(const NameParts: TNameParts): TBaseItem; override;
 
-    function FindItemMaybeInAncestors(const ItemName: string):
+    function FindItemMaybeInAncestors(const NameParts: TNameParts):
       TBaseItem; override;
 
     { This searches for item (field, method or property) defined
       in ancestor of this cio. I.e. searches within the FirstAncestor,
       then within FirstAncestor.FirstAncestor, and so on.
       Returns nil if not found. }
-    function FindItemInAncestors(const ItemName: string): TPasItem;
+    function FindItemInAncestors(const NameParts: TNameParts): TPasItem;
 
     procedure Sort(const SortSettings: TSortSettings); override;
 
@@ -1002,7 +995,7 @@ type
     property ShortTitle: string read FShortTitle write FShortTitle;
     property SourceFileName: string read FSourceFilename write FSourceFilename;
     property Title: string read FTitle write FTitle;
-    function FindItem(const ItemName: string): TBaseItem; override;
+    function FindItem(const NameParts: TNameParts): TBaseItem; override;
     procedure AddAnchor(const AnchorItem: TAnchorItem); overload;
 
     { If item with Name (case ignored) already exists, this raises
@@ -1068,9 +1061,11 @@ type
     procedure AddConstant(const i: TPasItem);
     procedure AddType(const i: TPasItem);
     procedure AddVariable(const i: TPasItem);
-    function FindInsideSomeClass(const AClassName, ItemInsideClass: string): TPasItem;
+    { Find item inside a class. Looks first for class named NameParts[0].
+      Guarantee we have Length(NameParts) >= 2. }
+    function FindInsideSomeClass(const NameParts: TNameParts): TPasItem;
     function FindInsideSomeEnum(const EnumName, EnumMember: string): TPasItem;
-    function FindItem(const ItemName: string): TBaseItem; override;
+    function FindItem(const NameParts: TNameParts): TBaseItem; override;
 
     procedure Sort(const SortSettings: TSortSettings); override;
   public
@@ -1411,15 +1406,15 @@ begin
   inherited;
 end;
 
-function TBaseItem.FindItem(const ItemName: string): TBaseItem;
+function TBaseItem.FindItem(const NameParts: TNameParts): TBaseItem;
 begin
   Result := nil;
 end;
 
-function TBaseItem.FindItemMaybeInAncestors(const ItemName: string):
+function TBaseItem.FindItemMaybeInAncestors(const NameParts: TNameParts):
   TBaseItem;
 begin
-  Result := FindItem(ItemName);
+  Result := FindItem(NameParts);
 end;
 
 function TBaseItem.FindName(const NameParts: TNameParts): TBaseItem;
@@ -1651,66 +1646,60 @@ end;
 
 function TPasItem.FindNameWithinUnit(const NameParts: TNameParts): TBaseItem;
 var
-  p: TBaseItem;
   LNameParts0: string;
 begin
   Result := nil;
+  Assert(Length(NameParts) >= 1);
   LNameParts0 := LowerCase(NameParts[0]);
-  case Length(NameParts) of
-    1: begin
-         Result := FindItemMaybeInAncestors(NameParts[0]);
-         if Result <> nil then Exit;
 
-         if Assigned(MyObject) then begin { this item is a method or field }
-           p := MyObject.FindItemMaybeInAncestors(NameParts[0]);
-           if Assigned(p) then begin
-             Result := p;
-             Exit;
-           end;
-         end;
+  // maybe we are class, and we link to member in ancestor class
+  Result := FindItemMaybeInAncestors(NameParts);
+  if Result <> nil then Exit;
 
-         if Assigned(MyUnit) then begin
-           p := MyUnit.FindItem(NameParts[0]);
-           if Assigned(p) then begin
-             Result := p;
-             Exit;
-           end;
-         end;
+  // maybe we are class member, and we link to member in ancestor class
+  if Assigned(MyObject) then
+  begin
+    Result := MyObject.FindItemMaybeInAncestors(NameParts);
+    if Result <> nil then Exit;
+  end;
 
-         if Assigned(MyUnit) and (LNameParts0 = LowerCase(MyUnit.Name)) then begin
-           Result := MyUnit;
-           Exit;
-         end;
-       end;
+  // maybe we link to something inside the same unit
+  if Assigned(MyUnit) then
+  begin
+    Result := MyUnit.FindItem(NameParts);
+    if Result <> nil then Exit;
+  end;
 
-    2: begin
-        if Assigned(MyObject) then begin
-          if LowerCase(MyObject.Name) = LNameParts0 then begin
-            p := MyObject.FindItem(NameParts[1]);
-            if Assigned(p) then begin
-              Result := p;
-              Exit;
-            end;
-          end;
-        end;
+  // maybe we link to unit that contains us
+  if (Length(NameParts) = 1) and
+     Assigned(MyUnit) and
+     (LNameParts0 = LowerCase(MyUnit.Name)) then
+  begin
+    Result := MyUnit;
+    Exit;
+  end;
 
-        if Assigned(MyUnit) then
-        begin
-          // To find links inside classes
-          p := MyUnit.FindInsideSomeClass(NameParts[0], NameParts[1]);
-          if Assigned(p) then begin
-            Result := p;
-            Exit;
-          end;
+  // maybe we are class member, and we link to member in current class, qualified with current class name
+  if (Length(NameParts) >= 2) and
+     Assigned(MyObject) and
+     (LowerCase(MyObject.Name) = LNameParts0) then
+  begin
+    Result := MyObject.FindItem(StripNamePart(NameParts));
+    if Result <> nil then Exit;
+  end;
 
-          // To find links inside enums
-          p := MyUnit.FindInsideSomeEnum(NameParts[0], NameParts[1]);
-          if Assigned(p) then begin
-            Result := p;
-            Exit;
-          end;
-        end;
-      end;
+  if Assigned(MyUnit) then
+  begin
+    // To find links inside classes
+    Result := MyUnit.FindInsideSomeClass(NameParts);
+    if Result <> nil then Exit;
+
+    if Length(NameParts) = 2 then
+    begin
+      // To find links inside enums
+      Result := MyUnit.FindInsideSomeEnum(NameParts[0], NameParts[1]);
+      if Result <> nil then Exit;
+    end;
   end;
 end;
 
@@ -1854,7 +1843,7 @@ end;
 function TPasItem.InheritedItem: TPasItem;
 begin
   if Assigned(MyObject) then
-    Result := MyObject.FindItemInAncestors(Name)
+    Result := MyObject.FindItemInAncestors([Name])
   else
     Result := nil;
 end;
@@ -1895,7 +1884,7 @@ begin
         because we want to pick up descriptions from any interfaces. }
       if not OverrideChainEnded then
       begin
-        ThisItemInAncestor := CurrentClassAncestor.FindItem(Signature) as TPasItem;
+        ThisItemInAncestor := CurrentClassAncestor.FindItem([Signature]) as TPasItem;
 
         { Check if the main ancestor has a description }
         if Assigned(ThisItemInAncestor) then
@@ -1924,7 +1913,7 @@ begin
         InterfaceAncestor := TPasCio(InterfaceAncestorItem);
         if Assigned(InterfaceAncestor) then
         begin
-          ThisItemInAncestor := InterfaceAncestor.FindItem(Self.Signature) as TPasItem;
+          ThisItemInAncestor := InterfaceAncestor.FindItem([Self.Signature]) as TPasItem;
           if Assigned(ThisItemInAncestor) and ThisItemInAncestor.HasDescription then
             AddAncestorDescription(Result, ThisItemInAncestor);
         end;
@@ -2138,9 +2127,12 @@ begin
       '@value tag specifies unknown value "%s"', [ValueName]);
 end;
 
-function TPasEnum.FindItem(const ItemName: string): TBaseItem;
+function TPasEnum.FindItem(const NameParts: TNameParts): TBaseItem;
 begin
-  Result := FMembers.FindListItem(ItemName);
+  if Length(NameParts) <> 1 then
+    Result := nil
+  else
+    Result := FMembers.FindListItem(NameParts[0]);
 end;
 
 { TPasFieldVariable ---------------------------------------------------------- }
@@ -2531,42 +2523,63 @@ begin
   SaveStringToStream(FOutputFileName, ADestination); }
 end;
 
-function TPasCio.FindItem(const ItemName: string): TBaseItem;
+function TPasCio.FindItem(const NameParts: TNameParts): TBaseItem;
+var
+  NestedCio: TPasCio;
 begin
-  if Fields <> nil then begin
-    Result := Fields.FindListItem(ItemName);
-    if Result <> nil then Exit;
+  Assert(Length(NameParts) >= 1);
+
+  if Length(NameParts) = 1 then
+  begin
+    if Fields <> nil then
+    begin
+      Result := Fields.FindListItem(NameParts[0]);
+      if Result <> nil then Exit;
+    end;
+
+    if Methods <> nil then
+    begin
+      Result := Methods.FindListItem(NameParts[0]);
+      if Result <> nil then Exit;
+    end;
+
+    if Properties <> nil then
+    begin
+      Result := Properties.FindListItem(NameParts[0]);
+      if Result <> nil then Exit;
+    end;
+
+    if FTypes <> nil then
+    begin
+      Result := FTypes.FindListItem(NameParts[0]);
+      if Result <> nil then Exit;
+    end;
+
+    if FCios <> nil then
+    begin
+      Result := FCios.FindListItem(NameParts[0]);
+      if Result <> nil then Exit;
+    end;
+  end else
+  begin
+    // try to resolve within nested CIO
+    NestedCio := FCios.FindListItem(NameParts[0]) as TPasCio;
+    if Assigned(NestedCio) then
+    begin
+      Result := NestedCio.FindItem(StripNamePart(NameParts));
+      if Assigned(Result) then Exit;
+    end;
   end;
 
-  if Methods <> nil then begin
-    Result := Methods.FindListItem(ItemName);
-    if Result <> nil then Exit;
-  end;
-
-  if Properties <> nil then begin
-    Result := Properties.FindListItem(ItemName);
-    if Result <> nil then Exit;
-  end;
-
-  if FTypes <> nil then begin
-    Result := FTypes.FindListItem(ItemName);
-    if Result <> nil then Exit;
-  end;
-
-  if FCios <> nil then begin
-    Result := FCios.FindListItem(ItemName);
-    if Result <> nil then Exit;
-  end;
-
-  Result := inherited FindItem(ItemName);
+  Result := inherited FindItem(NameParts);
 end;
 
-function TPasCio.FindItemMaybeInAncestors(const ItemName: string):
+function TPasCio.FindItemMaybeInAncestors(const NameParts: TNameParts):
   TBaseItem;
 begin
-  Result := inherited FindItemMaybeInAncestors(ItemName);
+  Result := inherited FindItemMaybeInAncestors(NameParts);
   if Result = nil then
-    Result := FindItemInAncestors(ItemName);
+    Result := FindItemInAncestors(NameParts);
 end;
 
 procedure TPasCio.Sort(const SortSettings: TSortSettings);
@@ -2631,7 +2644,7 @@ begin
   MemberDesc := TagParameter;
   MemberName := ExtractFirstWord(MemberDesc);
 
-  Member := FindItem(MemberName);
+  Member := FindItem([MemberName]);
   if Assigned(Member) then
   begin
     { Only replace the description if one wasn't specified for it
@@ -2675,7 +2688,7 @@ begin
     Result := '';
 end;
 
-function TPasCio.FindItemInAncestors(const ItemName: string): TPasItem;
+function TPasCio.FindItemInAncestors(const NameParts: TNameParts): TPasItem;
 var Ancestor: TBaseItem;
 begin
   Ancestor := FirstAncestor;
@@ -2684,7 +2697,7 @@ begin
   begin
     { TPasCio.FindItem always returns some TPasItem, so the cast below
       of Ancestor.FindItem to TPasItem should always be OK. }
-    Result := Ancestor.FindItem(ItemName) as TPasItem;
+    Result := Ancestor.FindItem(NameParts) as TPasItem;
     Ancestor := TPasCio(Ancestor).FirstAncestor;
   end;
 end;
@@ -2770,16 +2783,16 @@ begin
   Variables.Add(i);
 end;
 
-function TPasUnit.FindInsideSomeClass(const AClassName, ItemInsideClass: string): TPasItem;
+function TPasUnit.FindInsideSomeClass(const NameParts: TNameParts): TPasItem;
 var
   po: TPasCio;
 begin
   Result := nil;
   if CIOs = nil then Exit;
 
-  po := TPasCio(CIOs.FindListItem(AClassName));
+  po := TPasCio(CIOs.FindListItem(NameParts[0]));
   if Assigned(po) then
-    Result := TPasItem(po.FindItem(ItemInsideClass));
+    Result := TPasItem(po.FindItem(StripNamePart(NameParts)));
 end;
 
 function TPasUnit.FindInsideSomeEnum(const EnumName, EnumMember: string): TPasItem;
@@ -2791,37 +2804,59 @@ begin
 
   TypeItem := Types.FindListItem(EnumName);
   if Assigned(TypeItem) and (TypeItem is TPasEnum) then
-    Result := TPasItem(TPasEnum(TypeItem).FindItem(EnumMember));
+    Result := TPasItem(TPasEnum(TypeItem).FindItem([EnumMember]));
 end;
 
-function TPasUnit.FindItem(const ItemName: string): TBaseItem;
+function TPasUnit.FindItem(const NameParts: TNameParts): TBaseItem;
+var
+  CioInUnit: TPasCio;
 begin
-  if Constants <> nil then begin
-    Result := Constants.FindListItem(ItemName);
-    if Result <> nil then Exit;
+  Assert(Length(NameParts) >= 1);
+  if Length(NameParts) = 1 then
+  begin
+    if Constants <> nil then
+    begin
+      Result := Constants.FindListItem(NameParts[0]);
+      if Result <> nil then Exit;
+    end;
+
+    if Types <> nil then
+    begin
+      Result := Types.FindListItem(NameParts[0]);
+      if Result <> nil then Exit;
+    end;
+
+    if Variables <> nil then
+    begin
+      Result := Variables.FindListItem(NameParts[0]);
+      if Result <> nil then Exit;
+    end;
+
+    if FuncsProcs <> nil then
+    begin
+      Result := FuncsProcs.FindListItem(NameParts[0]);
+      if Result <> nil then Exit;
+    end;
+
+    if CIOs <> nil then
+    begin
+      Result := CIOs.FindListItem(NameParts[0]);
+      if Result <> nil then Exit;
+    end;
+  end else
+  begin
+    if CIOs <> nil then
+    begin
+      CioInUnit := CIOs.FindListItem(NameParts[0]) as TPasCio;
+      if CioInUnit <> nil then
+      begin
+        Result := CioInUnit.FindItem(StripNamePart(NameParts));
+        if Result <> nil then Exit;
+      end;
+    end;
   end;
 
-  if Types <> nil then begin
-    Result := Types.FindListItem(ItemName);
-    if Result <> nil then Exit;
-  end;
-
-  if Variables <> nil then begin
-    Result := Variables.FindListItem(ItemName);
-    if Result <> nil then Exit;
-  end;
-
-  if FuncsProcs <> nil then begin
-    Result := FuncsProcs.FindListItem(ItemName);
-    if Result <> nil then Exit;
-  end;
-
-  if CIOs <> nil then begin
-    Result := CIOs.FindListItem(ItemName);
-    if Result <> nil then Exit;
-  end;
-
-  Result := inherited FindItem(ItemName);
+  Result := inherited FindItem(NameParts);
 end;
 
 function TPasUnit.FileNewerThanCache(const FileName: string): boolean;
@@ -2911,7 +2946,7 @@ begin
     for I := 0 to Count - 1 do
       if PasItemAt[I] is TPasEnum then
       begin
-        Result := TPasEnum(PasItemAt[I]).FindItem(AName) as TPasItem;
+        Result := TPasEnum(PasItemAt[I]).FindItem([AName]) as TPasItem;
         if Result <> nil then
           Exit;
       end;
@@ -3044,7 +3079,7 @@ end;
 function TPasRoutine.InheritedItem: TPasItem;
 begin
   if Assigned(MyObject) and (SD_OVERRIDE in Directives) then
-    Result := MyObject.FindItemInAncestors(Name)
+    Result := MyObject.FindItemInAncestors([Name])
   else
     Result := nil;
 end;
@@ -3098,7 +3133,7 @@ end;
 function TPasProperty.InheritedItem: TPasItem;
 begin
   if Assigned(MyObject) and (PropType = '') then
-    Result := MyObject.FindItemInAncestors(Name)
+    Result := MyObject.FindItemInAncestors([Name])
   else
     Result := nil;
 end;
@@ -3117,7 +3152,7 @@ end;
 
 function TExternalItem.AddAnchor(const AnchorName: string): TAnchorItem;
 begin
-  if FindItem(AnchorName) = nil then
+  if FindItem([AnchorName]) = nil then
   begin
     Result := TAnchorItem.Create;
     Result.Name := AnchorName;
@@ -3141,12 +3176,16 @@ begin
   inherited;
 end;
 
-function TExternalItem.FindItem(const ItemName: string): TBaseItem;
+function TExternalItem.FindItem(const NameParts: TNameParts): TBaseItem;
 begin
   result := nil;
-  if FAnchors <> nil then begin
-    Result := FAnchors.FindListItem(ItemName);
-    if Result <> nil then Exit;
+  if Length(NameParts) = 1 then
+  begin
+    if FAnchors <> nil then
+    begin
+      Result := FAnchors.FindListItem(NameParts[0]);
+      if Result <> nil then Exit;
+    end;
   end;
 end;
 

@@ -52,12 +52,21 @@ type
   { Dynamic array of String. }
   TStringArray = TStringDynArray;
 
-  { Qualified name of some item.
+  { Qualified name of a Pascal item.
 
     User supplies such name by separating each part with dot,
-    e.g. 'UnitName.ClassName.ProcedureName', then @link(SplitNameParts)
+    e.g. 'UnitName.ClassName.MethodName', then @link(SplitNameParts)
     converts it to TNameParts like
-    ['UnitName', 'ClassName', 'ProcedureName'].
+    ['UnitName', 'ClassName', 'MethodName'].
+
+    Note that in case of unit names with dots, the item on this list
+    may also contain a dot inside, if it's determined to be a name of unit with dot.
+    Like this: ['Unit.Name.With.Dot', 'ClassName', 'MethodName'].
+    We have special code to do this in TDocGenerator.FindGlobal .
+
+    The idea is that each string corresponds to some TPasItem.Name.
+
+    Use such list for searching routines, for @link(TPasItem.FindItem) and friends.
 
     This must @italic(always have at least one part).
 
@@ -210,13 +219,15 @@ begin
   end;
 
   NameParts := SplitString(s, '.');
+  Assert(Length(NameParts) >= 1);
   Result := True;
 end;
 
 function StripNamePart(const NameParts: TNameParts): TNameParts;
 begin
   Assert(Length(NameParts) >= 2);
-  Result := Copy(NameParts, 2, Length(NameParts) - 1);
+  // Note that NameParts is indexed from 0
+  Result := Copy(NameParts, 1, Length(NameParts) - 1);
 end;
 
 function IsValidMultipartName(S: string): boolean;

@@ -2481,20 +2481,18 @@ function TDocGenerator.FindGlobal(
   const NameParts: TNameParts): TBaseItem;
 var
   i, UnitNamePartIdx: Integer;
-  Item: TBaseItem;
   U: TPasUnit;
   NewNameParts: TNameParts;
-  FullUnitName: string;
+  FullUnitName, LNewNameParts0: string;
 begin
   Result := nil;
+  Assert(Length(NameParts) >= 1);
 
   if ObjectVectorIsNilOrEmpty(Units) then Exit;
 
   { Units could have multipart names with dots (a-la namespace).
     So we first must check whether NameParts contains multiple parts of a unit name
-    and correct the array accordingly.
-    There's no sense in check if NameParts hold a single item. Similarily we start
-    check starting from two-part name as one-part name is default. }
+    and correct the array accordingly. }
   if Length(NameParts) > 1 then
   begin
     FullUnitName := NameParts[0];
@@ -2507,96 +2505,94 @@ begin
       else
         Break;
     until UnitNamePartIdx >= High(NameParts);
-    { So now we have full unit name and index until which unit name is spread.
-      Construct new nameparts array with unit name glued together. }
+
+    { So now we have full unit name and information how many items
+      were used by unit name (UnitNamePartIdx).
+      Construct NewNameParts with unit name glued together in NewNameParts[0]. }
     if (U <> nil) and (UnitNamePartIdx >= 1) then // Skip simple case of single-part unit name
     begin
       SetLength(NewNameParts, Length(NameParts) - UnitNamePartIdx);
       NewNameParts[0] := FullUnitName;
       for i := 1 to High(NewNameParts) do
         NewNameParts[i] := NameParts[UnitNamePartIdx + i];
-    end
-    else
+    end else
       NewNameParts := NameParts;
-  end
-  else
+  end else
     NewNameParts := NameParts;
 
-  case Length(NewNameParts) of
-    1: begin
-        if (Introduction <> nil) then
+  // above transformation NameParts -> NewNameParts must keep at least 1 part
+  Assert(Length(NewNameParts) >= 1);
+
+  LNewNameParts0 := LowerCase(NewNameParts[0]);
+
+  if Length(NewNameParts) = 1 then
+  begin
+    // is this link to introduction, conclusion or additional file, or to anchor inside?
+    if (Introduction <> nil) then
+    begin
+      if LowerCase(Introduction.Name) = LNewNameParts0 then
+      begin
+        Result := Introduction;
+        Exit;
+      end;
+      Result := Introduction.FindItem(NewNameParts);
+      if Result <> nil then Exit;
+    end;
+
+    if (Conclusion <> nil) then
+    begin
+      if LowerCase(Conclusion.Name) = LNewNameParts0 then
+      begin
+        Result := Conclusion;
+        Exit;
+      end;
+      Result := Conclusion.FindItem(NewNameParts);
+      if Result <> nil then Exit;
+    end;
+
+    if (AdditionalFiles <> nil) and (AdditionalFiles.Count > 0) then
+    begin
+      for i := 0 to AdditionalFiles.Count - 1 do
+      begin
+        if LowerCase(AdditionalFiles[i].Name) = LNewNameParts0 then
         begin
-          if  SameText(Introduction.Name, NewNameParts[0]) then
-          begin
-            Result := Introduction;
-            Exit;
-          end;
-          Result := Introduction.FindItem(NewNameParts[0]);
-          if Result <> nil then Exit;
+          Result := AdditionalFiles[i];
+          Exit;
         end;
+        Result := AdditionalFiles[i].FindItem(NewNameParts);
+        if Result <> nil then Exit;
+      end;
+    end;
 
-        if (Conclusion <> nil) then
-        begin
-          if  SameText(Conclusion.Name, NewNameParts[0]) then
-          begin
-            Result := Conclusion;
-            Exit;
-          end;
-          Result := Conclusion.FindItem(NewNameParts[0]);
-          if Result <> nil then Exit;
-        end;
+    // is this link to unit name?
+    for i := 0 to Units.Count - 1 do
+    begin
+      U := Units.UnitAt[i];
 
-        if (AdditionalFiles <> nil) and (AdditionalFiles.Count > 0) then
-        begin
-          for i := 0 to AdditionalFiles.Count - 1 do
-          begin
-            if  SameText(AdditionalFiles[i].Name, NewNameParts[0]) then
-            begin
-              Result := AdditionalFiles[i];
-              Exit;
-            end;
-            Result := AdditionalFiles[i].FindItem(NewNameParts[0]);
-            if Result <> nil then Exit;
-          end;
-        end;
+      if LowerCase(U.Name) = LNewNameParts0 then
+      begin
+        Result := U;
+        Exit;
+      end;
 
-        for i := 0 to Units.Count - 1 do
-         begin
-           U := Units.UnitAt[i];
+      Result := U.FindItem(NewNameParts);
+      if Result <> nil then Exit;
+    end;
+  end;
 
-           if SameText(U.Name, NewNameParts[0]) then
-           begin
-             Result := U;
-             Exit;
-           end;
+  // link to member inside some CIO, without unit qualifier, like TMyClass.MyMethod?
+  for i := 0 to Units.Count - 1 do
+  begin
+    Result := Units.UnitAt[i].FindInsideSomeClass(NewNameParts);
+    if Result <> nil then Exit;
+  end;
 
-           Result := U.FindItem(NewNameParts[0]);
-           if Result <> nil then Exit;
-         end;
-       end;
-    2: begin
-         { object.field_method_property }
-         for i := 0 to Units.Count - 1 do begin
-           Result := Units.UnitAt[i].FindInsideSomeClass(NewNameParts[0], NewNameParts[1]);
-           if Assigned(Result) then Exit;
-         end;
-
-         { unit.cio_var_const_type }
-         U := TPasUnit(Units.FindListItem(NewNameParts[0]));
-         if Assigned(U) then
-           Result := U.FindItem(NewNameParts[1]);
-       end;
-    3: begin
-         { unit.objectorclassorinterface.fieldormethodorproperty }
-         U := TPasUnit(Units.FindListItem(NewNameParts[0]));
-         if (not Assigned(U)) then Exit;
-         Item := U.FindItem(NewNameParts[1]);
-         if (not Assigned(Item)) then Exit;
-         Item := Item.FindItem(NewNameParts[2]);
-         if (not Assigned(Item)) then Exit;
-         Result := Item;
-         Exit;
-       end;
+  // link to item inside a unit, like MyUnit.MyIdentifier (maybe also to CIO, but qualified by unit name)
+  U := TPasUnit(Units.FindListItem(NewNameParts[0]));
+  if U <> nil then
+  begin
+    Result := U.FindItem(StripNamePart(NewNameParts));
+    if Result <> nil then Exit;
   end;
 end;
 
