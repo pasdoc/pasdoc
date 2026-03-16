@@ -2,7 +2,7 @@
   <type name="SomeType" declaration="SomeType = integer;" visibility="published">
     <description><detailed>SomeType description.</detailed></description>
   </type>
-  <structure name="SomeClass" name_with_generic="SomeClass" type="class" visibility="published">
+  <structure name="SomeClass" visibility="published" name_with_generic="SomeClass" type="class">
     <description><detailed>SomeClass description. program test;
 
 begin

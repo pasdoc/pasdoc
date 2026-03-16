@@ -1,4 +1,4 @@
 <unit name="ok_keyword_function_names">
-  <routine name="On" type="procedure" declaration="procedure On;" visibility="published">
+  <routine name="On" declaration="procedure On;" visibility="published" type="procedure">
   </routine>
 </unit>

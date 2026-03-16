@@ -1,11 +1,11 @@
 <unit name="ok_link_explicite_name">
-  <routine name="MyProc" type="procedure" declaration="procedure MyProc;" visibility="published">
+  <routine name="MyProc" declaration="procedure MyProc;" visibility="published" type="procedure">
     <description><detailed>Some testing proc. Have you seen my method ?</detailed></description>
   </routine>
-  <structure name="TTestingClass" name_with_generic="TTestingClass" type="class" visibility="published">
+  <structure name="TTestingClass" visibility="published" name_with_generic="TTestingClass" type="class">
     <description><detailed>I'm a testing class, oh ! And don't forget to look at my method !</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="MyMethod" type="procedure" declaration="procedure MyMethod;" visibility="public">
+    <routine name="MyMethod" declaration="procedure MyMethod;" visibility="public" type="procedure">
     </routine>
   </structure>
 </unit>

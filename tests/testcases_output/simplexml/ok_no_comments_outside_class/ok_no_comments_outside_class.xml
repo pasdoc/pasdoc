@@ -6,17 +6,17 @@
   </type>
   <type name="TNoDescr3" declaration="TNoDescr3 = byte;" visibility="published">
   </type>
-  <structure name="TEmptyCl" name_with_generic="TEmptyCl" type="class" visibility="published">
+  <structure name="TEmptyCl" visibility="published" name_with_generic="TEmptyCl" type="class">
     <description><detailed>Empty class with a comment inside</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
   </structure>
-  <structure name="TEmptyRec" name_with_generic="TEmptyRec" type="record" visibility="published">
+  <structure name="TEmptyRec" visibility="published" name_with_generic="TEmptyRec" type="record">
     <description><detailed>Empty record with a comment inside</detailed></description>
   </structure>
-  <structure name="TEmptyClWithNested" name_with_generic="TEmptyClWithNested" type="class" visibility="published">
+  <structure name="TEmptyClWithNested" visibility="published" name_with_generic="TEmptyClWithNested" type="class">
     <description><detailed>Empty class with nested empty class with a comment inside</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
-    <structure name="TNestedEmptyCl" name_with_generic="TNestedEmptyCl" type="class" visibility="public">
+    <structure name="TNestedEmptyCl" visibility="public" name_with_generic="TNestedEmptyCl" type="class">
       <ancestor name="TObject" declaration="TObject" />
     </structure>
   </structure>

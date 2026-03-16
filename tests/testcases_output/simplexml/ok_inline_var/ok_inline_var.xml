@@ -1,7 +1,7 @@
 <unit name="ok_inline_var">
-  <routine name="Foo" type="procedure" declaration="procedure Foo;" visibility="published">
+  <routine name="Foo" declaration="procedure Foo;" visibility="published" type="procedure">
   </routine>
-  <routine name="EdgeConsoleLog" type="function" declaration="function EdgeConsoleLog(const sender: ICoreWebView2; const args: ICoreWebView2DevToolsProtocolEventReceivedEventArgs): HResult;" visibility="published">
+  <routine name="EdgeConsoleLog" declaration="function EdgeConsoleLog(const sender: ICoreWebView2; const args: ICoreWebView2DevToolsProtocolEventReceivedEventArgs): HResult;" visibility="published" type="function">
   </routine>
   <variable name="t0" declaration="t0: Byte;" visibility="published">
     <description><detailed>intf var</detailed></description>

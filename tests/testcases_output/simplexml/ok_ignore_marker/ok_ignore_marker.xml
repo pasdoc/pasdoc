@@ -1,5 +1,5 @@
 <unit name="ok_ignore_marker">
-  <routine name="P" type="procedure" declaration="procedure P;" visibility="published">
+  <routine name="P" declaration="procedure P;" visibility="published" type="procedure">
   </routine>
   <constant name="A" declaration="A = 1;" visibility="published">
   </constant>

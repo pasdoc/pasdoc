@@ -1,8 +1,8 @@
 <unit name="ok_sorting">
   <description><detailed>Test unit to test various --sort settings.</detailed></description>
-  <routine name="ZZZProc" type="procedure" declaration="procedure ZZZProc;" visibility="published">
+  <routine name="ZZZProc" declaration="procedure ZZZProc;" visibility="published" type="procedure">
   </routine>
-  <routine name="AAAProc" type="procedure" declaration="procedure AAAProc;" visibility="published">
+  <routine name="AAAProc" declaration="procedure AAAProc;" visibility="published" type="procedure">
   </routine>
   <constant name="ZZZConst" declaration="ZZZConst = 1;" visibility="published">
   </constant>
@@ -16,31 +16,31 @@
   </type>
   <type name="AAAType" declaration="AAAType = Integer;" visibility="published">
   </type>
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
+  <structure name="TMyClass" visibility="published" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="ZZZMethod" type="procedure" declaration="procedure ZZZMethod;" visibility="public">
+    <routine name="ZZZMethod" declaration="procedure ZZZMethod;" visibility="public" type="procedure">
     </routine>
-    <routine name="AAAMethod" type="procedure" declaration="procedure AAAMethod;" visibility="public">
+    <routine name="AAAMethod" declaration="procedure AAAMethod;" visibility="public" type="procedure">
     </routine>
     <variable name="ZZZField" declaration="ZZZField: Integer;" visibility="public">
     </variable>
     <variable name="AAAField" declaration="AAAField: Integer;" visibility="public">
     </variable>
-    <property name="ZZZProp" indexdecl="" type="" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
+    <property name="ZZZProp" declaration="property ZZZProp;" visibility="public" indexdecl="" type="" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
-    <property name="AAAProp" indexdecl="" type="" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
+    <property name="AAAProp" declaration="property AAAProp;" visibility="public" indexdecl="" type="" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
   </structure>
-  <structure name="TMyRecord" name_with_generic="TMyRecord" type="record" visibility="published">
+  <structure name="TMyRecord" visibility="published" name_with_generic="TMyRecord" type="record">
     <variable name="ZZZField" declaration="ZZZField: Integer;" visibility="public">
     </variable>
     <variable name="AAAField" declaration="AAAField: Integer;" visibility="public">
     </variable>
   </structure>
-  <structure name="ZZZClass" name_with_generic="ZZZClass" type="class" visibility="published">
+  <structure name="ZZZClass" visibility="published" name_with_generic="ZZZClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
   </structure>
-  <structure name="AAAClass" name_with_generic="AAAClass" type="class" visibility="published">
+  <structure name="AAAClass" visibility="published" name_with_generic="AAAClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
   </structure>
 </unit>

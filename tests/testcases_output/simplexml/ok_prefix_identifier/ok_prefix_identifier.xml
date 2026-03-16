@@ -7,11 +7,11 @@
 </unorderedlist>
 
 </detailed></description>
-  <structure name="TTest" name_with_generic="TTest" type="class" visibility="published">
+  <structure name="TTest" visibility="published" name_with_generic="TTest" type="class">
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="Create" type="constructor" declaration="class constructor Create;" visibility="public">
+    <routine name="Create" declaration="class constructor Create;" visibility="public" type="constructor">
     </routine>
-    <routine name="end" type="function" declaration="class function end: Integer;" visibility="public">
+    <routine name="end" declaration="class function end: Integer;" visibility="public" type="function">
     </routine>
     <variable name="begin" declaration="class var begin: Integer;" visibility="public">
     </variable>

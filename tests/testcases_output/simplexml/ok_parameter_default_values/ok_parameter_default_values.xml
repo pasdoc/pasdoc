@@ -1,8 +1,8 @@
 <unit name="ok_parameter_default_values">
-  <routine name="Foo" type="procedure" declaration="procedure Foo(A: Integer; B: Integer = 3; C: Integer = 5);" visibility="published">
+  <routine name="Foo" declaration="procedure Foo(A: Integer; B: Integer = 3; C: Integer = 5);" visibility="published" type="procedure">
   </routine>
-  <routine name="Bar" type="procedure" declaration="procedure Bar(A, B: Integer; C: Integer = 3; D: string = '');" visibility="published">
+  <routine name="Bar" declaration="procedure Bar(A, B: Integer; C: Integer = 3; D: string = '');" visibility="published" type="procedure">
   </routine>
-  <routine name="Baz" type="function" declaration="function Baz(A: Boolean = True): string;" visibility="published">
+  <routine name="Baz" declaration="function Baz(A: Boolean = True): string;" visibility="published" type="function">
   </routine>
 </unit>

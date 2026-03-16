@@ -1,4 +1,4 @@
 <unit name="ok_comment_over_uses_clause">
-  <routine name="A" type="procedure" declaration="procedure A;" visibility="published">
+  <routine name="A" declaration="procedure A;" visibility="published" type="procedure">
   </routine>
 </unit>

@@ -1,12 +1,12 @@
 <unit name="ok_deprecated_default">
   <description><detailed>Test parsing property with deprecated directive and default specifier. See https://github.com/pasdoc/pasdoc/issues/138</detailed></description>
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
+  <structure name="TMyClass" visibility="published" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="GetItems" type="function" declaration="function GetItems(const Index: Integer): Byte;" visibility="public">
+    <routine name="GetItems" declaration="function GetItems(const Index: Integer): Byte;" visibility="public" type="function">
     </routine>
-    <routine name="SetItems" type="procedure" declaration="procedure SetItems(const Index: Integer; const Value: Byte);" visibility="public">
+    <routine name="SetItems" declaration="procedure SetItems(const Index: Integer; const Value: Byte);" visibility="public" type="procedure">
     </routine>
-    <property name="Items" indexdecl="[constIndex:Integer]" type="Byte" reader="GetItems" writer="SetItems" default_in_class="True" default_value="" nodefault="False"   stored="" visibility="public" deprecated_note="use instead X, Y fields" deprecated="true">
+    <property name="Items" declaration="property Items [const Index: Integer]: Byte read GetItems write SetItems; default; deprecated 'use instead X, Y fields';" visibility="public" deprecated_note="use instead X, Y fields" deprecated="true" indexdecl="[constIndex:Integer]" type="Byte" reader="GetItems" writer="SetItems" default_in_class="True" default_value="" nodefault="False"   stored="">
     </property>
   </structure>
 </unit>

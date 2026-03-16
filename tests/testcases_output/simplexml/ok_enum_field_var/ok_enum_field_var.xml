@@ -1,7 +1,7 @@
 <unit name="ok_enum_field_var">
   <variable name="ApplicationStatus" declaration="ApplicationStatus: (apInitializing, apReady, apClosing, apDestroying);" visibility="published">
   </variable>
-  <structure name="TServerConnController" name_with_generic="TServerConnController" type="class" visibility="published">
+  <structure name="TServerConnController" visibility="published" name_with_generic="TServerConnController" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <variable name="AutoConnectAction" declaration="AutoConnectAction: (acNone,
                         acConnectOnDisconnect,

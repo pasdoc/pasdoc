@@ -28,7 +28,7 @@
   </type>
   <type name="POggVorbis_File" declaration="POggVorbis_File = ^TOggVorbis_File;" visibility="published">
   </type>
-  <structure name="Tov_callbacks" name_with_generic="Tov_callbacks" type="record" visibility="published">
+  <structure name="Tov_callbacks" visibility="published" name_with_generic="Tov_callbacks" type="record">
     <variable name="read_func" declaration="read_func: TVorbisFileReadFunc;" visibility="public">
     </variable>
     <variable name="seek_func" declaration="seek_func: TVorbisFileSeekFunc;" visibility="public">
@@ -38,7 +38,7 @@
     <variable name="tell_func" declaration="tell_func: TVorbisFileTellFunc;" visibility="public">
     </variable>
   </structure>
-  <structure name="TOggVorbis_File" name_with_generic="TOggVorbis_File" type="record" visibility="published">
+  <structure name="TOggVorbis_File" visibility="published" name_with_generic="TOggVorbis_File" type="record">
     <variable name="datasource" declaration="datasource: Pointer;" visibility="public">
     </variable>
     <variable name="seekable" declaration="seekable: Cint;" visibility="public">

@@ -1,6 +1,6 @@
 <unit name="ok_deprecated_tag" deprecated="true">
   <description><abstract>Test @deprecated tag.</abstract><detailed> Everything in this unit is deprecated. Even this whole unit itself. </detailed></description>
-  <routine name="MyProc" type="procedure" declaration="procedure MyProc;" visibility="published" deprecated="true">
+  <routine name="MyProc" declaration="procedure MyProc;" visibility="published" deprecated="true" type="procedure">
   </routine>
   <constant name="MyConst" declaration="MyConst = 1;" visibility="published" deprecated="true">
   </constant>
@@ -9,15 +9,15 @@
   <type name="TMyType" declaration="TMyType = Integer;" visibility="published" deprecated="true">
     <description><detailed> Normal type deprecated.</detailed></description>
   </type>
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published" deprecated="true">
+  <structure name="TMyClass" visibility="published" deprecated="true" name_with_generic="TMyClass" type="class">
     <description><detailed> Deprecated class.</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="MyMethodLibrary" type="procedure" declaration="procedure MyMethodLibrary;" visibility="public" deprecated="true">
+    <routine name="MyMethodLibrary" declaration="procedure MyMethodLibrary;" visibility="public" deprecated="true" type="procedure">
     </routine>
     <variable name="MyField" declaration="MyField: Integer;" visibility="public" deprecated="true">
       <description><detailed>Deprecated field. </detailed></description>
     </variable>
-    <property name="MyProperty" indexdecl="" type="Integer" reader="MyField" writer="MyField" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public" deprecated="true">
+    <property name="MyProperty" declaration="property MyProperty: Integer read MyField write MyField;" visibility="public" deprecated="true" indexdecl="" type="Integer" reader="MyField" writer="MyField" default_in_class="False" default_value="" nodefault="False"   stored="">
       <description><detailed>    Property is deprecated (you can specify @deprecated as many times as you want, because it's harmless).</detailed></description>
     </property>
   </structure>

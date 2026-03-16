@@ -12,7 +12,7 @@
 
 </detailed></description>
   </variable>
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
+  <structure name="TMyClass" visibility="published" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <variable name="Field" declaration="Field: Integer;" visibility="public">
       <description><detailed>Common word used as identifier must be ignored when auto-linking thanks to auto-link-exclude list: Little brown fox runs over a field</detailed></description>

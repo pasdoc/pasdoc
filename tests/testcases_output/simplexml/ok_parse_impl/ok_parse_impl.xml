@@ -1,52 +1,52 @@
 <unit name="ok_parse_impl">
   <description><detailed>Parse implementation section. Must be tested with --implementation-comments=join --define PASDOC</detailed></description>
-  <routine name="Foo" type="procedure" declaration="procedure Foo;" visibility="published">
+  <routine name="Foo" declaration="procedure Foo;" visibility="published" type="procedure">
     <description><detailed>This is Foo (intf) This is Foo (impl)</detailed></description>
   </routine>
-  <routine name="Bar" type="procedure" declaration="procedure Bar;" visibility="published">
+  <routine name="Bar" declaration="procedure Bar;" visibility="published" type="procedure">
     <description><detailed>This is Bar (impl)</detailed></description>
   </routine>
-  <routine name="Laz" type="procedure" declaration="procedure Laz;" visibility="published">
+  <routine name="Laz" declaration="procedure Laz;" visibility="published" type="procedure">
     <description><detailed>This is Laz And it must not be doubled</detailed></description>
   </routine>
-  <routine name="Dex" type="procedure" declaration="procedure Dex;" visibility="published">
+  <routine name="Dex" declaration="procedure Dex;" visibility="published" type="procedure">
     <description><detailed>This is Dex described inside method body</detailed></description>
   </routine>
-  <routine name="NoDescr" type="procedure" declaration="procedure NoDescr;" visibility="published">
+  <routine name="NoDescr" declaration="procedure NoDescr;" visibility="published" type="procedure">
   </routine>
-  <routine name="Overloaded" type="procedure" declaration="procedure Overloaded; overload;" visibility="published">
+  <routine name="Overloaded" declaration="procedure Overloaded; overload;" visibility="published" type="procedure">
     <description><detailed>This is overloaded proc #1</detailed></description>
   </routine>
-  <routine name="Overloaded" type="procedure" declaration="procedure Overloaded(a: Byte); overload;" visibility="published">
+  <routine name="Overloaded" declaration="procedure Overloaded(a: Byte); overload;" visibility="published" type="procedure">
     <description><detailed>This is overloaded proc #2</detailed></description>
   </routine>
-  <routine name=":=" type="operator" declaration="Operator := (C : TMyType) z : TMyType;" visibility="published">
+  <routine name=":=" declaration="Operator := (C : TMyType) z : TMyType;" visibility="published" type="operator">
     <description><detailed>This is assignment operator</detailed></description>
   </routine>
-  <structure name="TClass" name_with_generic="TClass" type="class" visibility="published">
+  <structure name="TClass" visibility="published" name_with_generic="TClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="Create" type="constructor" declaration="constructor Create; overload;" visibility="public">
+    <routine name="Create" declaration="constructor Create; overload;" visibility="public" type="constructor">
       <description><detailed>Creates instance of TClass</detailed></description>
     </routine>
-    <routine name="Create" type="function" declaration="class function Create(const S: string): TClass; overload; static; inline;" visibility="public">
+    <routine name="Create" declaration="class function Create(const S: string): TClass; overload; static; inline;" visibility="public" type="function">
       <description><detailed>Static factory</detailed></description>
     </routine>
-    <routine name="Destroy" type="destructor" declaration="destructor Destroy;" visibility="public">
+    <routine name="Destroy" declaration="destructor Destroy;" visibility="public" type="destructor">
       <description><detailed>Destroys instance of TClass</detailed></description>
     </routine>
-    <routine name="Method" type="procedure" declaration="procedure Method;" visibility="public">
+    <routine name="Method" declaration="procedure Method;" visibility="public" type="procedure">
       <description><detailed>Does something</detailed></description>
     </routine>
-    <routine name="Implicit" type="operator" declaration="class operator Implicit(const S: string): TClass;" visibility="public">
+    <routine name="Implicit" declaration="class operator Implicit(const S: string): TClass;" visibility="public" type="operator">
       <description><detailed>Assignment operator</detailed></description>
     </routine>
-    <structure name="TInnerClass" name_with_generic="TInnerClass" type="class" visibility="public">
+    <structure name="TInnerClass" visibility="public" name_with_generic="TInnerClass" type="class">
       <ancestor name="TObject" declaration="TObject" />
-      <routine name="Method" type="procedure" declaration="procedure Method;" visibility="public">
+      <routine name="Method" declaration="procedure Method;" visibility="public" type="procedure">
         <description><detailed>Method of an inner class</detailed></description>
       </routine>
     </structure>
   </structure>
-  <structure name="TMyType" name_with_generic="TMyType" type="record" visibility="published">
+  <structure name="TMyType" visibility="published" name_with_generic="TMyType" type="record">
   </structure>
 </unit>

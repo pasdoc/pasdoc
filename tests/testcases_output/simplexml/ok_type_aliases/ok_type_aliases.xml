@@ -1,5 +1,5 @@
 <unit name="ok_type_aliases">
-  <routine name="Test" type="procedure" declaration="procedure Test;" visibility="published">
+  <routine name="Test" declaration="procedure Test;" visibility="published" type="procedure">
     <description><detailed>Also linking using @tags to arbitrary qualified type identifiers should work: 
 
 <unorderedlist>
@@ -46,34 +46,34 @@
   <type name="TMyContainerStrongAlias" declaration="TMyContainerStrongAlias = type TMyContainer;" visibility="published">
     <description><detailed>This class manages a Controls list.</detailed></description>
   </type>
-  <structure name="TOriginalType" name_with_generic="TOriginalType" type="record" visibility="published">
+  <structure name="TOriginalType" visibility="published" name_with_generic="TOriginalType" type="record">
     <description><abstract>TOriginalType abstract description</abstract></description>
     <variable name="x" declaration="x: integer " visibility="public">
     </variable>
     <variable name="y" declaration="y: integer " visibility="public">
     </variable>
   </structure>
-  <structure name="TOriginalType2" name_with_generic="TOriginalType2" type="record" visibility="published">
+  <structure name="TOriginalType2" visibility="published" name_with_generic="TOriginalType2" type="record">
     <description><abstract>TOriginalType2 abstract description.</abstract><detailed> More and more description.</detailed></description>
     <variable name="x" declaration="x: integer " visibility="public">
     </variable>
     <variable name="y" declaration="y: integer " visibility="public">
     </variable>
   </structure>
-  <structure name="TOriginalType3" name_with_generic="TOriginalType3" type="record" visibility="published">
+  <structure name="TOriginalType3" visibility="published" name_with_generic="TOriginalType3" type="record">
     <description><abstract>TOriginalType3 abstract description.</abstract><detailed> More and more description.</detailed></description>
     <variable name="x" declaration="x: integer " visibility="public">
     </variable>
     <variable name="y" declaration="y: integer " visibility="public">
     </variable>
   </structure>
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
+  <structure name="TMyClass" visibility="published" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
-    <structure name="TMyNestedClass" name_with_generic="TMyNestedClass" type="class" visibility="public">
+    <structure name="TMyNestedClass" visibility="public" name_with_generic="TMyNestedClass" type="class">
       <ancestor name="TObject" declaration="TObject" />
-      <structure name="TAnotherNestedClass" name_with_generic="TAnotherNestedClass" type="class" visibility="public">
+      <structure name="TAnotherNestedClass" visibility="public" name_with_generic="TAnotherNestedClass" type="class">
         <ancestor name="TObject" declaration="TObject" />
-        <structure name="TOriginalType" name_with_generic="TOriginalType" type="record" visibility="public">
+        <structure name="TOriginalType" visibility="public" name_with_generic="TOriginalType" type="record">
           <description><abstract>TOriginalType abstract description, inside nested class(es).</abstract><detailed> More and more description.</detailed></description>
           <variable name="x" declaration="x: integer " visibility="public">
           </variable>
@@ -83,10 +83,10 @@
       </structure>
     </structure>
   </structure>
-  <structure name="TMyContainer" name_with_generic="TMyContainer" type="class" visibility="published">
+  <structure name="TMyContainer" visibility="published" name_with_generic="TMyContainer" type="class">
     <description><detailed>This class manages a Controls list.</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
-    <property name="Controls" indexdecl="" type="TControls" reader="GetControls" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
+    <property name="Controls" declaration="property Controls: TControls read GetControls;" visibility="public" indexdecl="" type="TControls" reader="GetControls" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
   </structure>
 </unit>

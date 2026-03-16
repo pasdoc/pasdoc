@@ -7,7 +7,7 @@
     <constant name="geThree" declaration="geThree" visibility="published">
     </constant>
   </type>
-  <structure name="TMyObject" name_with_generic="TMyObject" type="class" visibility="published">
+  <structure name="TMyObject" visibility="published" name_with_generic="TMyObject" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <type name="TObjectEnum" declaration="TObjectEnum = (...);" visibility="public">
       <constant name="oeOne" declaration="oeOne" visibility="published">
@@ -17,7 +17,7 @@
       <constant name="oeThree" declaration="oeThree" visibility="published">
       </constant>
     </type>
-    <structure name="TNestedObject" name_with_generic="TNestedObject" type="class" visibility="public">
+    <structure name="TNestedObject" visibility="public" name_with_generic="TNestedObject" type="class">
       <ancestor name="TObject" declaration="TObject" />
       <type name="TNestedObjectEnum" declaration="TNestedObjectEnum = (...);" visibility="public">
         <constant name="noeOne" declaration="noeOne" visibility="published">

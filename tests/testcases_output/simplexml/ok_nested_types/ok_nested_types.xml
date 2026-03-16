@@ -3,10 +3,10 @@
   <constant name="GlobalConst" declaration="GlobalConst = 123456;" visibility="published">
     <description><detailed>Description of <code>GlobalConst</code></detailed></description>
   </constant>
-  <structure name="TOuterClass" name_with_generic="TOuterClass" type="class" visibility="published">
+  <structure name="TOuterClass" visibility="published" name_with_generic="TOuterClass" type="class">
     <description><abstract><code>TOuterClass</code> contains nested classes, records, types and constants.</abstract></description>
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="OuterPublicProc" type="procedure" declaration="procedure OuterPublicProc;" visibility="public">
+    <routine name="OuterPublicProc" declaration="procedure OuterPublicProc;" visibility="public" type="procedure">
       <description><detailed>Description of <code>OuterPublicProc</code></detailed></description>
     </routine>
     <variable name="OuterConst1" declaration="const OuterConst1 = 'Blah1';" visibility="public">
@@ -15,9 +15,9 @@
     <variable name="OuterConst2" declaration="const OuterConst2 = 'Blah2';" visibility="public">
       <description><detailed>Description of <code>OuterConst2</code></detailed></description>
     </variable>
-    <structure name="TInnerImplicitRecord" name_with_generic="TInnerImplicitRecord" type="record" visibility="public">
+    <structure name="TInnerImplicitRecord" visibility="public" name_with_generic="TInnerImplicitRecord" type="record">
       <description><detailed><code>TInnerImplicitRecord</code> is a nested record</detailed></description>
-      <routine name="InnerPublicRecProc" type="procedure" declaration="procedure InnerPublicRecProc;" visibility="public">
+      <routine name="InnerPublicRecProc" declaration="procedure InnerPublicRecProc;" visibility="public" type="procedure">
         <description><detailed>Description of <code>InnerPublicRecProc</code></detailed></description>
       </routine>
       <variable name="FInnerPublicRecField" declaration="FInnerPublicRecField: Integer;" visibility="public">

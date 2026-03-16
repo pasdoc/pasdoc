@@ -1,7 +1,7 @@
 <unit name="ok_final">
-  <structure name="TMyObject" name_with_generic="TMyObject" type="class" visibility="published">
+  <structure name="TMyObject" visibility="published" name_with_generic="TMyObject" type="class">
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="MyFinalMethod" type="procedure" declaration="procedure MyFinalMethod; virtual; final;" visibility="public">
+    <routine name="MyFinalMethod" declaration="procedure MyFinalMethod; virtual; final;" visibility="public" type="procedure">
     </routine>
   </structure>
 </unit>

@@ -41,7 +41,7 @@
   <variable name="F15" declaration="F15: Integer;" visibility="published">
     <description><detailed>Descr of F15 (multiline)</detailed></description>
   </variable>
-  <structure name="TRec1" name_with_generic="TRec1" type="record" visibility="published">
+  <structure name="TRec1" visibility="published" name_with_generic="TRec1" type="record">
     <variable name="F1" declaration="F1: Integer;" visibility="public">
       <description><detailed>Descr of F1, F2, F3</detailed></description>
     </variable>
@@ -85,7 +85,7 @@
       <description><detailed>Descr of F15</detailed></description>
     </variable>
   </structure>
-  <structure name="TRec2" name_with_generic="TRec2" type="record" visibility="published">
+  <structure name="TRec2" visibility="published" name_with_generic="TRec2" type="record">
     <variable name="F1" declaration="F1: Integer;" visibility="public">
       <description><detailed>Descr of F1, F2, F3</detailed></description>
     </variable>

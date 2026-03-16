@@ -7,7 +7,7 @@
   </constant>
   <constant name="byRef" declaration="byRef = 8;" visibility="published">
   </constant>
-  <structure name="TWeirdRecord" name_with_generic="TWeirdRecord" type="record" visibility="published">
+  <structure name="TWeirdRecord" visibility="published" name_with_generic="TWeirdRecord" type="record">
     <variable name="bVal" declaration="bVal: Byte" visibility="public">
     </variable>
     <variable name="iVal" declaration="iVal: Smallint" visibility="public">

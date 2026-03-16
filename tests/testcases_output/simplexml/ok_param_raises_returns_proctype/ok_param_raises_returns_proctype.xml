@@ -5,7 +5,7 @@
   <type name="TMyMethod" declaration="TMyMethod = function(A: integer): boolean of object;" visibility="published">
     <description><detailed>  </detailed></description>
   </type>
-  <structure name="EFoo" name_with_generic="EFoo" type="class" visibility="published">
+  <structure name="EFoo" visibility="published" name_with_generic="EFoo" type="class">
     <ancestor name="Exception" declaration="Exception" />
   </structure>
 </unit>

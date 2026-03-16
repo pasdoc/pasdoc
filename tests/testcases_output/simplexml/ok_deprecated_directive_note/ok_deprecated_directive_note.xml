@@ -1,35 +1,35 @@
 <unit name="ok_deprecated_directive_note" deprecated_note="Deprecation note for unit" deprecated="true">
   <description><abstract>Test deprecated directive with and without note.</abstract></description>
-  <routine name="MyProc1" type="procedure" declaration="procedure MyProc1; deprecated 'Deprecation note for procedure with some apostrophe: '' here you go:)';" visibility="published" deprecated_note="Deprecation note for procedure with some apostrophe: ' here you go:)" deprecated="true">
+  <routine name="MyProc1" declaration="procedure MyProc1; deprecated 'Deprecation note for procedure with some apostrophe: '' here you go:)';" visibility="published" deprecated_note="Deprecation note for procedure with some apostrophe: ' here you go:)" deprecated="true" type="procedure">
   </routine>
-  <routine name="MyProc2" type="procedure" declaration="procedure MyProc2; deprecated;" visibility="published" deprecated="true">
+  <routine name="MyProc2" declaration="procedure MyProc2; deprecated;" visibility="published" deprecated="true" type="procedure">
   </routine>
-  <routine name="MyProc3" type="procedure" declaration="procedure MyProc3; deprecated #72 #$65 'llo';" visibility="published" deprecated_note="Hello" deprecated="true">
+  <routine name="MyProc3" declaration="procedure MyProc3; deprecated #72 #$65 'llo';" visibility="published" deprecated_note="Hello" deprecated="true" type="procedure">
     <description><detailed>Deprecated note should say 'Hello'. Handled Ok, we convert and sum string tokens correctly.</detailed></description>
   </routine>
   <constant name="TestConstDeprecated1" declaration="TestConstDeprecated1 = 1 deprecated 'Deprecation note for constant';" visibility="published" deprecated_note="Deprecation note for constant" deprecated="true">
   </constant>
   <constant name="TestConstDeprecated2" declaration="TestConstDeprecated2 = 1 deprecated;" visibility="published" deprecated="true">
   </constant>
-  <structure name="TTestClass" name_with_generic="TTestClass" type="class" visibility="published">
+  <structure name="TTestClass" visibility="published" name_with_generic="TTestClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="MyMethod1" type="procedure" declaration="procedure MyMethod1; deprecated 'Deprecation note for procedure';" visibility="public" deprecated_note="Deprecation note for procedure" deprecated="true">
+    <routine name="MyMethod1" declaration="procedure MyMethod1; deprecated 'Deprecation note for procedure';" visibility="public" deprecated_note="Deprecation note for procedure" deprecated="true" type="procedure">
     </routine>
-    <routine name="MyMethod2" type="procedure" declaration="procedure MyMethod2; deprecated;" visibility="public" deprecated="true">
+    <routine name="MyMethod2" declaration="procedure MyMethod2; deprecated;" visibility="public" deprecated="true" type="procedure">
     </routine>
     <variable name="TestFieldDeprecated1" declaration="TestFieldDeprecated1: Integer deprecated 'Deprecation note for field';" visibility="public" deprecated_note="Deprecation note for field" deprecated="true">
     </variable>
     <variable name="TestFieldDeprecated2" declaration="TestFieldDeprecated2: Integer deprecated;" visibility="public" deprecated="true">
     </variable>
-    <property name="TestProperty1" indexdecl="" type="Integer" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public" deprecated_note="Deprecation note for property" deprecated="true">
+    <property name="TestProperty1" declaration="property TestProperty1: Integer; deprecated 'Deprecation note for property';" visibility="public" deprecated_note="Deprecation note for property" deprecated="true" indexdecl="" type="Integer" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
-    <property name="TestProperty2" indexdecl="" type="Integer" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public" deprecated="true">
+    <property name="TestProperty2" declaration="property TestProperty2: Integer; deprecated;" visibility="public" deprecated="true" indexdecl="" type="Integer" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
   </structure>
-  <structure name="TTestClassDeprecated1" name_with_generic="TTestClassDeprecated1" type="class" visibility="published" deprecated_note="Deprecation note for class" deprecated="true">
+  <structure name="TTestClassDeprecated1" visibility="published" deprecated_note="Deprecation note for class" deprecated="true" name_with_generic="TTestClassDeprecated1" type="class">
     <ancestor name="TObject" declaration="TObject" />
   </structure>
-  <structure name="TTestClassDeprecated2" name_with_generic="TTestClassDeprecated2" type="class" visibility="published" deprecated="true">
+  <structure name="TTestClassDeprecated2" visibility="published" deprecated="true" name_with_generic="TTestClassDeprecated2" type="class">
     <ancestor name="TObject" declaration="TObject" />
   </structure>
 </unit>

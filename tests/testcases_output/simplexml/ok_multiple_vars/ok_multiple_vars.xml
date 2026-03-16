@@ -11,7 +11,7 @@
   <variable name="D" declaration="D: function(A: Integer): boolean;" visibility="published">
     <description><detailed>Docs for C and D</detailed></description>
   </variable>
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
+  <structure name="TMyClass" visibility="published" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <variable name="A" declaration="A: Integer;" visibility="public">
       <description><detailed>Docs for A and B</detailed></description>

@@ -1,20 +1,20 @@
 <unit name="ok_implicit_visibility">
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
+  <structure name="TMyClass" visibility="published" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="MyMethod" type="procedure" declaration="procedure MyMethod;" visibility="published">
+    <routine name="MyMethod" declaration="procedure MyMethod;" visibility="published" type="procedure">
     </routine>
     <variable name="MyField" declaration="MyField: Integer;" visibility="published">
     </variable>
-    <property name="MyProperty" indexdecl="" type="Integer" reader="MyField" writer="MyField" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="published">
+    <property name="MyProperty" declaration="property MyProperty: Integer read MyField write MyField;" visibility="published" indexdecl="" type="Integer" reader="MyField" writer="MyField" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
   </structure>
-  <structure name="TMyClassInMState" name_with_generic="TMyClassInMState" type="class" visibility="published">
+  <structure name="TMyClassInMState" visibility="published" name_with_generic="TMyClassInMState" type="class">
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="MyMethod" type="procedure" declaration="procedure MyMethod;" visibility="published">
+    <routine name="MyMethod" declaration="procedure MyMethod;" visibility="published" type="procedure">
     </routine>
     <variable name="MyField" declaration="MyField: Integer;" visibility="published">
     </variable>
-    <property name="MyProperty" indexdecl="" type="Integer" reader="MyField" writer="MyField" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="published">
+    <property name="MyProperty" declaration="property MyProperty: Integer read MyField write MyField;" visibility="published" indexdecl="" type="Integer" reader="MyField" writer="MyField" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
   </structure>
 </unit>

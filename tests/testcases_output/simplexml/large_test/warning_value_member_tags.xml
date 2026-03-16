@@ -8,7 +8,7 @@
       <description><detailed>Second description of meTwo.</detailed></description>
     </constant>
   </type>
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published">
+  <structure name="TMyClass" visibility="published" name_with_generic="TMyClass" type="class">
     <description><detailed>    This should cause 3 warnings: MyField1 has two descriptions, MyField2 has two descriptions, and NotExistsingMember does not exist.</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
     <variable name="MyField1" declaration="MyField1: Integer;" visibility="public">

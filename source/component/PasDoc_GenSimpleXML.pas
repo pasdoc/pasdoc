@@ -62,6 +62,9 @@ type
       Returns '' if Item doesn't have any description. }
     function ItemDescription(Item: TPasItem): string;
 
+    { Common attributes from TPasItem properties. }
+    function CommonAttributes(const Item: TPasItem): String;
+
     procedure WriteRoutine(const Item: TPasRoutine);
     procedure WriteConstant(const Item: TPasItem);
     procedure WriteVariable(const Item: TPasItem);
@@ -183,25 +186,34 @@ begin
     Result := '';
 end;
 
+function TSimpleXMLDocGenerator.CommonAttributes(const Item: TPasItem): String;
+begin
+  Result := ' name="' + ConvertString(Item.name) + '"';
+  if Item.FullDeclaration <> '' then
+    Result := Result + ' declaration="' + ConvertString(Item.FullDeclaration) + '"';
+  //if Item.MyObject <> nil then // otherwise Item.visibility is meaningless
+  Result := Result +
+    ' visibility="' + VisToStr(Item.visibility) + '"';
+  Result := Result +
+    SourcePositionAttributes(item) +
+    HintDirectivesToString(item);
+end;
+
 procedure TSimpleXMLDocGenerator.WriteRoutine(const Item: TPasRoutine);
 var
   I: Integer;
 begin
   WriteDirectLine(space +
-      '<routine name="' + ConvertString(item.name) +
-            '" type="' + ConvertString(RoutineTypeToString(item.What)) +
-     '" declaration="' + ConvertString(item.FullDeclaration) +
-     '" visibility="' + VisToStr(item.visibility) + '"' +
-     SourcePositionAttributes(item) +
-     HintDirectivesToString(item) + '>');
-    for I := 0 to item.params.count - 1 do
+    '<routine' + CommonAttributes(Item) +
+    ' type="' + ConvertString(RoutineTypeToString(Item.What)) + '">');
+    for I := 0 to Item.params.count - 1 do
       WriteDirectLine(space +
-        '  <param name="' + ConvertString(item.params[i].name) + '">' +
-          item.params[i].value +'</param>');
-    if item.returns <> '' then
+        '  <param name="' + ConvertString(Item.params[i].name) + '">' +
+          Item.params[i].value +'</param>');
+    if Item.returns <> '' then
       WriteDirectLine(space +
-        '  <result>' + item.returns + '</result>');
-  if item.HasDescription then
+        '  <result>' + Item.returns + '</result>');
+  if Item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space + '</routine>');
 end;
@@ -209,19 +221,16 @@ end;
 procedure TSimpleXMLDocGenerator.WriteProperty(const Item: TPasProperty);
 begin
   WriteDirectLine(space +
-    '<property name="' + ConvertString(item.name) +
-       '" indexdecl="' + ConvertString(item.indexDecl) +
-            '" type="' + ConvertString(item.Proptype) +
-          '" reader="' + ConvertString(item.reader) +
-          '" writer="' + ConvertString(item.writer) +
-'" default_in_class="' + ConvertString(BoolToStr(item.DefaultInClass, true)) +
-   '" default_value="' + ConvertString(item.DefaultValue) +
-       '" nodefault="' + ConvertString(BoolToStr(item.NoDefault, true)) +
-        '"   stored="' + ConvertString(item.Stored) +
-      '" visibility="' + VisToStr(item.visibility) + '"' +
-      SourcePositionAttributes(item) +
-      HintDirectivesToString(item) + '>');
-  if item.HasDescription then
+    '<property' + CommonAttributes(Item) +
+       ' indexdecl="' + ConvertString(Item.indexDecl) +
+            '" type="' + ConvertString(Item.Proptype) +
+          '" reader="' + ConvertString(Item.reader) +
+          '" writer="' + ConvertString(Item.writer) +
+'" default_in_class="' + ConvertString(BoolToStr(Item.DefaultInClass, true)) +
+   '" default_value="' + ConvertString(Item.DefaultValue) +
+       '" nodefault="' + ConvertString(BoolToStr(Item.NoDefault, true)) +
+        '"   stored="' + ConvertString(Item.Stored) + '">');
+  if Item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</property>');
 end;
@@ -229,12 +238,8 @@ end;
 procedure TSimpleXMLDocGenerator.WriteConstant(const Item: TPasItem);
 begin
   WriteDirectLine(space +
-    '<constant name="' + ConvertString(item.Name) +
-     '" declaration="' + ConvertString(item.FullDeclaration) +
-      '" visibility="' + VisToStr(item.visibility) + '"' +
-      SourcePositionAttributes(item) +
-      HintDirectivesToString(item) + '>');
-  if item.HasDescription then
+    '<constant' + CommonAttributes(Item) + '>');
+  if Item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</constant>');
 end;
@@ -242,12 +247,8 @@ end;
 procedure TSimpleXMLDocGenerator.WriteVariable(const Item: TPasItem);
 begin
   WriteDirectLine(space +
-    '<variable name="' + ConvertString(item.Name) +
-     '" declaration="' + ConvertString(item.FullDeclaration) +
-      '" visibility="' + VisToStr(item.visibility) + '"' +
-      SourcePositionAttributes(item) +
-      HintDirectivesToString(item) + '>');
-  if item.HasDescription then
+    '<variable' + CommonAttributes(Item) + '>');
+  if Item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   WriteDirectLine(space+'</variable>');
 end;
@@ -264,12 +265,8 @@ procedure TSimpleXMLDocGenerator.WriteType(const Item: TPasItem);
 
 begin
   WriteDirectLine(space +
-        '<type name="' + ConvertString(item.Name) +
-     '" declaration="' + ConvertString(item.FullDeclaration) +
-      '" visibility="' + VisToStr(item.visibility) + '"' +
-      SourcePositionAttributes(item) +
-      HintDirectivesToString(item) + '>');
-  if item.HasDescription then
+      '<type' + CommonAttributes(Item) + '>');
+  if Item.HasDescription then
     WriteDirectLine(space + '  ' + ItemDescription(Item));
   if Item is TPasEnum then
   begin
@@ -295,36 +292,33 @@ var
   I: Integer;
 begin
   WriteDirectLine(space +
-      '<structure name="' + ConvertString(item.name) +
-  '" name_with_generic="' + ConvertString(item.NameWithGeneric) +
-               '" type="' + ConvertString(CioTypeToString(item.MyType)) +
-         '" visibility="' + VisToStr(item.visibility) + '"' +
-         SourcePositionAttributes(item) +
-         HintDirectivesToString(item) + '>');
+      '<structure' + CommonAttributes(Item) +
+   ' name_with_generic="' + ConvertString(Item.NameWithGeneric) +
+               '" type="' + ConvertString(CioTypeToString(Item.MyType)) + '">');
   Indent;
 
-  if item.HasDescription then
+  if Item.HasDescription then
     WriteDirectLine(space + ItemDescription(Item));
 
-  for I := 0 to item.ancestors.count-1 do
+  for I := 0 to Item.ancestors.count-1 do
     WriteDirectLine(space +
-      '<ancestor name="' + ConvertString(item.ancestors[i].Name) +
-       '" declaration="' + ConvertString(item.ancestors[i].Value) + '" />');
+      '<ancestor name="' + ConvertString(Item.ancestors[i].Name) +
+       '" declaration="' + ConvertString(Item.ancestors[i].Value) + '" />');
 
-  for I := 0 to item.Methods.count-1 do
-    WriteRoutine(item.Methods.PasItemAt[i] as TPasRoutine);
+  for I := 0 to Item.Methods.count-1 do
+    WriteRoutine(Item.Methods.PasItemAt[i] as TPasRoutine);
 
-  for I := 0 to item.Fields.count-1 do
-    WriteVariable(item.fields.PasItemAt[i]);
+  for I := 0 to Item.Fields.count-1 do
+    WriteVariable(Item.fields.PasItemAt[i]);
 
-  for I := 0 to item.Properties.count-1 do
-    WriteProperty(item.Properties.PasItemAt[i] as TPasProperty);
+  for I := 0 to Item.Properties.count-1 do
+    WriteProperty(Item.Properties.PasItemAt[i] as TPasProperty);
 
-  for I := 0 to item.Types.count-1 do
-    WriteType(item.Types.PasItemAt[i]);
+  for I := 0 to Item.Types.count-1 do
+    WriteType(Item.Types.PasItemAt[i]);
 
-  for I := 0 to item.Cios.count-1 do
-    WriteStructure(item.Cios.PasItemAt[i] as TPasCio);
+  for I := 0 to Item.Cios.count-1 do
+    WriteStructure(Item.Cios.PasItemAt[i] as TPasCio);
 
   UnIndent;
   WriteDirectLine(space+'</structure>');

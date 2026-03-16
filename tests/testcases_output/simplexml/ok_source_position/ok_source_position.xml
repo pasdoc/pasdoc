@@ -1,6 +1,6 @@
 <unit name="ok_source_position" source-line="2" source-relative-file-name="ok_source_position.pas" source-url="">
   <description><abstract>Test of --show-source-position and --source-url-pattern features.</abstract></description>
-  <routine name="MyProc" type="procedure" declaration="procedure MyProc;" visibility="published" source-line="16" source-relative-file-name="ok_source_position.pas" source-url="">
+  <routine name="MyProc" declaration="procedure MyProc;" visibility="published" source-line="16" source-relative-file-name="ok_source_position.pas" source-url="" type="procedure">
     <description><detailed>A simple procedure.</detailed></description>
   </routine>
   <constant name="MyConst" declaration="MyConst = 42;" visibility="published" source-line="7" source-relative-file-name="ok_source_position.pas" source-url="">
@@ -24,16 +24,16 @@
       <description><detailed>The third value.</detailed></description>
     </constant>
   </type>
-  <structure name="TMyClass" name_with_generic="TMyClass" type="class" visibility="published" source-line="20" source-relative-file-name="ok_source_position.pas" source-url="">
+  <structure name="TMyClass" visibility="published" source-line="20" source-relative-file-name="ok_source_position.pas" source-url="" name_with_generic="TMyClass" type="class">
     <description><detailed>A simple class.</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
-    <routine name="MyMethod" type="procedure" declaration="procedure MyMethod;" visibility="public" source-line="24" source-relative-file-name="ok_source_position.pas" source-url="">
+    <routine name="MyMethod" declaration="procedure MyMethod;" visibility="public" source-line="24" source-relative-file-name="ok_source_position.pas" source-url="" type="procedure">
       <description><detailed>A method.</detailed></description>
     </routine>
     <variable name="MyField" declaration="MyField: Integer;" visibility="public" source-line="22" source-relative-file-name="ok_source_position.pas" source-url="">
       <description><detailed>A field.</detailed></description>
     </variable>
-    <property name="MyProp" indexdecl="" type="Integer" reader="MyField" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public" source-line="26" source-relative-file-name="ok_source_position.pas" source-url="">
+    <property name="MyProp" declaration="property MyProp: Integer read MyField;" visibility="public" source-line="26" source-relative-file-name="ok_source_position.pas" source-url="" indexdecl="" type="Integer" reader="MyField" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
       <description><detailed>A property.</detailed></description>
     </property>
   </structure>
