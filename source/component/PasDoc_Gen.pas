@@ -1309,6 +1309,7 @@ var
           - AbstractDescriptionWasAutomatic
           ....because descriptions are not expanded yet. }
         AType.RawDescription := AliasedTypeWithRawDescription.RawDescription;
+        AType.ResolveDescriptionFromAliasedType := true;
         Inc(TypeAliasesCopied);
       end;
     end;

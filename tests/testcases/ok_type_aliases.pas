@@ -51,6 +51,15 @@ type
 }
 procedure Test;
 
+type
+  { This class manages a @link(Controls) list. }
+  TMyContainer = class
+    property Controls: TControls read GetControls;
+  end;
+
+  TMyContainerAlias = TMyContainer;
+  TMyContainerStrongAlias = type TMyContainer;
+
 implementation
 
 end.

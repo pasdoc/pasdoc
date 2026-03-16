@@ -643,10 +643,13 @@ type
     FIsStrongAlias: boolean;
     FAliasedName: string;
     FAliasedType: TPasType;
+    FResolveDescriptionFromAliasedType: Boolean;
   protected
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
   public
+    function FindItem(const NameParts: TNameParts): TBaseItem; override;
+
     { Look for a description of given type: within Self, within AliasedType,
       then maybe AliasedType.AliasedType, until we find a type that has
       a useful description.
@@ -660,10 +663,24 @@ type
       @code(TNewType = TOldType;). This follows terminology from
       https://blog.marcocantu.com/blog/2023-october-nativeint-weak-alias.html . }
     property IsStrongAlias: boolean read FIsStrongAlias write FIsStrongAlias;
-    { Name of the type it refers to }
+
+    { Name of the target type.
+      This is generally equal to @link(AliasedType).Name, however it may
+      be qualified (with containinig unit name, CIO name) if it was specified.
+      It is also always available, even before @link(TDocGenerator.BuildLinks)
+      execution, since this is set by the parser. }
     property AliasedName: string read FAliasedName write FAliasedName;
-    { Type it refers to }
+
+    { Target type, that we are an alias of. }
     property AliasedType: TPasType read FAliasedType write FAliasedType;
+
+    { @abstract(Whether to resolve descriptions, e.g. links inside it, with respect
+      to the @link(AliasedType).) This makes sense when our @link(RawDescription)
+      was copied from @link(AliasedType) and it may mention links only reachable
+      from @link(AliasedType) scope. }
+    property ResolveDescriptionFromAliasedType: Boolean
+      read FResolveDescriptionFromAliasedType write FResolveDescriptionFromAliasedType
+      default false;
   end;
 
   { @abstract(Enumerated type.) }
@@ -2188,6 +2205,14 @@ begin
     if PossibleResult = Self then
       Exit(nil); // circular reference in alias definition, abort
   until false;
+end;
+
+function TPasAliasType.FindItem(const NameParts: TNameParts): TBaseItem;
+begin
+  if ResolveDescriptionFromAliasedType and (AliasedType <> nil) then
+    Result := AliasedType.FindItem(NameParts)
+  else
+    Result := inherited FindItem(NameParts);
 end;
 
 { TBaseItems ----------------------------------------------------------------- }
