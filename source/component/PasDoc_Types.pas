@@ -31,7 +31,7 @@ unit PasDoc_Types;
 interface
 
 uses
-  SysUtils, StrUtils, Types;
+  SysUtils, StrUtils, Types, Classes;
 
 type
 {$IFNDEF COMPILER_11_UP}
@@ -129,9 +129,29 @@ type
     @url(https://pasdoc.github.io/ImplicitVisibilityOption --implicit-visibility documentation). }
   TImplicitVisibility = (ivPublic, ivPublished, ivImplicit);
 
+{ FPC 3.2.3 (fixes_3_2 branch) fails when querying TDictionary from
+  Generics.Collections, specific problem on Darwin x86_64:
+
+    if not TryGetValue(AKey, Result) then
+      raise EListError.CreateFmt('Dictionary key "%s" does not exist', [AKey]);
+
+  Fixed already in FPC 3.3.1 .
+  TODO: submit to FPC to merge into fixes_3_2 branch.
+}
+{$if defined(DARWIN) and defined(CPUX86_64) and defined(VER3_2_3)}
+  {$define WORKAROUND_DICTIONARY_FIND}
+{$endif}
+
+{$define read_interface}
+{$I naive_dictionary_fix.inc}
+{$undef read_interface}
+
 implementation
 
 uses PasDoc_Tokenizer;
+
+{$define read_implementation}
+{$I naive_dictionary_fix.inc}
 
 { EPasDoc -------------------------------------------------------------------- }
 

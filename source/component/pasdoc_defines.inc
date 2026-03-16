@@ -71,3 +71,8 @@
 {$ifdef VER3_0} {$define GENERICS_CONSTREF} {$endif}
 {$ifdef VER3_2_0} {$define GENERICS_CONSTREF} {$endif}
 {$ifdef VER3_2_2} {$define GENERICS_CONSTREF} {$endif}
+
+// Needed by naive_dictionary_fix.inc
+{$ifdef FPC}
+  {$modeswitch advancedrecords}
+{$endif}
