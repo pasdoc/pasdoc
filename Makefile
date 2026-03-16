@@ -202,8 +202,22 @@ build-fpc-release: make-dirs
 build-fpc-default: build-fpc-release
 
 .PHONY: build-tools
-build-tools: make-dirs
+build-tools: build-generators
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./source/tools/pascal_pre_proc.dpr
+
+# Separate target to build only 2 generators.
+#
+# This allows to clean everything + build everything using the sequence:
+#   make clean
+#   make clean -C source/component/ # deletes some .inc files in source/component/
+#   make build-generators
+#   make -C source/component/ # recreates some .inc files in source/component/
+#   make build-tools
+#   make
+#
+# Debian packaging relies on this.
+.PHONY: build-generators
+build-generators: make-dirs
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./source/tools/file_to_pascal_data.dpr
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./source/tools/file_to_pascal_string.dpr
 
