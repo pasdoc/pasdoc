@@ -65,6 +65,7 @@
 \item[\texttt{\begin{ttfamily}TOriginalType2\end{ttfamily} Record}]TOriginalType2 abstract description.
 \item[\texttt{\begin{ttfamily}TOriginalType3\end{ttfamily} Record}]TOriginalType3 abstract description.
 \item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyContainer\end{ttfamily} Class}]
 \end{description}
 \begin{description}
 \item[\texttt{Test}]
@@ -207,6 +208,31 @@ public y: integer \end{ttfamily}
 \subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
 TMyClass {$>$} TObject
 %%%%Description
+\subsection*{TMyContainer Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyContainer {$>$} TObject
+\subsubsection*{\large{\textbf{Description}}\normalsize\hspace{1ex}\hfill}
+This class manages a \begin{ttfamily}Controls\end{ttfamily}(\ref{ok_type_aliases.TMyContainer-Controls}) list.\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{Controls}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public property Controls: TControls read GetControls;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
 \section{Functions and Procedures}
 \subsection*{Test}
 \begin{list}{}{
@@ -438,6 +464,52 @@ TStrongAliasTypeVeryNested = type TMyClass.TMyNestedClass.TAnotherNestedClass.TO
 TOriginalType abstract description, inside nested class(es).\hfill\vspace*{1ex}
 
  More and more description.
+
+\end{list}
+\subsection*{TMyContainerAlias}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+TMyContainerAlias = TMyContainer;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+This class manages a \begin{ttfamily}Controls\end{ttfamily}(\ref{ok_type_aliases.TMyContainer-Controls}) list.
+
+\end{list}
+\subsection*{TMyContainerStrongAlias}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+TMyContainerStrongAlias = type TMyContainer;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+This class manages a \begin{ttfamily}Controls\end{ttfamily}(\ref{ok_type_aliases.TMyContainer-Controls}) list.
 
 \end{list}
 \end{document}

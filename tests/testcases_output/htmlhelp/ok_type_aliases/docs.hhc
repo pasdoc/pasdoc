@@ -134,6 +134,22 @@
 </ul>
 </ul>
 </ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyContainer">
+<param name="Local" value="ok_type_aliases.TMyContainer.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Properties">
+<param name="Local" value="ok_type_aliases.TMyContainer.html#@Properties">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Controls">
+<param name="Local" value="ok_type_aliases.TMyContainer.html#Controls">
+</object>
+</ul>
+</ul>
 </ul>
 <li><object type="text/sitemap">
 <param name="Name" value="Functions and Procedures">
@@ -181,6 +197,14 @@
 <li><object type="text/sitemap">
 <param name="Name" value="TStrongAliasTypeVeryNested">
 <param name="Local" value="ok_type_aliases.html#TStrongAliasTypeVeryNested">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyContainerAlias">
+<param name="Local" value="ok_type_aliases.html#TMyContainerAlias">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyContainerStrongAlias">
+<param name="Local" value="ok_type_aliases.html#TMyContainerStrongAlias">
 </object>
 </ul>
 </ul>
@@ -248,6 +272,22 @@
 </ul>
 </ul>
 </ul>
+</ul>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyContainer">
+<param name="Local" value="ok_type_aliases.TMyContainer.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Properties">
+<param name="Local" value="ok_type_aliases.TMyContainer.html#@Properties">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Controls">
+<param name="Local" value="ok_type_aliases.TMyContainer.html#Controls">
+</object>
 </ul>
 </ul>
 <li><object type="text/sitemap">

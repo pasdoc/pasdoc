@@ -32,6 +32,22 @@
 <param name="Local" value="ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType.html#y">
 </object>
 <li><object type="text/sitemap">
+<param name="Name" value="TMyContainer">
+<param name="Local" value="ok_type_aliases.TMyContainer.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Controls">
+<param name="Local" value="ok_type_aliases.TMyContainer.html#Controls">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyContainerAlias">
+<param name="Local" value="ok_type_aliases.html#TMyContainerAlias">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyContainerStrongAlias">
+<param name="Local" value="ok_type_aliases.html#TMyContainerStrongAlias">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="TOriginalType">
 <param name="Local" value="ok_type_aliases.TOriginalType.html">
 </object>

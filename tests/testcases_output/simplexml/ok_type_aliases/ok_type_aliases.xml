@@ -40,6 +40,12 @@
   <type name="TStrongAliasTypeVeryNested" declaration="TStrongAliasTypeVeryNested = type TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;" visibility="published">
     <description><abstract>TOriginalType abstract description, inside nested class(es).</abstract><detailed> More and more description.</detailed></description>
   </type>
+  <type name="TMyContainerAlias" declaration="TMyContainerAlias = TMyContainer;" visibility="published">
+    <description><detailed>This class manages a Controls list.</detailed></description>
+  </type>
+  <type name="TMyContainerStrongAlias" declaration="TMyContainerStrongAlias = type TMyContainer;" visibility="published">
+    <description><detailed>This class manages a Controls list.</detailed></description>
+  </type>
   <structure name="TOriginalType" name_with_generic="TOriginalType" type="record" visibility="published">
     <description><abstract>TOriginalType abstract description</abstract></description>
     <variable name="x" declaration="x: integer " visibility="public">
@@ -76,5 +82,11 @@
         </structure>
       </structure>
     </structure>
+  </structure>
+  <structure name="TMyContainer" name_with_generic="TMyContainer" type="class" visibility="published">
+    <description><detailed>This class manages a Controls list.</detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+    <property name="Controls" indexdecl="" type="TControls" reader="GetControls" writer="" default_in_class="False" default_value="" nodefault="False"   stored="" visibility="public">
+    </property>
   </structure>
 </unit>

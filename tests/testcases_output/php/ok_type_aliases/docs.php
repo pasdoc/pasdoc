@@ -11,6 +11,8 @@ $pasdoc = array(
   'TStrongAliasType3' => array('html_filename' => 'ok_type_aliases.html#TStrongAliasType3', 'type' => 'type'),
   'TWeakAliasTypeVeryNested' => array('html_filename' => 'ok_type_aliases.html#TWeakAliasTypeVeryNested', 'type' => 'type'),
   'TStrongAliasTypeVeryNested' => array('html_filename' => 'ok_type_aliases.html#TStrongAliasTypeVeryNested', 'type' => 'type'),
+  'TMyContainerAlias' => array('html_filename' => 'ok_type_aliases.html#TMyContainerAlias', 'type' => 'type'),
+  'TMyContainerStrongAlias' => array('html_filename' => 'ok_type_aliases.html#TMyContainerStrongAlias', 'type' => 'type'),
   'TOriginalType' => array('html_filename' => 'ok_type_aliases.TOriginalType.html', 'type' => 'record'),
   'TOriginalType.x' => array('html_filename' => 'ok_type_aliases.TOriginalType.html#x', 'type' => 'variable'),
   'TOriginalType.y' => array('html_filename' => 'ok_type_aliases.TOriginalType.html#y', 'type' => 'variable'),
@@ -26,4 +28,6 @@ $pasdoc = array(
   'TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType' => array('html_filename' => 'ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType.html', 'type' => 'record'),
   'TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType.x' => array('html_filename' => 'ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType.html#x', 'type' => 'variable'),
   'TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType.y' => array('html_filename' => 'ok_type_aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType.html#y', 'type' => 'variable'),
+  'TMyContainer' => array('html_filename' => 'ok_type_aliases.TMyContainer.html', 'type' => 'class'),
+  'TMyContainer.Controls' => array('html_filename' => 'ok_type_aliases.TMyContainer.html#Controls', 'type' => 'property'),
 );
