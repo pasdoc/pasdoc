@@ -1,18 +1,18 @@
 <unit name="ok_interface_implicit">
-  <structure name="IMyInterface" visibility="published" name_with_generic="IMyInterface" type="interface">
+  <structure name="IMyInterface" name_with_generic="IMyInterface" type="interface">
     <ancestor name="IInterface" declaration="IInterface" />
     <routine name="PublicMethod" declaration="procedure PublicMethod;" visibility="public" type="procedure">
     </routine>
   </structure>
-  <structure name="TMyRecord" visibility="published" name_with_generic="TMyRecord" type="record">
+  <structure name="TMyRecord" name_with_generic="TMyRecord" type="record">
     <variable name="PublicField" declaration="PublicField: Integer;" visibility="public">
     </variable>
   </structure>
-  <structure name="TMyPackedRecord" visibility="published" name_with_generic="TMyPackedRecord" type="packed record">
+  <structure name="TMyPackedRecord" name_with_generic="TMyPackedRecord" type="packed record">
     <variable name="PublicField" declaration="PublicField: Integer;" visibility="public">
     </variable>
   </structure>
-  <structure name="TMyClass" visibility="published" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <variable name="PublicField" declaration="PublicField: Integer;" visibility="public">
     </variable>

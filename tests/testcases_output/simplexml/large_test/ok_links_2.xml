@@ -1,15 +1,15 @@
 <unit name="ok_links_2">
   <description><detailed>Helper unit for test in ok_links.</detailed></description>
-  <routine name="MyOtherProc" declaration="procedure MyOtherProc;" visibility="published" type="procedure">
+  <routine name="MyOtherProc" declaration="procedure MyOtherProc;" type="procedure">
   </routine>
-  <routine name="MyProc" declaration="procedure MyProc;" visibility="published" type="procedure">
+  <routine name="MyProc" declaration="procedure MyProc;" type="procedure">
   </routine>
-  <structure name="TSomeClass" visibility="published" name_with_generic="TSomeClass" type="class">
+  <structure name="TSomeClass" name_with_generic="TSomeClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <routine name="MyMethod" declaration="procedure MyMethod;" visibility="public" type="procedure">
     </routine>
   </structure>
-  <structure name="TSomeOtherClass" visibility="published" name_with_generic="TSomeOtherClass" type="class">
+  <structure name="TSomeOtherClass" name_with_generic="TSomeOtherClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <routine name="MyMethod" declaration="procedure MyMethod;" visibility="public" type="procedure">
     </routine>

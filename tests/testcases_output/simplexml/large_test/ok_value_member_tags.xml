@@ -1,16 +1,16 @@
 <unit name="ok_value_member_tags">
-  <type name="TMyEnum" declaration="TMyEnum = (...);" visibility="published">
+  <type name="TMyEnum" declaration="TMyEnum = (...);">
     <description><detailed> </detailed></description>
-    <constant name="meOne" declaration="meOne" visibility="published">
+    <constant name="meOne" declaration="meOne">
       <description><detailed>Description of meOne follows.</detailed></description>
     </constant>
-    <constant name="meTwo" declaration="meTwo" visibility="published">
+    <constant name="meTwo" declaration="meTwo">
     </constant>
-    <constant name="meThree" declaration="meThree" visibility="published">
+    <constant name="meThree" declaration="meThree">
       <description><detailed>Description of meThree, with some link: TMyClass.MyField.</detailed></description>
     </constant>
   </type>
-  <structure name="TMyClass" visibility="published" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <description><detailed>  </detailed></description>
     <ancestor name="TObject" declaration="TObject" />
     <routine name="MyMethod" declaration="function MyMethod(A: Integer): boolean;" visibility="public" type="function">
@@ -25,7 +25,7 @@
       <description><detailed>Description of MyProperty here, with some recursive tags inside: <code>Some code with a link to TMyRecord</code>.</detailed></description>
     </property>
   </structure>
-  <structure name="TMyRecord" visibility="published" name_with_generic="TMyRecord" type="record">
+  <structure name="TMyRecord" name_with_generic="TMyRecord" type="record">
     <variable name="MyField" declaration="MyField: Integer;" visibility="public">
       <description><detailed>Description of MyField in TMyRecord here.</detailed></description>
     </variable>

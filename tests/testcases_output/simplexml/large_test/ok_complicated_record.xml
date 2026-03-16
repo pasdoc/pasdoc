@@ -1,24 +1,24 @@
 <unit name="ok_complicated_record">
   <description><abstract> This unit is used for converting to and from the BigEndian format. See http://community.borland.com/article/0,1410,28964,00.html.</abstract><detailed>Submitted in thread &quot;Pasdoc tests&quot; on pasdoc-main on 2005-04-11 by Richard B Winston. pasdoc passes it, but the test checks many important things (line glueing single-line comments by pasdoc, record with case etc.) so it's worth adding it to test cases. </detailed></description>
-  <routine name="ConvertDouble" declaration="function ConvertDouble(const Value: double): double;" visibility="published" type="function">
+  <routine name="ConvertDouble" declaration="function ConvertDouble(const Value: double): double;" type="function">
     <param name="Value">is the value to be converted.</param>
     <result>Value after being converted to or from the BigEndian format.</result>
     <description><abstract><code>ConvertDouble</code> converts Value to or from the BigEndian format.</abstract><detailed>  </detailed></description>
   </routine>
-  <routine name="SwapDoubleBytes" declaration="procedure SwapDoubleBytes(Dest, Source: PDoubleEndianCnvRec);" visibility="published" type="procedure">
+  <routine name="SwapDoubleBytes" declaration="procedure SwapDoubleBytes(Dest, Source: PDoubleEndianCnvRec);" type="procedure">
     <description><abstract><code>SwapDoubleBytes</code> copies TDoubleEndianCnvRec.Bytes in reverse order from Source^ to Dest^.</abstract><detailed> <code>SwapDoubleBytes</code> is used in ConvertDouble.</detailed></description>
   </routine>
-  <type name="BytePos" declaration="BytePos = (...);" visibility="published">
+  <type name="BytePos" declaration="BytePos = (...);">
     <description><detailed>enumeration used in variant record</detailed></description>
-    <constant name="EndVal" declaration="EndVal" visibility="published">
+    <constant name="EndVal" declaration="EndVal">
     </constant>
-    <constant name="ByteVal" declaration="ByteVal" visibility="published">
+    <constant name="ByteVal" declaration="ByteVal">
     </constant>
   </type>
-  <type name="PDoubleEndianCnvRec" declaration="PDoubleEndianCnvRec = ^TDoubleEndianCnvRec;" visibility="published">
+  <type name="PDoubleEndianCnvRec" declaration="PDoubleEndianCnvRec = ^TDoubleEndianCnvRec;">
     <description><detailed><code>PDoubleEndianCnvRec</code> is a pointer to a TDoubleEndianCnvRec.</detailed></description>
   </type>
-  <structure name="TDoubleEndianCnvRec" visibility="published" name_with_generic="TDoubleEndianCnvRec" type="packed record">
+  <structure name="TDoubleEndianCnvRec" name_with_generic="TDoubleEndianCnvRec" type="packed record">
     <description><abstract><code>TDoubleEndianCnvRec</code> is used in ConvertDouble to convert a double to or from the BigEndian format.</abstract><detailed> 
 TDoubleEndianCnvRec = packed record
   case BytePos of

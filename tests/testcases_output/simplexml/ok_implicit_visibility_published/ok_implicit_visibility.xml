@@ -1,5 +1,5 @@
 <unit name="ok_implicit_visibility">
-  <structure name="TMyClass" visibility="published" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <routine name="MyMethod" declaration="procedure MyMethod;" visibility="published" type="procedure">
     </routine>
@@ -8,7 +8,7 @@
     <property name="MyProperty" declaration="property MyProperty: Integer read MyField write MyField;" visibility="published" indexdecl="" type="Integer" reader="MyField" writer="MyField" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
   </structure>
-  <structure name="TMyClassInMState" visibility="published" name_with_generic="TMyClassInMState" type="class">
+  <structure name="TMyClassInMState" name_with_generic="TMyClassInMState" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <routine name="MyMethod" declaration="procedure MyMethod;" visibility="published" type="procedure">
     </routine>

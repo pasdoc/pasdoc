@@ -1,15 +1,15 @@
 <unit name="ok_deprecated_tag" deprecated="true">
   <description><abstract>Test @deprecated tag.</abstract><detailed> Everything in this unit is deprecated. Even this whole unit itself. </detailed></description>
-  <routine name="MyProc" declaration="procedure MyProc;" visibility="published" deprecated="true" type="procedure">
+  <routine name="MyProc" declaration="procedure MyProc;" deprecated="true" type="procedure">
   </routine>
-  <constant name="MyConst" declaration="MyConst = 1;" visibility="published" deprecated="true">
+  <constant name="MyConst" declaration="MyConst = 1;" deprecated="true">
   </constant>
-  <variable name="MyVar" declaration="MyVar: Integer;" visibility="published" deprecated="true">
+  <variable name="MyVar" declaration="MyVar: Integer;" deprecated="true">
   </variable>
-  <type name="TMyType" declaration="TMyType = Integer;" visibility="published" deprecated="true">
+  <type name="TMyType" declaration="TMyType = Integer;" deprecated="true">
     <description><detailed> Normal type deprecated.</detailed></description>
   </type>
-  <structure name="TMyClass" visibility="published" deprecated="true" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" deprecated="true" name_with_generic="TMyClass" type="class">
     <description><detailed> Deprecated class.</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
     <routine name="MyMethodLibrary" declaration="procedure MyMethodLibrary;" visibility="public" deprecated="true" type="procedure">

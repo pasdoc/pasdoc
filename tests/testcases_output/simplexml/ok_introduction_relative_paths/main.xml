@@ -1,8 +1,8 @@
 <unit name="main">
-  <type name="SomeType" declaration="SomeType = integer;" visibility="published">
+  <type name="SomeType" declaration="SomeType = integer;">
     <description><detailed>SomeType description.</detailed></description>
   </type>
-  <structure name="SomeClass" visibility="published" name_with_generic="SomeClass" type="class">
+  <structure name="SomeClass" name_with_generic="SomeClass" type="class">
     <description><detailed>SomeClass description. program test;
 
 begin

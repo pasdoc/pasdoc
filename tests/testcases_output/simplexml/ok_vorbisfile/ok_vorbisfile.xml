@@ -1,34 +1,34 @@
 <unit name="ok_vorbisfile">
   <description><detailed>API of vorbisfile library. Usually libvorbisfile.so under Unixes or vorbisfile.dll under Windows. This is just a quick translation of /usr/include/vorbis/vorbisfile.h header.</detailed></description>
-  <constant name="NOTOPEN" declaration="NOTOPEN   = 0;" visibility="published">
+  <constant name="NOTOPEN" declaration="NOTOPEN   = 0;">
   </constant>
-  <constant name="PARTOPEN" declaration="PARTOPEN  = 1;" visibility="published">
+  <constant name="PARTOPEN" declaration="PARTOPEN  = 1;">
   </constant>
-  <constant name="OPENED" declaration="OPENED    = 2;" visibility="published">
+  <constant name="OPENED" declaration="OPENED    = 2;">
   </constant>
-  <constant name="STREAMSET" declaration="STREAMSET = 3;" visibility="published">
+  <constant name="STREAMSET" declaration="STREAMSET = 3;">
   </constant>
-  <constant name="INITSET" declaration="INITSET   = 4;" visibility="published">
+  <constant name="INITSET" declaration="INITSET   = 4;">
   </constant>
-  <variable name="ov_clear" declaration="ov_clear: function(Vf: POggVorbis_File): CInt; cdecl;" visibility="published">
+  <variable name="ov_clear" declaration="ov_clear: function(Vf: POggVorbis_File): CInt; cdecl;">
   </variable>
-  <variable name="VorbisFileInited" declaration="VorbisFileInited: boolean;" visibility="published">
+  <variable name="VorbisFileInited" declaration="VorbisFileInited: boolean;">
   </variable>
-  <type name="TSizeT" declaration="TSizeT = LongWord;" visibility="published">
+  <type name="TSizeT" declaration="TSizeT = LongWord;">
   </type>
-  <type name="TVorbisFileReadFunc" declaration="TVorbisFileReadFunc = function (ptr: Pointer; Size: TSizeT; nmemb: TSizeT; DataSource: Pointer): TSizeT; cdecl;" visibility="published">
+  <type name="TVorbisFileReadFunc" declaration="TVorbisFileReadFunc = function (ptr: Pointer; Size: TSizeT; nmemb: TSizeT; DataSource: Pointer): TSizeT; cdecl;">
   </type>
-  <type name="TVorbisFileSeekFunc" declaration="TVorbisFileSeekFunc = function (DataSource: Pointer; offset: Int64; whence: CInt): CInt; cdecl;" visibility="published">
+  <type name="TVorbisFileSeekFunc" declaration="TVorbisFileSeekFunc = function (DataSource: Pointer; offset: Int64; whence: CInt): CInt; cdecl;">
   </type>
-  <type name="TVorbisFileCloseFunc" declaration="TVorbisFileCloseFunc = function (DataSource: Pointer): CInt; cdecl;" visibility="published">
+  <type name="TVorbisFileCloseFunc" declaration="TVorbisFileCloseFunc = function (DataSource: Pointer): CInt; cdecl;">
   </type>
-  <type name="TVorbisFileTellFunc" declaration="TVorbisFileTellFunc = function (DataSource: Pointer): CLong; cdecl;" visibility="published">
+  <type name="TVorbisFileTellFunc" declaration="TVorbisFileTellFunc = function (DataSource: Pointer): CLong; cdecl;">
   </type>
-  <type name="Pov_callbacks" declaration="Pov_callbacks = ^Tov_callbacks;" visibility="published">
+  <type name="Pov_callbacks" declaration="Pov_callbacks = ^Tov_callbacks;">
   </type>
-  <type name="POggVorbis_File" declaration="POggVorbis_File = ^TOggVorbis_File;" visibility="published">
+  <type name="POggVorbis_File" declaration="POggVorbis_File = ^TOggVorbis_File;">
   </type>
-  <structure name="Tov_callbacks" visibility="published" name_with_generic="Tov_callbacks" type="record">
+  <structure name="Tov_callbacks" name_with_generic="Tov_callbacks" type="record">
     <variable name="read_func" declaration="read_func: TVorbisFileReadFunc;" visibility="public">
     </variable>
     <variable name="seek_func" declaration="seek_func: TVorbisFileSeekFunc;" visibility="public">
@@ -38,7 +38,7 @@
     <variable name="tell_func" declaration="tell_func: TVorbisFileTellFunc;" visibility="public">
     </variable>
   </structure>
-  <structure name="TOggVorbis_File" visibility="published" name_with_generic="TOggVorbis_File" type="record">
+  <structure name="TOggVorbis_File" name_with_generic="TOggVorbis_File" type="record">
     <variable name="datasource" declaration="datasource: Pointer;" visibility="public">
     </variable>
     <variable name="seekable" declaration="seekable: Cint;" visibility="public">

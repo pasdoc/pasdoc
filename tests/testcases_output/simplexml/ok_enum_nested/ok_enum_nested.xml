@@ -1,13 +1,13 @@
 <unit name="ok_enum_nested">
-  <type name="TGlobalEnum" declaration="TGlobalEnum = (...);" visibility="published">
-    <constant name="geOne" declaration="geOne" visibility="published">
+  <type name="TGlobalEnum" declaration="TGlobalEnum = (...);">
+    <constant name="geOne" declaration="geOne">
     </constant>
-    <constant name="geTwo" declaration="geTwo" visibility="published">
+    <constant name="geTwo" declaration="geTwo">
     </constant>
-    <constant name="geThree" declaration="geThree" visibility="published">
+    <constant name="geThree" declaration="geThree">
     </constant>
   </type>
-  <structure name="TMyObject" visibility="published" name_with_generic="TMyObject" type="class">
+  <structure name="TMyObject" name_with_generic="TMyObject" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <type name="TObjectEnum" declaration="TObjectEnum = (...);" visibility="public">
       <constant name="oeOne" declaration="oeOne" visibility="published">

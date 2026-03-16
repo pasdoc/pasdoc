@@ -1,5 +1,5 @@
 <unit name="ok_array_property">
-  <structure name="TAbstractNode" visibility="published" name_with_generic="TAbstractNode" type="class">
+  <structure name="TAbstractNode" name_with_generic="TAbstractNode" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <property name="MetadataBoolean" declaration="property MetadataBoolean[const Key: String]: Boolean read GetMetadataBoolean write SetMetadataBoolean;" visibility="public" indexdecl="[constKey:String]" type="Boolean" reader="GetMetadataBoolean" writer="SetMetadataBoolean" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>

@@ -1,19 +1,19 @@
 <unit name="warning_back_comment">
   <description><detailed>Descr of unit warning_back_comment</detailed></description>
-  <variable name="V1" declaration="V1: Integer;" visibility="published">
+  <variable name="V1" declaration="V1: Integer;">
     <description><detailed>descr of V1 and V2</detailed></description>
   </variable>
-  <variable name="V2" declaration="V2: Integer;" visibility="published">
+  <variable name="V2" declaration="V2: Integer;">
     <description><detailed>descr of V1 and V2</detailed></description>
   </variable>
-  <variable name="V4" declaration="V4: string;" visibility="published">
+  <variable name="V4" declaration="V4: string;">
     <description><detailed>descr of V4 after a keyword</detailed></description>
   </variable>
-  <type name="T" declaration="T = byte;" visibility="published">
+  <type name="T" declaration="T = byte;">
   </type>
-  <type name="TMyEnum" declaration="TMyEnum = (...);" visibility="published">
+  <type name="TMyEnum" declaration="TMyEnum = (...);">
     <description><detailed>Descr of TMyEnum</detailed></description>
-    <constant name="meOne" declaration="meOne" visibility="published">
+    <constant name="meOne" declaration="meOne">
       <description><detailed>Descr of meOne</detailed></description>
     </constant>
   </type>

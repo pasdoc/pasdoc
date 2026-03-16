@@ -1,5 +1,5 @@
 <unit name="ok_property_decl">
-  <structure name="TMyClass" visibility="published" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <property name="MyProperty" declaration="property MyProperty[S: string]: Integer read GetMyProperty;" visibility="public" indexdecl="[S:string]" type="Integer" reader="GetMyProperty" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>

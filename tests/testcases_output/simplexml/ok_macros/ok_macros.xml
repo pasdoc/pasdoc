@@ -1,33 +1,33 @@
 <unit name="ok_macros">
   <description><abstract>Test of FPC macros handling.</abstract><detailed> Parts based on [http://sourceforge.net/tracker/index.php?func=detail&amp;aid=861356&amp;group_id=4213&amp;atid=354213]</detailed></description>
-  <routine name="MyProc1" declaration="procedure MyProc1( a:Integer);" visibility="published" type="procedure">
+  <routine name="MyProc1" declaration="procedure MyProc1( a:Integer);" type="procedure">
     <description><detailed>Below is an example of a very bad and confusing (but valid) macro usage. Just to test pasdoc.</detailed></description>
   </routine>
-  <routine name="MyProc2" declaration="procedure MyProc2( b: Integer);" visibility="published" type="procedure">
+  <routine name="MyProc2" declaration="procedure MyProc2( b: Integer);" type="procedure">
     <description><detailed>This is very stupid way to declare a procedure</detailed></description>
   </routine>
-  <routine name="Foo" declaration="function Foo(c: string): Integer;" visibility="published" type="function">
+  <routine name="Foo" declaration="function Foo(c: string): Integer;" type="function">
   </routine>
-  <routine name="MyProc3" declaration="procedure MyProc3( X: Integer = 1; Y: Integer = 2);" visibility="published" type="procedure">
+  <routine name="MyProc3" declaration="procedure MyProc3( X: Integer = 1; Y: Integer = 2);" type="procedure">
   </routine>
-  <routine name="ThisShouldBeIncluded" declaration="procedure ThisShouldBeIncluded;" visibility="published" type="procedure">
+  <routine name="ThisShouldBeIncluded" declaration="procedure ThisShouldBeIncluded;" type="procedure">
   </routine>
-  <routine name="ThisShouldBeIncluded2" declaration="procedure ThisShouldBeIncluded2;" visibility="published" type="procedure">
+  <routine name="ThisShouldBeIncluded2" declaration="procedure ThisShouldBeIncluded2;" type="procedure">
   </routine>
-  <constant name="ThisShouldBeTrue" declaration="ThisShouldBeTrue = true;" visibility="published">
+  <constant name="ThisShouldBeTrue" declaration="ThisShouldBeTrue = true;">
   </constant>
-  <constant name="FourConst" declaration="FourConst =  (1 + 1) * (1 + 1);" visibility="published">
+  <constant name="FourConst" declaration="FourConst =  (1 + 1) * (1 + 1);">
     <description><detailed>Test of recursive macro expansion.</detailed></description>
   </constant>
-  <constant name="OneAndNotNothing" declaration="OneAndNotNothing = 1  + 1;" visibility="published">
+  <constant name="OneAndNotNothing" declaration="OneAndNotNothing = 1  + 1;">
     <description><detailed>Test that symbol that is not a macro is something different than a macro that expands to nothing.</detailed></description>
   </constant>
-  <constant name="OnlyOne" declaration="OnlyOne = 1 ;" visibility="published">
+  <constant name="OnlyOne" declaration="OnlyOne = 1 ;">
   </constant>
-  <structure name="TAncestor" visibility="published" name_with_generic="TAncestor" type="class">
+  <structure name="TAncestor" name_with_generic="TAncestor" type="class">
     <ancestor name="TObject" declaration="TObject" />
   </structure>
-  <structure name="TMyClass" visibility="published" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <ancestor name="TAncestor" declaration="TAncestor" />
     <routine name="Init" declaration="Constructor Init; Overload;" visibility="public" type="constructor">
     </routine>

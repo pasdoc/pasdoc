@@ -7,7 +7,7 @@
 </unorderedlist>
 
 </detailed></description>
-  <structure name="TTest" visibility="published" name_with_generic="TTest" type="class">
+  <structure name="TTest" name_with_generic="TTest" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <routine name="Create" declaration="class constructor Create;" visibility="public" type="constructor">
     </routine>

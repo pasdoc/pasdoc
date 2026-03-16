@@ -1,11 +1,11 @@
 <unit name="ok_ancestor_qualified">
   <description><detailed>Test of using ancestor name qualified with unit name.</detailed></description>
-  <structure name="TCastleObjectStack" visibility="published" name_with_generic="TCastleObjectStack" type="class">
+  <structure name="TCastleObjectStack" name_with_generic="TCastleObjectStack" type="class">
     <ancestor name="Contnrs.TObjectStack" declaration="Contnrs.TObjectStack" />
     <property name="Capacity" declaration="property Capacity: TListSize read GetCapacity write SetCapacity;" visibility="public" indexdecl="" type="TListSize" reader="GetCapacity" writer="SetCapacity" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
   </structure>
-  <structure name="TSomethingElse" visibility="published" name_with_generic="TSomethingElse" type="class">
+  <structure name="TSomethingElse" name_with_generic="TSomethingElse" type="class">
     <ancestor name="ok_ancestor_qualified.TCastleObjectStack" declaration="ok_ancestor_qualified.TCastleObjectStack" />
   </structure>
 </unit>

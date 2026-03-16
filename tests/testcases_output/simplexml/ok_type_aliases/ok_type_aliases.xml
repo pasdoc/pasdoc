@@ -1,5 +1,5 @@
 <unit name="ok_type_aliases">
-  <routine name="Test" declaration="procedure Test;" visibility="published" type="procedure">
+  <routine name="Test" declaration="procedure Test;" type="procedure">
     <description><detailed>Also linking using @tags to arbitrary qualified type identifiers should work: 
 
 <unorderedlist>
@@ -16,58 +16,58 @@
 
 </detailed></description>
   </routine>
-  <type name="TWeakAliasType" declaration="TWeakAliasType = TOriginalType;" visibility="published">
+  <type name="TWeakAliasType" declaration="TWeakAliasType = TOriginalType;">
     <description><abstract>TOriginalType abstract description</abstract></description>
   </type>
-  <type name="TStrongAliasType" declaration="TStrongAliasType = type TOriginalType;" visibility="published">
+  <type name="TStrongAliasType" declaration="TStrongAliasType = type TOriginalType;">
     <description><abstract>TOriginalType abstract description</abstract></description>
   </type>
-  <type name="TWeakAliasType2" declaration="TWeakAliasType2 = TOriginalType2;" visibility="published">
+  <type name="TWeakAliasType2" declaration="TWeakAliasType2 = TOriginalType2;">
     <description><abstract>TOriginalType2 abstract description.</abstract><detailed> More and more description.</detailed></description>
   </type>
-  <type name="TStrongAliasType2" declaration="TStrongAliasType2 = type TOriginalType2;" visibility="published">
+  <type name="TStrongAliasType2" declaration="TStrongAliasType2 = type TOriginalType2;">
     <description><abstract>TOriginalType2 abstract description.</abstract><detailed> More and more description.</detailed></description>
   </type>
-  <type name="TWeakAliasType3" declaration="TWeakAliasType3 = TOriginalType3;" visibility="published">
+  <type name="TWeakAliasType3" declaration="TWeakAliasType3 = TOriginalType3;">
     <description><abstract>Special weak alias abstract.</abstract><detailed> More and more description.</detailed></description>
   </type>
-  <type name="TStrongAliasType3" declaration="TStrongAliasType3 = type TOriginalType3;" visibility="published">
+  <type name="TStrongAliasType3" declaration="TStrongAliasType3 = type TOriginalType3;">
     <description><abstract>Special strong alias abstract.</abstract><detailed> More and more description.</detailed></description>
   </type>
-  <type name="TWeakAliasTypeVeryNested" declaration="TWeakAliasTypeVeryNested = TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;" visibility="published">
+  <type name="TWeakAliasTypeVeryNested" declaration="TWeakAliasTypeVeryNested = TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;">
     <description><abstract>TOriginalType abstract description, inside nested class(es).</abstract><detailed> More and more description.</detailed></description>
   </type>
-  <type name="TStrongAliasTypeVeryNested" declaration="TStrongAliasTypeVeryNested = type TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;" visibility="published">
+  <type name="TStrongAliasTypeVeryNested" declaration="TStrongAliasTypeVeryNested = type TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;">
     <description><abstract>TOriginalType abstract description, inside nested class(es).</abstract><detailed> More and more description.</detailed></description>
   </type>
-  <type name="TMyContainerAlias" declaration="TMyContainerAlias = TMyContainer;" visibility="published">
+  <type name="TMyContainerAlias" declaration="TMyContainerAlias = TMyContainer;">
     <description><detailed>This class manages a Controls list.</detailed></description>
   </type>
-  <type name="TMyContainerStrongAlias" declaration="TMyContainerStrongAlias = type TMyContainer;" visibility="published">
+  <type name="TMyContainerStrongAlias" declaration="TMyContainerStrongAlias = type TMyContainer;">
     <description><detailed>This class manages a Controls list.</detailed></description>
   </type>
-  <structure name="TOriginalType" visibility="published" name_with_generic="TOriginalType" type="record">
+  <structure name="TOriginalType" name_with_generic="TOriginalType" type="record">
     <description><abstract>TOriginalType abstract description</abstract></description>
     <variable name="x" declaration="x: integer " visibility="public">
     </variable>
     <variable name="y" declaration="y: integer " visibility="public">
     </variable>
   </structure>
-  <structure name="TOriginalType2" visibility="published" name_with_generic="TOriginalType2" type="record">
+  <structure name="TOriginalType2" name_with_generic="TOriginalType2" type="record">
     <description><abstract>TOriginalType2 abstract description.</abstract><detailed> More and more description.</detailed></description>
     <variable name="x" declaration="x: integer " visibility="public">
     </variable>
     <variable name="y" declaration="y: integer " visibility="public">
     </variable>
   </structure>
-  <structure name="TOriginalType3" visibility="published" name_with_generic="TOriginalType3" type="record">
+  <structure name="TOriginalType3" name_with_generic="TOriginalType3" type="record">
     <description><abstract>TOriginalType3 abstract description.</abstract><detailed> More and more description.</detailed></description>
     <variable name="x" declaration="x: integer " visibility="public">
     </variable>
     <variable name="y" declaration="y: integer " visibility="public">
     </variable>
   </structure>
-  <structure name="TMyClass" visibility="published" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <structure name="TMyNestedClass" visibility="public" name_with_generic="TMyNestedClass" type="class">
       <ancestor name="TObject" declaration="TObject" />
@@ -83,7 +83,7 @@
       </structure>
     </structure>
   </structure>
-  <structure name="TMyContainer" visibility="published" name_with_generic="TMyContainer" type="class">
+  <structure name="TMyContainer" name_with_generic="TMyContainer" type="class">
     <description><detailed>This class manages a Controls list.</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
     <property name="Controls" declaration="property Controls: TControls read GetControls;" visibility="public" indexdecl="" type="TControls" reader="GetControls" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">

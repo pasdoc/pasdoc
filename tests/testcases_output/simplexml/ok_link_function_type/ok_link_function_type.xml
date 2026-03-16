@@ -1,10 +1,10 @@
 <unit name="ok_link_function_type">
-  <routine name="Test" declaration="procedure Test(F: TMyFunction; R: TMyRecord);" visibility="published" type="procedure">
+  <routine name="Test" declaration="procedure Test(F: TMyFunction; R: TMyRecord);" type="procedure">
     <description><detailed>Give TMyFunction and TMyRecord to test it.</detailed></description>
   </routine>
-  <type name="TMyFunction" declaration="TMyFunction = function(A: Integer): Integer;" visibility="published">
+  <type name="TMyFunction" declaration="TMyFunction = function(A: Integer): Integer;">
   </type>
-  <structure name="TMyRecord" visibility="published" name_with_generic="TMyRecord" type="record">
+  <structure name="TMyRecord" name_with_generic="TMyRecord" type="record">
     <variable name="A" declaration="A: Integer;" visibility="public">
     </variable>
   </structure>

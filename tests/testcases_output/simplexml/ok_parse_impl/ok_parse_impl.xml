@@ -1,29 +1,29 @@
 <unit name="ok_parse_impl">
   <description><detailed>Parse implementation section. Must be tested with --implementation-comments=join --define PASDOC</detailed></description>
-  <routine name="Foo" declaration="procedure Foo;" visibility="published" type="procedure">
+  <routine name="Foo" declaration="procedure Foo;" type="procedure">
     <description><detailed>This is Foo (intf) This is Foo (impl)</detailed></description>
   </routine>
-  <routine name="Bar" declaration="procedure Bar;" visibility="published" type="procedure">
+  <routine name="Bar" declaration="procedure Bar;" type="procedure">
     <description><detailed>This is Bar (impl)</detailed></description>
   </routine>
-  <routine name="Laz" declaration="procedure Laz;" visibility="published" type="procedure">
+  <routine name="Laz" declaration="procedure Laz;" type="procedure">
     <description><detailed>This is Laz And it must not be doubled</detailed></description>
   </routine>
-  <routine name="Dex" declaration="procedure Dex;" visibility="published" type="procedure">
+  <routine name="Dex" declaration="procedure Dex;" type="procedure">
     <description><detailed>This is Dex described inside method body</detailed></description>
   </routine>
-  <routine name="NoDescr" declaration="procedure NoDescr;" visibility="published" type="procedure">
+  <routine name="NoDescr" declaration="procedure NoDescr;" type="procedure">
   </routine>
-  <routine name="Overloaded" declaration="procedure Overloaded; overload;" visibility="published" type="procedure">
+  <routine name="Overloaded" declaration="procedure Overloaded; overload;" type="procedure">
     <description><detailed>This is overloaded proc #1</detailed></description>
   </routine>
-  <routine name="Overloaded" declaration="procedure Overloaded(a: Byte); overload;" visibility="published" type="procedure">
+  <routine name="Overloaded" declaration="procedure Overloaded(a: Byte); overload;" type="procedure">
     <description><detailed>This is overloaded proc #2</detailed></description>
   </routine>
-  <routine name=":=" declaration="Operator := (C : TMyType) z : TMyType;" visibility="published" type="operator">
+  <routine name=":=" declaration="Operator := (C : TMyType) z : TMyType;" type="operator">
     <description><detailed>This is assignment operator</detailed></description>
   </routine>
-  <structure name="TClass" visibility="published" name_with_generic="TClass" type="class">
+  <structure name="TClass" name_with_generic="TClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <routine name="Create" declaration="constructor Create; overload;" visibility="public" type="constructor">
       <description><detailed>Creates instance of TClass</detailed></description>
@@ -47,6 +47,6 @@
       </routine>
     </structure>
   </structure>
-  <structure name="TMyType" visibility="published" name_with_generic="TMyType" type="record">
+  <structure name="TMyType" name_with_generic="TMyType" type="record">
   </structure>
 </unit>

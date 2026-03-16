@@ -1,6 +1,6 @@
 <unit name="ok_nested_1">
   <description><detailed>Testcase of classes nested in classes. This is a reworked version of code from Castle Game Engine.</detailed></description>
-  <structure name="TRepoSoundEngine" visibility="published" name_with_generic="TRepoSoundEngine" type="class">
+  <structure name="TRepoSoundEngine" name_with_generic="TRepoSoundEngine" type="class">
     <ancestor name="TSoundEngine" declaration="TSoundEngine" />
     <routine name="SetRepositoryUrl" declaration="procedure SetRepositoryUrl(const Value: String);" visibility="private" type="procedure">
     </routine>

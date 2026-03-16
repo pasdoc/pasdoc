@@ -1,30 +1,30 @@
 <unit name="ok_source_position" source-line="2" source-relative-file-name="ok_source_position.pas" source-url="">
   <description><abstract>Test of --show-source-position and --source-url-pattern features.</abstract></description>
-  <routine name="MyProc" declaration="procedure MyProc;" visibility="published" source-line="16" source-relative-file-name="ok_source_position.pas" source-url="" type="procedure">
+  <routine name="MyProc" declaration="procedure MyProc;" source-line="16" source-relative-file-name="ok_source_position.pas" source-url="" type="procedure">
     <description><detailed>A simple procedure.</detailed></description>
   </routine>
-  <constant name="MyConst" declaration="MyConst = 42;" visibility="published" source-line="7" source-relative-file-name="ok_source_position.pas" source-url="">
+  <constant name="MyConst" declaration="MyConst = 42;" source-line="7" source-relative-file-name="ok_source_position.pas" source-url="">
     <description><detailed>A simple constant.</detailed></description>
   </constant>
-  <variable name="MyVar" declaration="MyVar: Integer;" visibility="published" source-line="13" source-relative-file-name="ok_source_position.pas" source-url="">
+  <variable name="MyVar" declaration="MyVar: Integer;" source-line="13" source-relative-file-name="ok_source_position.pas" source-url="">
     <description><detailed>A simple variable.</detailed></description>
   </variable>
-  <type name="TMyType" declaration="TMyType = Integer;" visibility="published" source-line="10" source-relative-file-name="ok_source_position.pas" source-url="">
+  <type name="TMyType" declaration="TMyType = Integer;" source-line="10" source-relative-file-name="ok_source_position.pas" source-url="">
     <description><detailed>A simple type.</detailed></description>
   </type>
-  <type name="TEnum" declaration="TEnum = (...);" visibility="published" source-line="30" source-relative-file-name="ok_source_position.pas" source-url="">
+  <type name="TEnum" declaration="TEnum = (...);" source-line="30" source-relative-file-name="ok_source_position.pas" source-url="">
     <description><detailed>An enumerated type.</detailed></description>
-    <constant name="eOne" declaration="eOne" visibility="published">
+    <constant name="eOne" declaration="eOne">
       <description><detailed>The first value.</detailed></description>
     </constant>
-    <constant name="eTwo" declaration="eTwo" visibility="published">
+    <constant name="eTwo" declaration="eTwo">
       <description><detailed>The second value.</detailed></description>
     </constant>
-    <constant name="eThree" declaration="eThree" visibility="published">
+    <constant name="eThree" declaration="eThree">
       <description><detailed>The third value.</detailed></description>
     </constant>
   </type>
-  <structure name="TMyClass" visibility="published" source-line="20" source-relative-file-name="ok_source_position.pas" source-url="" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" source-line="20" source-relative-file-name="ok_source_position.pas" source-url="" name_with_generic="TMyClass" type="class">
     <description><detailed>A simple class.</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
     <routine name="MyMethod" declaration="procedure MyMethod;" visibility="public" source-line="24" source-relative-file-name="ok_source_position.pas" source-url="" type="procedure">

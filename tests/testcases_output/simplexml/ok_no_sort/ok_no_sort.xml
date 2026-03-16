@@ -1,19 +1,19 @@
 <unit name="ok_no_sort">
-  <type name="TMyEnum" declaration="TMyEnum = (...);" visibility="published">
+  <type name="TMyEnum" declaration="TMyEnum = (...);">
     <description><detailed>Enum values are not sorted</detailed></description>
-    <constant name="meZZZ" declaration="meZZZ" visibility="published">
+    <constant name="meZZZ" declaration="meZZZ">
     </constant>
-    <constant name="meAAA" declaration="meAAA" visibility="published">
+    <constant name="meAAA" declaration="meAAA">
     </constant>
   </type>
-  <structure name="TMyRecord" visibility="published" name_with_generic="TMyRecord" type="record">
+  <structure name="TMyRecord" name_with_generic="TMyRecord" type="record">
     <description><detailed>Record fields are not sorted</detailed></description>
     <variable name="ZZZ" declaration="ZZZ: Integer;" visibility="public">
     </variable>
     <variable name="AAA" declaration="AAA: Integer;" visibility="public">
     </variable>
   </structure>
-  <structure name="TMyClass" visibility="published" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <description><detailed>Class fields are sorted</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
     <variable name="AAA" declaration="AAA: Integer;" visibility="public">

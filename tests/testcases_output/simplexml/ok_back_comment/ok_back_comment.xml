@@ -1,36 +1,36 @@
 <unit name="ok_back_comment">
   <description><detailed>Description of unit ok_back_comment.</detailed></description>
-  <routine name="Foo" declaration="procedure Foo;" visibility="published" type="procedure">
+  <routine name="Foo" declaration="procedure Foo;" type="procedure">
     <description><detailed>Description of Foo, (<code>Foo</code>)</detailed></description>
   </routine>
-  <constant name="MyConst" declaration="MyConst = 2;" visibility="published">
+  <constant name="MyConst" declaration="MyConst = 2;">
     <description><detailed>Description of MyConst</detailed></description>
   </constant>
-  <variable name="V" declaration="V: Integer;" visibility="published">
+  <variable name="V" declaration="V: Integer;">
     <description><detailed>Description of V</detailed></description>
   </variable>
-  <variable name="V1" declaration="V1: Integer;" visibility="published">
+  <variable name="V1" declaration="V1: Integer;">
     <description><detailed>Description of V1 and V2</detailed></description>
   </variable>
-  <variable name="V2" declaration="V2: Integer;" visibility="published">
+  <variable name="V2" declaration="V2: Integer;">
     <description><detailed>Description of V1 and V2</detailed></description>
   </variable>
-  <type name="TMyType" declaration="TMyType = Integer;" visibility="published">
+  <type name="TMyType" declaration="TMyType = Integer;">
     <description><detailed>Description of TMyType</detailed></description>
   </type>
-  <type name="TMyEnum" declaration="TMyEnum = (...);" visibility="published">
+  <type name="TMyEnum" declaration="TMyEnum = (...);">
     <description><detailed>Description of TMyEnum</detailed></description>
-    <constant name="meOne" declaration="meOne" visibility="published">
+    <constant name="meOne" declaration="meOne">
       <description><detailed>Description of meOne</detailed></description>
     </constant>
-    <constant name="meTwo" declaration="meTwo" visibility="published">
+    <constant name="meTwo" declaration="meTwo">
       <description><detailed>Description of meTwo</detailed></description>
     </constant>
-    <constant name="meThree" declaration="meThree" visibility="published">
+    <constant name="meThree" declaration="meThree">
       <description><detailed>Description of meThree</detailed></description>
     </constant>
   </type>
-  <structure name="TMyClass" visibility="published" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <description><detailed>Description of TMyClass</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
     <routine name="MyProc" declaration="procedure MyProc;" visibility="public" type="procedure">
@@ -43,11 +43,11 @@
       <description><detailed>Description of MyProp</detailed></description>
     </property>
   </structure>
-  <structure name="TMyException1" visibility="published" name_with_generic="TMyException1" type="class">
+  <structure name="TMyException1" name_with_generic="TMyException1" type="class">
     <description><detailed>Description of TMyException1</detailed></description>
     <ancestor name="Exception" declaration="Exception" />
   </structure>
-  <structure name="TMyException2" visibility="published" name_with_generic="TMyException2" type="class">
+  <structure name="TMyException2" name_with_generic="TMyException2" type="class">
     <description><detailed>Description of TMyException2</detailed></description>
     <ancestor name="Exception" declaration="Exception" />
   </structure>

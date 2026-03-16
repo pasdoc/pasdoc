@@ -1,12 +1,12 @@
 <unit name="A">
-  <routine name="Foo" declaration="procedure Foo(A: Integer);" visibility="published" type="procedure">
+  <routine name="Foo" declaration="procedure Foo(A: Integer);" type="procedure">
     <param name="A">This is some parameter.</param>
     <description><detailed> </detailed></description>
   </routine>
-  <structure name="TMyException" visibility="published" name_with_generic="TMyException" type="class">
+  <structure name="TMyException" name_with_generic="TMyException" type="class">
     <ancestor name="TObject" declaration="TObject" />
   </structure>
-  <structure name="TMyClass" visibility="published" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <property name="Bar" declaration="property Bar: Integer read FBar write SetBar;" visibility="public" indexdecl="" type="Integer" reader="FBar" writer="SetBar" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>

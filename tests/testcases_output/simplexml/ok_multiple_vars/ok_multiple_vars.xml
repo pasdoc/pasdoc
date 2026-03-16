@@ -1,17 +1,17 @@
 <unit name="ok_multiple_vars">
-  <variable name="A" declaration="A: Integer;" visibility="published">
+  <variable name="A" declaration="A: Integer;">
     <description><detailed>Docs for A and B</detailed></description>
   </variable>
-  <variable name="B" declaration="B: Integer;" visibility="published">
+  <variable name="B" declaration="B: Integer;">
     <description><detailed>Docs for A and B</detailed></description>
   </variable>
-  <variable name="C" declaration="C: function(A: Integer): boolean;" visibility="published">
+  <variable name="C" declaration="C: function(A: Integer): boolean;">
     <description><detailed>Docs for C and D</detailed></description>
   </variable>
-  <variable name="D" declaration="D: function(A: Integer): boolean;" visibility="published">
+  <variable name="D" declaration="D: function(A: Integer): boolean;">
     <description><detailed>Docs for C and D</detailed></description>
   </variable>
-  <structure name="TMyClass" visibility="published" name_with_generic="TMyClass" type="class">
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <variable name="A" declaration="A: Integer;" visibility="public">
       <description><detailed>Docs for A and B</detailed></description>

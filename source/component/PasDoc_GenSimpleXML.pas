@@ -77,13 +77,6 @@ type
 
     { Remove indentation from Space, reverting the work of last @link(Indent). }
     procedure UnIndent;
-
-    { XML attributes derived from TPasItem.SourceAbsoluteFileName and SourceLine. }
-    function SourcePositionAttributes(const Item: TPasItem): String;
-
-    { XML attributes derived from TPasItem.HintDirectives and TPasItem.DeprecatedNote. }
-    function HintDirectivesToString(const Item: TPasItem): String;
-
   public
     procedure WriteDocumentation; override;
     function GetFileExtension: string; override;
@@ -92,42 +85,6 @@ type
 implementation
 
 uses SysUtils;
-
-function TSimpleXMLDocGenerator.SourcePositionAttributes(
-  const Item: TPasItem): string;
-var
-  ItemName, ItemFilenameInRoot, ItemUrl: string;
-begin
-  if HasSourcePosition(Item, ItemName, ItemFilenameInRoot, ItemUrl) then
-    Result :=
-      // machine-specific, don't output
-      //' source-absolute-file-name="' + ConvertString(Item.SourceAbsoluteFileName) + '"' +
-      ' source-line="' + IntToStr(Item.SourceLine) + '"' +
-      ' source-relative-file-name="' + ConvertString(ItemFilenameInRoot) + '"' +
-      ' source-url="' + ConvertString(ItemUrl) + '"'
-  else
-    Result := '';
-end;
-
-function TSimpleXMLDocGenerator.HintDirectivesToString(const Item: TPasItem): String;
-const
-  HintDirectiveXmlAttribute: array[THintDirective] of string = (
-    'deprecated',
-    'platform',
-    'library',
-    'experimental',
-    'unimplemented'
-  );
-var
-  Directive: THintDirective;
-begin
-  Result := '';
-  if Item.DeprecatedNote <> '' then
-    Result := Result + ' deprecated_note="' + ConvertString(Item.DeprecatedNote) + '"';
-  for Directive := Low(THintDirective) to High(THintDirective) do
-    if Directive in Item.HintDirectives then
-      Result := Result + ' ' + HintDirectiveXmlAttribute[Directive] + '="true"';
-end;
 
 function TSimpleXMLDocGenerator.GetFileExtension:string;
 begin
@@ -187,13 +144,50 @@ begin
 end;
 
 function TSimpleXMLDocGenerator.CommonAttributes(const Item: TPasItem): String;
+
+  { XML attributes derived from TPasItem.SourceAbsoluteFileName and SourceLine. }
+  function SourcePositionAttributes(const Item: TPasItem): String;
+  var
+    ItemName, ItemFilenameInRoot, ItemUrl: string;
+  begin
+    if HasSourcePosition(Item, ItemName, ItemFilenameInRoot, ItemUrl) then
+      Result :=
+        // machine-specific, don't output
+        //' source-absolute-file-name="' + ConvertString(Item.SourceAbsoluteFileName) + '"' +
+        ' source-line="' + IntToStr(Item.SourceLine) + '"' +
+        ' source-relative-file-name="' + ConvertString(ItemFilenameInRoot) + '"' +
+        ' source-url="' + ConvertString(ItemUrl) + '"'
+    else
+      Result := '';
+  end;
+
+  { XML attributes derived from TPasItem.HintDirectives and TPasItem.DeprecatedNote. }
+  function HintDirectivesToString(const Item: TPasItem): String;
+  const
+    HintDirectiveXmlAttribute: array[THintDirective] of string = (
+      'deprecated',
+      'platform',
+      'library',
+      'experimental',
+      'unimplemented'
+    );
+  var
+    Directive: THintDirective;
+  begin
+    Result := '';
+    if Item.DeprecatedNote <> '' then
+      Result := Result + ' deprecated_note="' + ConvertString(Item.DeprecatedNote) + '"';
+    for Directive := Low(THintDirective) to High(THintDirective) do
+      if Directive in Item.HintDirectives then
+        Result := Result + ' ' + HintDirectiveXmlAttribute[Directive] + '="true"';
+  end;
+
 begin
   Result := ' name="' + ConvertString(Item.name) + '"';
   if Item.FullDeclaration <> '' then
     Result := Result + ' declaration="' + ConvertString(Item.FullDeclaration) + '"';
-  //if Item.MyObject <> nil then // otherwise Item.visibility is meaningless
-  Result := Result +
-    ' visibility="' + VisToStr(Item.visibility) + '"';
+  if Item.MyObject <> nil then // otherwise Item.visibility is meaningless
+    Result := Result + ' visibility="' + VisToStr(Item.visibility) + '"';
   Result := Result +
     SourcePositionAttributes(item) +
     HintDirectivesToString(item);
@@ -346,9 +340,7 @@ begin
   if not CreateStream(U.OutputFileName) then Exit;
 
   DoMessage(2, pmtInformation, 'Writing Docs for unit "%s"', [U.Name]);
-  WriteDirectLine('<unit name="' + ConvertString(U.Name) + '"' +
-    SourcePositionAttributes(U) +
-    HintDirectivesToString(U) +'>');
+  WriteDirectLine('<unit' + CommonAttributes(U) + '>');
   space:='  ';
   if u.HasDescription then
     WriteDirectLine(space + ItemDescription(u));

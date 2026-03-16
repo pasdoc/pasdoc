@@ -1,9 +1,9 @@
 <unit name="ok_link_tag_overloads">
-  <routine name="TopLevelFunc" declaration="function TopLevelFunc(MyStr: string): integer; overload;" visibility="published" type="function">
+  <routine name="TopLevelFunc" declaration="function TopLevelFunc(MyStr: string): integer; overload;" type="function">
   </routine>
-  <routine name="TopLevelFunc" declaration="function TopLevelFunc(MyInt: Integer): Integer; overload;" visibility="published" type="function">
+  <routine name="TopLevelFunc" declaration="function TopLevelFunc(MyInt: Integer): Integer; overload;" type="function">
   </routine>
-  <structure name="TLinkHolder" visibility="published" name_with_generic="TLinkHolder" type="class">
+  <structure name="TLinkHolder" name_with_generic="TLinkHolder" type="class">
     <description><detailed>
 
 <unorderedlist>
@@ -21,13 +21,13 @@
 </detailed></description>
     <ancestor name="TObject" declaration="TObject" />
   </structure>
-  <structure name="TOverloadedBase" visibility="published" name_with_generic="TOverloadedBase" type="class">
+  <structure name="TOverloadedBase" name_with_generic="TOverloadedBase" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <routine name="Bar" declaration="procedure Bar(MyInt: Integer; MyBool: Boolean); virtual;" visibility="public" type="procedure">
       <description><detailed><code>TOverloadedBase</code>.<code>Bar</code></detailed></description>
     </routine>
   </structure>
-  <structure name="TOverloadedMethods" visibility="published" name_with_generic="TOverloadedMethods" type="class">
+  <structure name="TOverloadedMethods" name_with_generic="TOverloadedMethods" type="class">
     <description><detailed>TLinkHolder</detailed></description>
     <ancestor name="TOverloadedBase" declaration="TOverloadedBase" />
     <routine name="Foo" declaration="procedure Foo(MyInt: IntEGEr); overload;" visibility="public" type="procedure">

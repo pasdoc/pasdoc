@@ -1,25 +1,25 @@
 <unit name="ok_interfaces_graphviz">
-  <structure name="TBaseClass" visibility="published" name_with_generic="TBaseClass" type="class">
+  <structure name="TBaseClass" name_with_generic="TBaseClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
   </structure>
-  <structure name="TDerivedClass" visibility="published" name_with_generic="TDerivedClass" type="class">
+  <structure name="TDerivedClass" name_with_generic="TDerivedClass" type="class">
     <ancestor name="TBaseClass" declaration="TBaseClass" />
   </structure>
-  <structure name="TDerivedClassWithInterface" visibility="published" name_with_generic="TDerivedClassWithInterface" type="class">
+  <structure name="TDerivedClassWithInterface" name_with_generic="TDerivedClassWithInterface" type="class">
     <ancestor name="TBaseClass" declaration="TBaseClass" />
     <ancestor name="IInterface" declaration="IInterface" />
   </structure>
-  <structure name="IMyInterface" visibility="published" name_with_generic="IMyInterface" type="interface">
+  <structure name="IMyInterface" name_with_generic="IMyInterface" type="interface">
     <ancestor name="IInterface" declaration="IInterface" />
   </structure>
-  <structure name="IMyInterface2" visibility="published" name_with_generic="IMyInterface2" type="interface">
+  <structure name="IMyInterface2" name_with_generic="IMyInterface2" type="interface">
     <ancestor name="IInterface" declaration="IInterface" />
   </structure>
-  <structure name="TDerivedClassWithMyInterface" visibility="published" name_with_generic="TDerivedClassWithMyInterface" type="class">
+  <structure name="TDerivedClassWithMyInterface" name_with_generic="TDerivedClassWithMyInterface" type="class">
     <ancestor name="TBaseClass" declaration="TBaseClass" />
     <ancestor name="IMyInterface" declaration="IMyInterface" />
   </structure>
-  <structure name="TDerivedClassWithMoreInterfaces" visibility="published" name_with_generic="TDerivedClassWithMoreInterfaces" type="class">
+  <structure name="TDerivedClassWithMoreInterfaces" name_with_generic="TDerivedClassWithMoreInterfaces" type="class">
     <ancestor name="TBaseClass" declaration="TBaseClass" />
     <ancestor name="IMyInterface" declaration="IMyInterface" />
     <ancestor name="IMyInterface2" declaration="IMyInterface2" />

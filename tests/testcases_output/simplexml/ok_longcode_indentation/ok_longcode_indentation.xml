@@ -1,40 +1,40 @@
 <unit name="ok_longcode_indentation">
-  <routine name="Foo1" declaration="procedure Foo1;" visibility="published" type="procedure">
+  <routine name="Foo1" declaration="procedure Foo1;" type="procedure">
     <description><detailed>Should cut nothing: one
   two
     three</detailed></description>
   </routine>
-  <routine name="Foo2" declaration="procedure Foo2;" visibility="published" type="procedure">
+  <routine name="Foo2" declaration="procedure Foo2;" type="procedure">
     <description><detailed>Should cut 4 spaces: 
 one
 two
 three</detailed></description>
   </routine>
-  <routine name="Foo3" declaration="procedure Foo3;" visibility="published" type="procedure">
+  <routine name="Foo3" declaration="procedure Foo3;" type="procedure">
     <description><detailed>Should cut 2 spaces: 
   one
 two
   three</detailed></description>
   </routine>
-  <routine name="Foo4" declaration="procedure Foo4;" visibility="published" type="procedure">
+  <routine name="Foo4" declaration="procedure Foo4;" type="procedure">
     <description><detailed>Should cut nothing (there's a tab here): 
     one
 	two
     three</detailed></description>
   </routine>
-  <routine name="Foo5" declaration="procedure Foo5;" visibility="published" type="procedure">
+  <routine name="Foo5" declaration="procedure Foo5;" type="procedure">
     <description><detailed>Should cut tab + 2 spaces: 
 one
   two
 three</detailed></description>
   </routine>
-  <routine name="Foo6" declaration="procedure Foo6;" visibility="published" type="procedure">
+  <routine name="Foo6" declaration="procedure Foo6;" type="procedure">
     <description><detailed>Should cut 4 spaces (there's trailing whitespace in 1st lines here, that should be ignored): 
                  
                   
 one</detailed></description>
   </routine>
-  <routine name="Foo7" declaration="procedure Foo7;" visibility="published" type="procedure">
+  <routine name="Foo7" declaration="procedure Foo7;" type="procedure">
     <description><detailed>Should cut 4 spaces (empty line doesn't shorten IndentationPrefix): 
 if something then
 begin

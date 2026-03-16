@@ -1,8 +1,8 @@
 <unit name="ok_multiple_markers">
-  <variable name="Marker1" declaration="Marker1: Integer;" visibility="published">
+  <variable name="Marker1" declaration="Marker1: Integer;">
     <description><detailed>Some comment.</detailed></description>
   </variable>
-  <variable name="Marker2" declaration="Marker2: Integer;" visibility="published">
+  <variable name="Marker2" declaration="Marker2: Integer;">
     <description><detailed>Another comment.</detailed></description>
   </variable>
 </unit>

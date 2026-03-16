@@ -1,22 +1,22 @@
 <unit name="warning_inherited_test">
-  <routine name="Test" declaration="procedure Test;" visibility="published" type="procedure">
+  <routine name="Test" declaration="procedure Test;" type="procedure">
     <description><detailed>Inherited is <code>Test</code>. Inherited class is <code>Test</code>.</detailed></description>
   </routine>
-  <structure name="TMyClass0" visibility="published" name_with_generic="TMyClass0" type="class">
+  <structure name="TMyClass0" name_with_generic="TMyClass0" type="class">
     <description><detailed>This is a class without ancestor name specified. Inherited is <code>TObject</code>. Inherited class is <code>TObject</code>.</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
     <routine name="Clear" declaration="procedure Clear; virtual;" visibility="public" type="procedure">
       <description><detailed>Inherited is <code>Clear</code>. Inherited class is <code>TObject</code>.</detailed></description>
     </routine>
   </structure>
-  <structure name="TMyClass1" visibility="published" name_with_generic="TMyClass1" type="class">
+  <structure name="TMyClass1" name_with_generic="TMyClass1" type="class">
     <description><detailed>This is a class with specified ancestor name, but ancestor (TStringList) is not parsed by PasDoc. Inherited is <code>TStringList</code>. Inherited class is <code>TStringList</code>.</detailed></description>
     <ancestor name="TStringList" declaration="TStringList" />
     <routine name="Clear" declaration="procedure Clear; override;" visibility="public" type="procedure">
       <description><detailed>Inherited is <code>Clear</code>. Inherited class is <code>TStringList</code>.</detailed></description>
     </routine>
   </structure>
-  <structure name="TMyClass2" visibility="published" name_with_generic="TMyClass2" type="class">
+  <structure name="TMyClass2" name_with_generic="TMyClass2" type="class">
     <description><detailed>This is a class with specified ancestor name, and ancestor (TMyClass1) is parsed by PasDoc. Inherited is TMyClass1. Inherited class is TMyClass1.</detailed></description>
     <ancestor name="TMyClass1" declaration="TMyClass1" />
     <routine name="Clear" declaration="procedure Clear; override;" visibility="public" type="procedure">

@@ -1,9 +1,9 @@
 <unit name="ok_nested_types">
   <description><abstract>Test case for Delphi nested types</abstract><detailed>  </detailed></description>
-  <constant name="GlobalConst" declaration="GlobalConst = 123456;" visibility="published">
+  <constant name="GlobalConst" declaration="GlobalConst = 123456;">
     <description><detailed>Description of <code>GlobalConst</code></detailed></description>
   </constant>
-  <structure name="TOuterClass" visibility="published" name_with_generic="TOuterClass" type="class">
+  <structure name="TOuterClass" name_with_generic="TOuterClass" type="class">
     <description><abstract><code>TOuterClass</code> contains nested classes, records, types and constants.</abstract></description>
     <ancestor name="TObject" declaration="TObject" />
     <routine name="OuterPublicProc" declaration="procedure OuterPublicProc;" visibility="public" type="procedure">

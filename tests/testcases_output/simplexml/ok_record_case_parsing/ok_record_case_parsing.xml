@@ -1,11 +1,11 @@
 <unit name="ok_record_case_parsing">
-  <structure name="TRec1" visibility="published" name_with_generic="TRec1" type="record">
+  <structure name="TRec1" name_with_generic="TRec1" type="record">
     <variable name="A" declaration="A: Integer" visibility="public">
     </variable>
     <variable name="B" declaration="B: Integer" visibility="public">
     </variable>
   </structure>
-  <structure name="TRec2" visibility="published" name_with_generic="TRec2" type="record">
+  <structure name="TRec2" name_with_generic="TRec2" type="record">
     <variable name="Field1" declaration="Field1: boolean" visibility="published">
     </variable>
     <variable name="A" declaration="A: Integer" visibility="public">
@@ -13,7 +13,7 @@
     <variable name="B" declaration="B: Integer;" visibility="public">
     </variable>
   </structure>
-  <structure name="TRec3" visibility="published" name_with_generic="TRec3" type="record">
+  <structure name="TRec3" name_with_generic="TRec3" type="record">
     <variable name="A" declaration="A: Integer;" visibility="public">
       <description><detailed>Descr of A</detailed></description>
     </variable>
@@ -38,7 +38,7 @@
       <description><detailed>Descr of H</detailed></description>
     </variable>
   </structure>
-  <structure name="TRec4" visibility="published" name_with_generic="TRec4" type="record">
+  <structure name="TRec4" name_with_generic="TRec4" type="record">
     <variable name="A" declaration="A: Integer" visibility="public">
     </variable>
     <variable name="B" declaration="B: Integer" visibility="public">

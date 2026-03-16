@@ -1,6 +1,6 @@
 <unit name="ok_nested_with_exclude">
   <description><detailed>Testcase of classes nested in classes. This is a reworked version of code from Castle Game Engine. We use _exclude on some nested items, which requires proper TPasDoc.RemoveExcludedItems implementation.</detailed></description>
-  <structure name="TSkinNode" visibility="published" name_with_generic="TSkinNode" type="class">
+  <structure name="TSkinNode" name_with_generic="TSkinNode" type="class">
     <ancestor name="TX3DNode" declaration="TX3DNode" />
     <routine name="Create" declaration="constructor Create(const AX3DName, ABaseUrl: String); override;" visibility="public" type="constructor">
     </routine>

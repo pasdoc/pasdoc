@@ -1,7 +1,7 @@
 <unit name="ok_array_parameters">
-  <routine name="Foo" declaration="procedure Foo(A: array of string; const B: array of Integer = 3; C: file of TObject = 5);" visibility="published" type="procedure">
+  <routine name="Foo" declaration="procedure Foo(A: array of string; const B: array of Integer = 3; C: file of TObject = 5);" type="procedure">
   </routine>
-  <routine name="Bar" declaration="procedure Bar;" visibility="published" type="procedure">
+  <routine name="Bar" declaration="procedure Bar;" type="procedure">
     <description><detailed>Foo(array of string, array of Integer, file of TObject)</detailed></description>
   </routine>
 </unit>
