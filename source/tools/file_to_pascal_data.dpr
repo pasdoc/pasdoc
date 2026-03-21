@@ -33,9 +33,13 @@
 
 program file_to_pascal_data;
 
-{$apptype CONSOLE}
-{$ifdef FPC} {$mode objfpc} {$endif}
-{$H+}
+{$ifdef MSWINDOWS}
+  {$apptype CONSOLE}
+{$endif}
+{$ifdef FPC}
+  {$mode objfpc}
+  {$H+}
+{$endif}
 
 uses SysUtils, Classes;
 
