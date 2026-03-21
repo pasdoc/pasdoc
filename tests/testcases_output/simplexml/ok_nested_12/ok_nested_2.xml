@@ -29,6 +29,8 @@ end; If you don't use the &quot;finally&quot; clause to <italic>always</italic> 
     <routine name="Stop" declaration="procedure Stop(const TimeStart: TCastleProfilerTime; const LogSummary: Boolean = false; const LogSummaryOnlyIfNonTrivial: Boolean = false);" visibility="public" type="procedure">
       <description><detailed>Stop a task. This call must match earlier Start call. If LogSummary, and profiling is Enabled, we will output (to CastleLog) a summary of things that happened within this particular TCastleProfilerTime instance (between it's start and stop). This is useful when you are interested not only in adding this TCastleProfilerTime to the profiler tree, but also in immediately viewing the times in this TCastleProfilerTime subtree. If LogSummary and LogSummaryOnlyIfNonTrivial, then the summary will be output only if it's larger than some ignorable amount of time (right now: 1 milisecond). This is useful to output only things that take non-trivial amount of time. </detailed></description>
     </routine>
+    <constant name="DefaultFloatPrecision" declaration="DefaultFloatPrecision = 2;" visibility="public">
+    </constant>
     <variable name="FEnabled" declaration="var FEnabled: boolean;" visibility="public">
     </variable>
     <variable name="FFloatPrecision" declaration="FFloatPrecision: Cardinal;" visibility="public">
@@ -38,8 +40,6 @@ end; If you don't use the &quot;finally&quot; clause to <italic>always</italic> 
     </variable>
     <variable name="CurrentStack" declaration="CurrentStack: TTimeList;" visibility="public">
       <description><detailed>The currently started (but not stopped) TTime structures.</detailed></description>
-    </variable>
-    <variable name="DefaultFloatPrecision" declaration="const DefaultFloatPrecision = 2;" visibility="public">
     </variable>
     <property name="Enabled" declaration="property Enabled: boolean read FEnabled write FEnabled;" visibility="public" indexdecl="" type="boolean" reader="FEnabled" writer="FEnabled" default_in_class="False" default_value="" nodefault="False"   stored="">
       <description><detailed>Whether to gather speed measurements. When not enabled, the Start and Stop methods do as little as possible to not waste time.</detailed></description>

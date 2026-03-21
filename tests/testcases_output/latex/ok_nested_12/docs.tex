@@ -439,9 +439,35 @@ public property Enabled: boolean read FEnabled write FEnabled;\end{ttfamily}
 
 
 \par Whether to gather speed measurements. When not enabled, the \begin{ttfamily}Start\end{ttfamily}(\ref{ok_nested_2.TCastleProfiler-Start}) and \begin{ttfamily}Stop\end{ttfamily}(\ref{ok_nested_2.TCastleProfiler-Stop}) methods do as little as possible to not waste time.\end{list}
-\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\subsubsection*{\large{\textbf{Constants}}\normalsize\hspace{1ex}\hfill}
 \begin{list}{}{
 \settowidth{\tmplength}{\textbf{DefaultFloatPrecision}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\label{DefaultFloatPrecision}
+\index{DefaultFloatPrecision}
+\item[\textbf{DefaultFloatPrecision}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+public DefaultFloatPrecision = 2;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \end{list}
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{FFloatPrecision}}
 \setlength{\itemindent}{0cm}
 \setlength{\listparindent}{0cm}
 \setlength{\leftmargin}{\evensidemargin}
@@ -506,21 +532,7 @@ public CurrentStack: TTimeList;\end{ttfamily}
 \fi
 
 
-\par The currently started (but not stopped) TTime structures.\label{ok_nested_2.TCastleProfiler-DefaultFloatPrecision}
-\index{DefaultFloatPrecision}
-\item[\textbf{DefaultFloatPrecision}\hfill]
-\ifpdf
-\begin{flushleft}
-\fi
-\begin{ttfamily}
-public const DefaultFloatPrecision = 2;\end{ttfamily}
-
-\ifpdf
-\end{flushleft}
-\fi
-
-
-\par  \end{list}
+\par The currently started (but not stopped) TTime structures.\end{list}
 \subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
 \paragraph*{Create}\hspace*{\fill}
 

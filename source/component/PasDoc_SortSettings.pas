@@ -33,10 +33,27 @@ type
   EInvalidSortSetting = class(Exception);
 
   TSortSetting = (
-    { At unit (TPasUnit) level : } { }
-    ssCIOs, ssConstants, ssFuncsProcs, ssTypes, ssVariables, ssUsesClauses,
-    { At CIO (TPasCio) level : } { }
-    ssRecordFields, ssNonRecordFields, ssMethods, ssProperties);
+    // CIOs in a unit or nested in CIO.
+    ssCIOs,
+    // Constants in a unit or nested in CIO.
+    ssConstants,
+    // Routines in a unit.
+    ssFuncsProcs,
+    // Types in a unit.
+    ssTypes,
+    // Variables in a unit.
+    ssVariables,
+    // Uses clauses in a unit.
+    ssUsesClauses,
+    // Fields in a CIO that is a record.
+    ssRecordFields,
+    // Fields in a CIO that is not a record, like in a class or interface.
+    ssNonRecordFields,
+    // Methods in a CIO.
+    ssMethods,
+    // Properties in a CIO.
+    ssProperties
+  );
   TSortSettings = set of TSortSetting;
 
 const

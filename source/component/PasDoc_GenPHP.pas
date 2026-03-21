@@ -247,6 +247,9 @@ begin
   for I := 0 to item.Methods.count-1 do
     WriteRoutine(Namespace, item.Methods.PasItemAt[i] as TPasRoutine);
 
+  for I := 0 to item.Constants.count-1 do
+    WriteConstant(Namespace, item.Constants.PasItemAt[i]);
+
   for I := 0 to item.Fields.count-1 do
     WriteVariable(Namespace, item.fields.PasItemAt[i]);
 

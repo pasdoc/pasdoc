@@ -376,6 +376,27 @@ public property Enabled: boolean read FEnabled write FEnabled;\end{ttfamily}
 Whether to gather speed measurements. When not enabled, the \begin{ttfamily}Start\end{ttfamily}(\ref{ok_nested_2.TCastleProfiler-Start}) and \begin{ttfamily}Stop\end{ttfamily}(\ref{ok_nested_2.TCastleProfiler-Stop}) methods do as little as possible to not waste time.
 
 \end{list}
+\subsubsection*{\large{\textbf{Constants}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{DefaultFloatPrecision}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public DefaultFloatPrecision = 2;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
 \subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
 \paragraph*{FEnabled}\hspace*{\fill}
 
@@ -464,26 +485,6 @@ public CurrentStack: TTimeList;\end{ttfamily}
 \item[\textbf{Description}]
 The currently started (but not stopped) TTime structures.
 
-\end{list}
-\paragraph*{DefaultFloatPrecision}\hspace*{\fill}
-
-\begin{list}{}{
-\settowidth{\tmplength}{\textbf{Description}}
-\setlength{\itemindent}{0cm}
-\setlength{\listparindent}{0cm}
-\setlength{\leftmargin}{\evensidemargin}
-\addtolength{\leftmargin}{\tmplength}
-\settowidth{\labelsep}{X}
-\addtolength{\leftmargin}{\labelsep}
-\setlength{\labelwidth}{\tmplength}
-}
-\begin{flushleft}
-\item[\textbf{Declaration}\hfill]
-\begin{ttfamily}
-public const DefaultFloatPrecision = 2;\end{ttfamily}
-
-
-\end{flushleft}
 \end{list}
 \subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
 \paragraph*{Create}\hspace*{\fill}

@@ -110,8 +110,6 @@ type
     property Items[Index: integer]: TRawDescriptionInfo read GetItems; default;
   end;
 
-  TOwnerItemType = (otUnit, otCio);
-
   { Parser class that will process a complete unit file and all of its
     include files, regarding directives.
     When creating this object constructor @link(Create) takes as an argument
@@ -423,7 +421,7 @@ type
       const RawDescriptionInfo: TRawDescriptionInfo; var Visibility: TVisibility);
 
     procedure ParseRecordCase(const R: TPasCio; const SubCase: boolean);
-    procedure ParseConstant(OwnerItemType: TOwnerItemType; out Constant: TPasItem);
+    procedure ParseConstant(out Constant: TPasConstant);
 
     { This parses type, var or const section that doesn't belong to a CIO
       (unit intf section, unit impl section, inside a standalone routine).
@@ -1330,7 +1328,7 @@ begin
 end;
 
 { ---------------------------------------------------------------------------- }
-procedure TParser.ParseConstant(OwnerItemType: TOwnerItemType; out Constant: TPasItem);
+procedure TParser.ParseConstant(out Constant: TPasConstant);
 var
   t: TToken;
   WhitespaceCollector: string;
@@ -1346,7 +1344,6 @@ var
     EndLevel := 0;
     PLevel := 0;
     Result := False;
-    {AG}
     repeat
       t := GetNextToken(Constant);
       WhitespaceCollectorToAdd := '';
@@ -1411,14 +1408,9 @@ var
       end;
     until IsSemicolon and (EndLevel = 0) and (PLevel = 0);
   end;
-  {/AG}
 
 begin
-  { When in CIO treat this constant as a constant field }
-  case OwnerItemType of
-    otUnit: Constant := TPasConstant.Create;
-    otCio:  Constant := TPasFieldVariable.Create;
-  end;
+  Constant := TPasConstant.Create;
 
   try
     Constant.Name := GetAndCheckNextToken(TOK_IDENTIFIER);
@@ -1428,7 +1420,7 @@ begin
     Constant.RawDescriptionInfo^ := GetLastComment;
     Constant.FullDeclaration := Constant.Name;
     Constant.SetAttributes(CurrentAttributes);
-    {AG}
+
     if LocalSkipDeclaration then
     begin
       { Check for following calling conventions }
@@ -1450,15 +1442,8 @@ begin
         raise;
       end;
     end;
-    //SkipDeclaration(i, false);
-    {/AG}
 
     ItemsForNextBackComment.ClearAndAdd(Constant);
-    if OwnerItemType = otCio then
-    begin
-      Constant.FullDeclaration := 'const ' + Constant.FullDeclaration;
-      TPasFieldVariable(Constant).IsConstant := True;
-    end;
   except
     FreeAndNil(Constant);
     raise;
@@ -1586,7 +1571,7 @@ procedure TParser.ParseTVCSection(U: TPasUnit);
 var
   Section: TParsingSection;
   t, t2: TToken;
-  ConstantParsed: TPasItem;
+  ConstantParsed: TPasConstant;
 begin
   Section := psNone;
 
@@ -1606,7 +1591,8 @@ begin
               psConst:
                 begin
                   Scanner.UnGetToken(t);
-                  ParseConstant(otUnit, ConstantParsed);
+                  ParseConstant(ConstantParsed);
+                  ConstantParsed.MyUnit := U;
                   if U <> nil then
                     U.AddConstant(ConstantParsed)
                   else
@@ -3666,6 +3652,8 @@ function TParser.ParseCioMembers(const ACio: TPasCio; var Section: TParsingSecti
   begin
     if Visibility in ShowVisibilities then
     begin
+      Item.MyUnit := ACio.MyUnit;
+      Item.MyObject := ACio;
       Item.Visibility := Visibility;
       Items.Add(Item);
     end
@@ -3678,7 +3666,7 @@ function TParser.ParseCioMembers(const ACio: TPasCio; var Section: TParsingSecti
 var
   ClassKeyWordString: string;
   M: TPasRoutine;
-  ConstantParsed: TPasItem;
+  ConstantParsed: TPasConstant;
   p: TPasProperty;
   StrictVisibility: Boolean;
   t, t2: TToken;
@@ -3772,8 +3760,8 @@ begin
             begin
               Section := psConst;
               FreeAndNil(t);
-              ParseConstant(otCio, ConstantParsed);
-              AddItemIfVisible(ConstantParsed, ACio.Fields, Visibility);
+              ParseConstant(ConstantParsed);
+              AddItemIfVisible(TPasItem(ConstantParsed), ACio.Constants, Visibility);
             end;
            else
              DoError('Unexpected %s', [T.Description]);
@@ -3881,8 +3869,8 @@ begin
               Exit;
             if Section = psConst then
             begin
-              ParseConstant(otCio, ConstantParsed);
-              AddItemIfVisible(ConstantParsed, ACio.Fields, Visibility);
+              ParseConstant(ConstantParsed);
+              AddItemIfVisible(TPasItem(ConstantParsed), ACio.Constants, Visibility);
             end
             else begin
               ParseFields(Visibility in ShowVisibilities, Visibility,

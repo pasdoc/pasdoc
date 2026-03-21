@@ -616,21 +616,8 @@ type
   TPasConstant = class(TPasItem)
   end;
 
-  { @abstract(Pascal global variable or field or nested constant of CIO.)
-
-    Precise definition is "a name with some type". And Optionally with some
-    initial value, for global variables. It also holds a nested constant of
-    extended classes and records.
-    In the future we may introduce here some property like Type: TPasType. }
+  { Global variable or a field in CIO. }
   TPasFieldVariable = class(TPasItem)
-  private
-    FIsConstant: Boolean;
-  protected
-    procedure Serialize(const ADestination: TStream); override;
-    procedure Deserialize(const ASource: TStream); override;
-  public
-    { @abstract(Set if this is a nested constant field) }
-    property IsConstant: Boolean read FIsConstant write FIsConstant;
   end;
 
   { @abstract(Pascal type (but not a procedural type --- these are expressed
@@ -833,6 +820,7 @@ type
   protected
     FClassDirective: TClassDirective;
     FFields: TPasItems;
+    FConstants: TPasItems;
     FMethods: TPasRoutines;
     FProperties: TPasProperties;
     FAncestors: TStringPairVector;
@@ -842,7 +830,6 @@ type
     FCios: TPasNestedCios;
     FTypes: TPasTypes;
     FNameWithGeneric: string;
-
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
   protected
@@ -949,20 +936,23 @@ type
       <> ''. }
     function FirstAncestorName: string;
 
-    { list of all fields }
+    { Fields inside this class. }
     property Fields: TPasItems read FFields;
+
+    { Constants inside this class. }
+    property Constants: TPasItems read FConstants;
 
     { Class or record helper type identifier }
     property HelperTypeIdentifier: string read  FHelperTypeIdentifier
                                           write FHelperTypeIdentifier;
 
-    { list of all methods }
+    { Methods inside this class. }
     property Methods: TPasRoutines read FMethods;
 
-    { list of properties }
+    { Properties inside this class. }
     property Properties: TPasProperties read FProperties;
 
-    { determines if this is a class, an interface or an object }
+    { Which TCIOType it is: class, interface, record, object etc. }
     property MyType: TCIOType read FMyType write FMyType;
 
     { name of documentation output file (if each class / object gets
@@ -971,7 +961,12 @@ type
 
     //function QualifiedName: String; override;
 
-    { Is Visibility of items (Fields, Methods, Properties) important ? }
+    { Is visibility of members (public, private and so on) worth showing?
+      This is for now just always @true . In the past, for records it was @false,
+      but advanced records means that this makes sense for records too.
+      We may remove this property in the future to simplify things,
+      for now we keep this around in case it may make sense for some
+      structure again. }
     function ShowVisibility: boolean;
 
     { Simple nested types (that don't fall into @link(Cios)). }
@@ -2156,20 +2151,6 @@ begin
     Result := FMembers.FindListItem(NameParts[0]);
 end;
 
-{ TPasFieldVariable ---------------------------------------------------------- }
-
-procedure TPasFieldVariable.Deserialize(const ASource: TStream);
-begin
-  inherited;
-  ASource.Read(FIsConstant, SizeOf(FIsConstant));
-end;
-
-procedure TPasFieldVariable.Serialize(const ADestination: TStream);
-begin
-  inherited;
-  ADestination.Write(FIsConstant, SizeOf(FIsConstant));
-end;
-
 { TPasAliasType }
 
 procedure TPasAliasType.Serialize(const ADestination: TStream);
@@ -2505,6 +2486,7 @@ begin
   inherited;
   FClassDirective := CT_NONE;
   FFields := TPasItems.Create(True);
+  FConstants := TPasItems.Create(True);
   FMethods := TPasRoutines.Create(True);
   FProperties := TPasProperties.Create(True);
   FAncestors := TStringPairVector.Create(True);
@@ -2514,12 +2496,13 @@ end;
 
 destructor TPasCio.Destroy;
 begin
-  Ancestors.Free;
-  Fields.Free;
-  Methods.Free;
-  Properties.Free;
-  FCios.Free;
-  FTypes.Free;
+  FreeAndNil(FAncestors);
+  FreeAndNil(FFields);
+  FreeAndNil(FConstants);
+  FreeAndNil(FMethods);
+  FreeAndNil(FProperties);
+  FreeAndNil(FCios);
+  FreeAndNil(FTypes);
   inherited;
 end;
 
@@ -2527,9 +2510,10 @@ procedure TPasCio.Deserialize(const ASource: TStream);
 begin
   inherited;
   FFields.Deserialize(ASource);
+  FConstants.Deserialize(ASource);
   FMethods.Deserialize(ASource);
   FProperties.Deserialize(ASource);
-  Ancestors.LoadFromBinaryStream(ASource);
+  FAncestors.LoadFromBinaryStream(ASource);
   ASource.Read(FMyType, SizeOf(FMyType));
   ASource.Read(FClassDirective, SizeOf(FClassDirective));
   FHelperTypeIdentifier := LoadStringFromStream(ASource);
@@ -2545,6 +2529,7 @@ procedure TPasCio.Serialize(const ADestination: TStream);
 begin
   inherited;
   FFields.Serialize(ADestination);
+  FConstants.Serialize(ADestination);
   FMethods.Serialize(ADestination);
   FProperties.Serialize(ADestination);
   Ancestors.SaveToBinaryStream(ADestination);
@@ -2570,6 +2555,12 @@ begin
     if Fields <> nil then
     begin
       Result := Fields.FindListItem(NameParts[0]);
+      if Result <> nil then Exit;
+    end;
+
+    if Constants <> nil then
+    begin
+      Result := Constants.FindListItem(NameParts[0]);
       if Result <> nil then Exit;
     end;
 
@@ -2635,14 +2626,21 @@ begin
     end;
   end;
 
+  if (Constants <> nil) and (ssConstants in SortSettings) then
+    Constants.SortShallow;
+
   if (Methods <> nil) and (ssMethods in SortSettings) then
     Methods.Sort(TBaseItemComparer.Construct({$IFDEF FPC}@{$ENDIF} ComparePasRoutines));
 
   if (Properties <> nil) and (ssProperties in SortSettings) then
     Properties.SortShallow;
 
-  if (FCios <> nil) then
-    FCios.SortDeep(SortSettings);
+  if CIOs <> nil then
+  begin
+    if ssCIOs in SortSettings then
+      CIOs.SortShallow;
+    CIOs.SortOnlyInsideItems(SortSettings);
+  end;
 
   if (FTypes <> nil) then
     FTypes.SortDeep(SortSettings);

@@ -398,6 +398,16 @@
 </object>
 </ul>
 <li><object type="text/sitemap">
+<param name="Name" value="Constants">
+<param name="Local" value="ok_nested_2.TCastleProfiler.html#@Constants">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="DefaultFloatPrecision">
+<param name="Local" value="ok_nested_2.TCastleProfiler.html#DefaultFloatPrecision">
+</object>
+</ul>
+<li><object type="text/sitemap">
 <param name="Name" value="Fields">
 <param name="Local" value="ok_nested_2.TCastleProfiler.html#@Fields">
 </object>
@@ -417,10 +427,6 @@
 <li><object type="text/sitemap">
 <param name="Name" value="CurrentStack">
 <param name="Local" value="ok_nested_2.TCastleProfiler.html#CurrentStack">
-</object>
-<li><object type="text/sitemap">
-<param name="Name" value="DefaultFloatPrecision">
-<param name="Local" value="ok_nested_2.TCastleProfiler.html#DefaultFloatPrecision">
 </object>
 </ul>
 <li><object type="text/sitemap">
@@ -564,6 +570,16 @@
 </object>
 </ul>
 <li><object type="text/sitemap">
+<param name="Name" value="Constants">
+<param name="Local" value="ok_nested_2.TCastleProfiler.html#@Constants">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="DefaultFloatPrecision">
+<param name="Local" value="ok_nested_2.TCastleProfiler.html#DefaultFloatPrecision">
+</object>
+</ul>
+<li><object type="text/sitemap">
 <param name="Name" value="Fields">
 <param name="Local" value="ok_nested_2.TCastleProfiler.html#@Fields">
 </object>
@@ -571,10 +587,6 @@
 <li><object type="text/sitemap">
 <param name="Name" value="CurrentStack">
 <param name="Local" value="ok_nested_2.TCastleProfiler.html#CurrentStack">
-</object>
-<li><object type="text/sitemap">
-<param name="Name" value="DefaultFloatPrecision">
-<param name="Local" value="ok_nested_2.TCastleProfiler.html#DefaultFloatPrecision">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="FEnabled">

@@ -586,7 +586,7 @@ end;
 procedure TGenericHTMLDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
 type
   TSections = (dsDescription, dsHierarchy, dsEnclosingClass, dsNestedCRs,
-  dsNestedTypes, dsFields, dsMethods, dsProperties);
+    dsNestedTypes, dsConstants, dsFields, dsMethods, dsProperties);
   TSectionSet = set of TSections;
   TSectionAnchors = array[TSections] of string;
 const
@@ -596,6 +596,7 @@ const
     'PasDoc-EnclosingClass',
     'PasDoc-NestedCRs',
     'PasDoc-NestedTypes',
+    'PasDoc-Constants',
     'PasDoc-Fields',
     'PasDoc-Methods',
     'PasDoc-Properties');
@@ -615,49 +616,61 @@ const
     'packed object',
     'record',
     'packed record',
-    'type');
+    'type'
+  );
 
-  procedure WriteMethodsSummary;
+  procedure WriteMethodsSummary(const AllMethods: TPasRoutines);
   begin
-    WriteItemsSummary(CIO.Methods, CIO.ShowVisibility, HL + 1,
+    WriteItemsSummary(AllMethods, CIO.ShowVisibility, HL + 1,
       SectionAnchors[dsMethods], trMethods);
   end;
 
-  procedure WriteMethodsDetailed;
+  procedure WriteMethodsDetailed(const AllMethods: TPasRoutines);
   begin
-    WriteItemsDetailed(CIO.Methods, CIO.ShowVisibility, HL + 1, trMethods);
+    WriteItemsDetailed(AllMethods, CIO.ShowVisibility, HL + 1, trMethods);
   end;
 
-  procedure WritePropertiesSummary;
+  procedure WritePropertiesSummary(const AllProperties: TPasProperties);
   begin
-    WriteItemsSummary(CIO.Properties, CIO.ShowVisibility, HL + 1,
+    WriteItemsSummary(AllProperties, CIO.ShowVisibility, HL + 1,
       SectionAnchors[dsProperties], trProperties);
   end;
 
-  procedure WritePropertiesDetailed;
+  procedure WritePropertiesDetailed(const AllProperties: TPasProperties);
   begin
-    WriteItemsDetailed(CIO.Properties, CIO.ShowVisibility, HL + 1, trProperties);
+    WriteItemsDetailed(AllProperties, CIO.ShowVisibility, HL + 1, trProperties);
   end;
 
-  procedure WriteFieldsSummary;
+  procedure WriteConstantsSummary(const AllConstants: TPasItems);
   begin
-    WriteItemsSummary(CIO.Fields, CIO.ShowVisibility, HL + 1,
+    WriteItemsSummary(AllConstants, CIO.ShowVisibility, HL + 1,
+      SectionAnchors[dsConstants], trConstants);
+  end;
+
+  procedure WriteConstantsDetailed(const AllConstants: TPasItems);
+  begin
+    WriteItemsDetailed(AllConstants, CIO.ShowVisibility, HL + 1, trConstants);
+  end;
+
+  procedure WriteFieldsSummary(const AllFields: TPasItems);
+  begin
+    WriteItemsSummary(AllFields, CIO.ShowVisibility, HL + 1,
       SectionAnchors[dsFields], trFields);
   end;
 
-  procedure WriteFieldsDetailed;
+  procedure WriteFieldsDetailed(const AllFields: TPasItems);
   begin
-    WriteItemsDetailed(CIO.Fields, CIO.ShowVisibility, HL + 1, trFields);
+    WriteItemsDetailed(AllFields, CIO.ShowVisibility, HL + 1, trFields);
   end;
 
-  procedure WriteNestedCioSummary;
+  procedure WriteNestedCioSummary(const AllCios: TPasNestedCios);
   var
     I, J: Integer;
     LCio: TPasCio;
   begin
-    for I := 0 to CIO.Cios.Count - 1 do
+    for I := 0 to AllCios.Count - 1 do
     begin
-      LCio := TPasCio(CIO.Cios.PasItemAt[I]);
+      LCio := TPasCio(AllCios.PasItemAt[I]);
       LCio.FullDeclaration := LCIO.NameWithGeneric + ' = ' +
         CIO_NAMES[LCIO.MyType] + GetClassDirectiveName(LCIO.ClassDirective);
       if LCio.Ancestors.Count <> 0 then
@@ -672,19 +685,19 @@ const
         LCio.FullDeclaration := LCio.FullDeclaration + ')';
       end;
     end;
-    WriteItemsSummary(CIO.Cios, CIO.ShowVisibility, HL + 1,
+    WriteItemsSummary(AllCios, CIO.ShowVisibility, HL + 1,
       SectionAnchors[dsNestedCRs], trNestedCR);
   end;
 
-  procedure WriteNestedTypesSummary;
+  procedure WriteNestedTypesSummary(const AllTypes: TPasTypes);
   begin
-    WriteItemsSummary(CIO.Types, CIO.ShowVisibility, HL + 1,
+    WriteItemsSummary(AllTypes, CIO.ShowVisibility, HL + 1,
       SectionAnchors[dsNestedTypes], trNestedTypes);
   end;
 
-  procedure WriteNestedTypesDetailed;
+  procedure WriteNestedTypesDetailed(const AllTypes: TPasTypes);
   begin
-    WriteItemsDetailed(CIO.Types, CIO.ShowVisibility, HL + 1, trNestedTypes);
+    WriteItemsDetailed(AllTypes, CIO.ShowVisibility, HL + 1, trNestedTypes);
   end;
 
   { Writes all ancestors of the given Item (with given Name).
@@ -757,46 +770,55 @@ var
   SectionHeads: array[TSections] of string;
   Section: TSections;
   AnyItem: boolean;
-  Fv: TPasFieldVariable;
   Vis: TVisibility;
+  AllConstants: TPasItems;
+  AllFields: TPasItems;
+  AllMethods: TPasRoutines;
+  AllProperties: TPasProperties;
+  AllTypes: TPasTypes;
+  AllCios: TPasNestedCios;
 begin
   if not Assigned(CIO) then Exit;
 
   SectionHeads[dsDescription] := FLanguage.Translation[trDescription];
   SectionHeads[dsHierarchy] := FLanguage.Translation[trHierarchy];
-  SectionHeads[dsFields ]:= FLanguage.Translation[trFields];
-  SectionHeads[dsMethods ]:= FLanguage.Translation[trMethods];
+  SectionHeads[dsConstants] := FLanguage.Translation[trConstants];
+  SectionHeads[dsFields]:= FLanguage.Translation[trFields];
+  SectionHeads[dsMethods]:= FLanguage.Translation[trMethods];
   SectionHeads[dsProperties ]:= FLanguage.Translation[trProperties];
   SectionHeads[dsNestedTypes]:= FLanguage.Translation[trNestedTypes];
   SectionHeads[dsNestedCRs]:= FLanguage.Translation[trNestedCR];
   SectionHeads[dsEnclosingClass]:= FLanguage.Translation[trEnclosingClass];
 
+  AllConstants := CIO.Constants;
+  AllFields := CIO.Fields;
+  AllMethods := CIO.Methods;
+  AllProperties := CIO.Properties;
+  AllTypes := CIO.Types;
+  AllCios := CIO.Cios;
+
+  if InheritedMembers <> imNever then
+  begin
+    // TODO: add inherited members to All* lists
+  end;
+
   SectionsAvailable := [dsDescription];
   if Assigned(CIO.Ancestors) and (CIO.Ancestors.Count > 0) then
     Include(SectionsAvailable, dsHierarchy);
-  if not ObjectVectorIsNilOrEmpty(CIO.Fields) then
+  if not ObjectVectorIsNilOrEmpty(AllConstants) then
+    Include(SectionsAvailable, dsConstants);
+  if not ObjectVectorIsNilOrEmpty(AllFields) then
     Include(SectionsAvailable, dsFields);
-  if not ObjectVectorIsNilOrEmpty(CIO.Methods) then
+  if not ObjectVectorIsNilOrEmpty(AllMethods) then
     Include(SectionsAvailable, dsMethods);
-  if not ObjectVectorIsNilOrEmpty(CIO.Properties) then
+  if not ObjectVectorIsNilOrEmpty(AllProperties) then
     Include(SectionsAvailable, dsProperties);
-  if not ObjectVectorIsNilOrEmpty(CIO.Types) then
+  if not ObjectVectorIsNilOrEmpty(AllTypes) then
     Include(SectionsAvailable, dsNestedTypes);
-  if not ObjectVectorIsNilOrEmpty(CIO.Cios) then
+  if not ObjectVectorIsNilOrEmpty(AllCios) then
     Include(SectionsAvailable, dsNestedCRs);
   if CIO.MyObject <> nil then
     Include(SectionsAvailable, dsEnclosingClass);
-
-  if not ObjectVectorIsNilOrEmpty(CIO.Fields) then
-  begin
-    for I := 0 to CIO.Fields.Count - 1 do
-    begin
-      Fv := TPasFieldVariable(CIO.Fields.PasItemAt[I]);
-      if Fv.IsConstant then
-        Fv.FullDeclaration := FLanguage.Translation[trNested] + ' ' +
-          Fv.FullDeclaration;
-    end;
-  end;
 
   s := GetCIOTypeName(CIO.MyType) + ' ' + CIO.UnitRelativeQualifiedName;
 
@@ -882,11 +904,12 @@ begin
   end;
 
   AnyItem :=
-    (not ObjectVectorIsNilOrEmpty(CIO.Fields)) or
-    (not ObjectVectorIsNilOrEmpty(CIO.Methods)) or
-    (not ObjectVectorIsNilOrEmpty(CIO.Properties)) or
-    (not ObjectVectorIsNilOrEmpty(CIO.Types)) or
-    (not ObjectVectorIsNilOrEmpty(CIO.Cios));
+    (not ObjectVectorIsNilOrEmpty(AllConstants)) or
+    (not ObjectVectorIsNilOrEmpty(AllFields)) or
+    (not ObjectVectorIsNilOrEmpty(AllMethods)) or
+    (not ObjectVectorIsNilOrEmpty(AllProperties)) or
+    (not ObjectVectorIsNilOrEmpty(AllTypes)) or
+    (not ObjectVectorIsNilOrEmpty(AllCios));
 
   { AnyItem is used here to avoid writing headers "Overview"
     and "Description" when there are no items. }
@@ -917,17 +940,19 @@ begin
     end;
 
     WriteHeading(HL + 1, 'overview', FLanguage.Translation[trOverview]);
-    WriteNestedCioSummary;
-    WriteNestedTypesSummary;
-    WriteFieldsSummary;
-    WriteMethodsSummary;
-    WritePropertiesSummary;
+    WriteNestedCioSummary(AllCios);
+    WriteNestedTypesSummary(AllTypes);
+    WriteConstantsSummary(AllConstants);
+    WriteFieldsSummary(AllFields);
+    WriteMethodsSummary(AllMethods);
+    WritePropertiesSummary(AllProperties);
 
     WriteHeading(HL + 1, 'description', FLanguage.Translation[trDescription]);
-    WriteNestedTypesDetailed;
-    WriteFieldsDetailed;
-    WriteMethodsDetailed;
-    WritePropertiesDetailed;
+    WriteNestedTypesDetailed(AllTypes);
+    WriteConstantsDetailed(AllConstants);
+    WriteFieldsDetailed(AllFields);
+    WriteMethodsDetailed(AllMethods);
+    WritePropertiesDetailed(AllProperties);
   end;
 
   WriteAuthors(HL + 1, CIO.Authors);

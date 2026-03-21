@@ -302,6 +302,9 @@ begin
   for I := 0 to Item.Methods.count-1 do
     WriteRoutine(Item.Methods.PasItemAt[i] as TPasRoutine);
 
+  for I := 0 to Item.Constants.count-1 do
+    WriteConstant(Item.Constants.PasItemAt[i]);
+
   for I := 0 to Item.Fields.count-1 do
     WriteVariable(Item.fields.PasItemAt[i]);
 

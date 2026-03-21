@@ -166,6 +166,7 @@ var
     end;
 
     WriteItemHeadingCollection(fLanguage.Translation[trNestedTypes], ClassItem.FullLink, '@NestedTypes', ClassItem.Types);
+    WriteItemHeadingCollection(fLanguage.Translation[trConstants], ClassItem.FullLink, '@Constants', ClassItem.Constants);
     WriteItemHeadingCollection(fLanguage.Translation[trFields], ClassItem.FullLink, '@Fields', ClassItem.Fields);
     WriteItemHeadingCollection(fLanguage.Translation[trProperties], ClassItem.FullLink, '@Properties', ClassItem.Properties);
     WriteItemHeadingCollection(fLanguage.Translation[trMethods], ClassItem.FullLink, '@Methods', ClassItem.Methods);
@@ -435,6 +436,7 @@ var
     procedure AddRecursive(ACio: TPasCio);
     begin
       ADst.Add(ACio);
+      ADst.CopyItems(ACio.Constants);
       ADst.CopyItems(ACio.Fields);
       ADst.CopyItems(ACio.Properties);
       ADst.CopyItems(ACio.Methods);

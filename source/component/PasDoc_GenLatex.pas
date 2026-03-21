@@ -414,7 +414,8 @@ end;
 
 procedure TTexDocGenerator.WriteCIO(HL: integer; const CIO: TPasCio);
 type
-  TSections = (dsDescription, dsHierarchy, dsFields, dsMethods, dsProperties);
+  TSections = (dsDescription, dsHierarchy,
+    dsConstants, dsFields, dsMethods, dsProperties);
   TSectionSet = set of TSections;
 var
   s: string;
@@ -426,15 +427,18 @@ begin
 
   SectionHeads[dsDescription] := FLanguage.Translation[trDescription];
   SectionHeads[dsHierarchy] := FLanguage.Translation[trHierarchy];
-  SectionHeads[dsFields ]:= FLanguage.Translation[trFields];
-  SectionHeads[dsMethods ]:= FLanguage.Translation[trMethods];
-  SectionHeads[dsProperties ]:= FLanguage.Translation[trProperties];
+  SectionHeads[dsConstants] := FLanguage.Translation[trConstants];
+  SectionHeads[dsFields]:= FLanguage.Translation[trFields];
+  SectionHeads[dsMethods]:= FLanguage.Translation[trMethods];
+  SectionHeads[dsProperties]:= FLanguage.Translation[trProperties];
 
   SectionsAvailable := [];
   if HasDescription(CIO) then
     Include(SectionsAvailable, dsDescription);
   if Assigned(CIO.Ancestors) and (CIO.Ancestors.Count > 0) then
     Include(SectionsAvailable, dsHierarchy);
+  if not ObjectVectorIsNilOrEmpty(CIO.Constants) then
+    Include(SectionsAvailable, dsConstants);
   if not ObjectVectorIsNilOrEmpty(CIO.Fields) then
     Include(SectionsAvailable, dsFields);
   if not ObjectVectorIsNilOrEmpty(CIO.Methods) then
@@ -500,7 +504,7 @@ begin
       WriteDirect('%%%%' + SectionHeads[dsDescription],true);
 
   WriteFieldsProperties(HL + 2, CIO.Properties, CIO.ShowVisibility, trProperties);
-
+  WriteFieldsProperties(HL + 2, CIO.Constants, CIO.ShowVisibility, trConstants);
   WriteFieldsProperties(HL + 2, CIO.Fields, CIO.ShowVisibility, trFields);
 
   WriteItemsDetailed(HL + 2, CIO.Methods, CIO.ShowVisibility, trMethods);
