@@ -1033,7 +1033,7 @@ begin
           '<label><input type="checkbox" autocomplete="off"' +
           // default is checked when InheritedMembers=imDefaultShow
           IfThen(InheritedMembers = imDefaultShow, ' checked', '') +
-          ' onchange="pasdocToggleVisibility(''inherited-member'', this)">' +
+          ' onchange="pasdocToggleVisibility(''inherited-member'', this)"> ' +
           ConvertString(FLanguage.Translation[trInherited]) +
           '</label>');
       end;
