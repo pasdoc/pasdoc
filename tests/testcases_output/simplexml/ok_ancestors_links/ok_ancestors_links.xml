@@ -1,0 +1,22 @@
+<unit name="ok_ancestors_links">
+  <description><detailed>Test that we show ancestors correctly, even when using type aliases.</detailed></description>
+  <type name="TMyClassAlias" declaration="TMyClassAlias = TMyClass;">
+  </type>
+  <type name="TStringListAlias" declaration="TStringListAlias = TStringList;">
+  </type>
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+  </structure>
+  <structure name="TMyDescendant" name_with_generic="TMyDescendant" type="class">
+    <ancestor name="TMyClass" declaration="TMyClass" />
+  </structure>
+  <structure name="TMyDescendantUsingAlias" name_with_generic="TMyDescendantUsingAlias" type="class">
+    <ancestor name="TMyClassAlias" declaration="TMyClassAlias" />
+  </structure>
+  <structure name="TMyDescendantOfStdClass" name_with_generic="TMyDescendantOfStdClass" type="class">
+    <ancestor name="TStringList" declaration="TStringList" />
+  </structure>
+  <structure name="TMyDescendantOfStdClassAlias" name_with_generic="TMyDescendantOfStdClassAlias" type="class">
+    <ancestor name="TStringListAlias" declaration="TStringListAlias" />
+  </structure>
+</unit>

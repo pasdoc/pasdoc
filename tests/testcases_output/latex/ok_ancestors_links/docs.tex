@@ -1,0 +1,205 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+% definitons for warning and note tag
+\usepackage[most]{tcolorbox}
+\newtcolorbox{tcbwarning}{
+ breakable,
+ enhanced jigsaw,
+ top=0pt,
+ bottom=0pt,
+ titlerule=0pt,
+ bottomtitle=0pt,
+ rightrule=0pt,
+ toprule=0pt,
+ bottomrule=0pt,
+ colback=white,
+ arc=0pt,
+ outer arc=0pt,
+ title style={white},
+ fonttitle=\color{black}\bfseries,
+ left=8pt,
+ colframe=red,
+ title={Warning:},
+}
+\newtcolorbox{tcbnote}{
+ breakable,
+ enhanced jigsaw,
+ top=0pt,
+ bottom=0pt,
+ titlerule=0pt,
+ bottomtitle=0pt,
+ rightrule=0pt,
+ toprule=0pt,
+ bottomrule=0pt,
+ colback=white,
+ arc=0pt,
+ outer arc=0pt,
+ title style={white},
+ fonttitle=\color{black}\bfseries,
+ left=8pt,
+ colframe=yellow,
+ title={Note:},
+}
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}ancestors{\_}links}
+\label{ok_ancestors_links}
+\index{ok{\_}ancestors{\_}links}
+\section{Description}
+Test that we show ancestors correctly, even when using type aliases.
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyDescendant\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyDescendantUsingAlias\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyDescendantOfStdClass\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyDescendantOfStdClassAlias\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\ifpdf
+\subsection*{\large{\textbf{TMyClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyClass Class}
+\fi
+\label{ok_ancestors_links.TMyClass}
+\index{TMyClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyClass {$>$} TObject
+%%%%Description
+\ifpdf
+\subsection*{\large{\textbf{TMyDescendant Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyDescendant Class}
+\fi
+\label{ok_ancestors_links.TMyDescendant}
+\index{TMyDescendant}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyDescendant {$>$} \begin{ttfamily}TMyClass\end{ttfamily}(\ref{ok_ancestors_links.TMyClass}) {$>$} 
+TObject
+%%%%Description
+\ifpdf
+\subsection*{\large{\textbf{TMyDescendantUsingAlias Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyDescendantUsingAlias Class}
+\fi
+\label{ok_ancestors_links.TMyDescendantUsingAlias}
+\index{TMyDescendantUsingAlias}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyDescendantUsingAlias {$>$} %%%%Description
+\ifpdf
+\subsection*{\large{\textbf{TMyDescendantOfStdClass Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyDescendantOfStdClass Class}
+\fi
+\label{ok_ancestors_links.TMyDescendantOfStdClass}
+\index{TMyDescendantOfStdClass}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyDescendantOfStdClass {$>$} TStringList
+%%%%Description
+\ifpdf
+\subsection*{\large{\textbf{TMyDescendantOfStdClassAlias Class}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyDescendantOfStdClassAlias Class}
+\fi
+\label{ok_ancestors_links.TMyDescendantOfStdClassAlias}
+\index{TMyDescendantOfStdClassAlias}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TMyDescendantOfStdClassAlias {$>$} %%%%Description
+\section{Types}
+\ifpdf
+\subsection*{\large{\textbf{TMyClassAlias}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TMyClassAlias}
+\fi
+\label{ok_ancestors_links-TMyClassAlias}
+\index{TMyClassAlias}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TMyClassAlias = TMyClass;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TStringListAlias}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TStringListAlias}
+\fi
+\label{ok_ancestors_links-TStringListAlias}
+\index{TStringListAlias}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TStringListAlias = TStringList;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\end{document}

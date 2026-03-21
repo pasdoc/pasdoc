@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClass">
+<param name="Local" value="ok_ancestors_links.TMyClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyClassAlias">
+<param name="Local" value="ok_ancestors_links.html#TMyClassAlias">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyDescendant">
+<param name="Local" value="ok_ancestors_links.TMyDescendant.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyDescendantOfStdClass">
+<param name="Local" value="ok_ancestors_links.TMyDescendantOfStdClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyDescendantOfStdClassAlias">
+<param name="Local" value="ok_ancestors_links.TMyDescendantOfStdClassAlias.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TMyDescendantUsingAlias">
+<param name="Local" value="ok_ancestors_links.TMyDescendantUsingAlias.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TStringListAlias">
+<param name="Local" value="ok_ancestors_links.html#TStringListAlias">
+</object>
+</ul>
+</body></html>

@@ -687,14 +687,18 @@ const
     WriteItemsDetailed(CIO.Types, CIO.ShowVisibility, HL + 1, trNestedTypes);
   end;
 
-  { writes all ancestors of the given item and the item itself }
+  { Writes all ancestors of the given Item (with given Name).
+    Item may be
+    - @nil (only name is known)
+    - or any TBaseItem (not necessarily a TPasCio), when the item is a type alias
+      to CIO in standard library. }
   procedure WriteHierarchy(const Name: string; const Item: TBaseItem);
   var
     CIO: TPasCio;
     ParentName: String;
     ParentItem: TBaseItem;
   begin
-    if not Assigned(Item) then
+    if Item = nil then
     begin
       { First, write the ancestors.
         In case Item = nil, look for parent using ExternalClassHierarchy. }
@@ -720,8 +724,30 @@ const
       { then write itself }
       WriteDirectLine('<li class="ancestor">' +
         MakeItemLink(CIO, CIO.UnitRelativeQualifiedName, lcNormal) + '</li>')
+    end else
+    begin
+      { Item is not TPasCio.
+        If it is type alias, we can still follow up the chain. }
+      if Item is TPasAliasType then
+      begin
+        if TPasAliasType(Item).AliasedType is TPasCio then
+        begin
+          CIO := TPasCio(TPasAliasType(Item).AliasedType);
+          WriteHierarchy(CIO.Ancestors.FirstName, CIO.FirstAncestor);
+        end else
+        begin
+          ParentName := ExternalClassHierarchy.Values[TPasAliasType(Item).AliasedName];
+          if ParentName <> '' then
+          begin
+            ParentItem := FindGlobalPasItem(ParentName);
+            WriteHierarchy(ParentName, ParentItem);
+          end;
+        end;
+      end;
+
+      WriteDirectLine('<li class="ancestor">' +
+        MakeItemLink(Item, Item.Name, lcNormal) + '</li>');
     end;
-    { todo --check: Is it possible that the item is assigned but is not a TPasCio ? }
   end;
 
 var

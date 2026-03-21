@@ -2,6 +2,7 @@
 
 ## Upcoming Next Release
 
+* More complete "Hierarchy" at CIO pages by following also type aliases (Michalis)
 * SimpleXML improvements: Add `declaration="` to `<property...>`. Remove `visibility="..."` from non-members (where the meaning is undefined) (Michalis)
 * Support for linking to arbitrary qualified type identifiers, like `TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType` and `MyUnit.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType` (Michalis)
 * If the type alias doesn't have a special description, we show the description from the type it aliases. Also parsing _strong_ type aliases (with the `type` keyword) implemented. (Johann Elsass aka circular17, Michalis)
