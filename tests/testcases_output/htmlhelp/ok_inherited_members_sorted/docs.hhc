@@ -99,6 +99,10 @@
 <param name="Local" value="ok_inherited_members.TBase.html#BaseField3">
 </object>
 <li><object type="text/sitemap">
+<param name="Name" value="BaseProtectedField">
+<param name="Local" value="ok_inherited_members.TBase.html#BaseProtectedField">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="Y">
 <param name="Local" value="ok_inherited_members.TBase.html#Y">
 </object>
@@ -133,6 +137,10 @@
 <li><object type="text/sitemap">
 <param name="Name" value="BaseMethod2">
 <param name="Local" value="ok_inherited_members.TBase.html#BaseMethod2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="BaseProtectedMethod">
+<param name="Local" value="ok_inherited_members.TBase.html#BaseProtectedMethod">
 </object>
 </ul>
 </ul>
@@ -217,6 +225,10 @@
 <param name="Local" value="ok_inherited_members.TDerived.html#DerivedField3">
 </object>
 <li><object type="text/sitemap">
+<param name="Name" value="DerivedProtectedField">
+<param name="Local" value="ok_inherited_members.TDerived.html#DerivedProtectedField">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="Y2">
 <param name="Local" value="ok_inherited_members.TDerived.html#Y2">
 </object>
@@ -251,6 +263,10 @@
 <li><object type="text/sitemap">
 <param name="Name" value="DerivedMethod2">
 <param name="Local" value="ok_inherited_members.TDerived.html#DerivedMethod2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="DerivedProtectedMethod">
+<param name="Local" value="ok_inherited_members.TDerived.html#DerivedProtectedMethod">
 </object>
 </ul>
 </ul>
@@ -335,6 +351,10 @@
 <param name="Local" value="ok_inherited_members.TNewDerived.html#NewDerivedField3">
 </object>
 <li><object type="text/sitemap">
+<param name="Name" value="NewDerivedProtectedField">
+<param name="Local" value="ok_inherited_members.TNewDerived.html#NewDerivedProtectedField">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="Y3">
 <param name="Local" value="ok_inherited_members.TNewDerived.html#Y3">
 </object>
@@ -369,6 +389,10 @@
 <li><object type="text/sitemap">
 <param name="Name" value="NewDerivedMethod2">
 <param name="Local" value="ok_inherited_members.TNewDerived.html#NewDerivedMethod2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="NewDerivedProtectedMethod">
+<param name="Local" value="ok_inherited_members.TNewDerived.html#NewDerivedProtectedMethod">
 </object>
 </ul>
 </ul>
@@ -465,6 +489,10 @@
 <param name="Local" value="ok_inherited_members.TBase.html#BaseField3">
 </object>
 <li><object type="text/sitemap">
+<param name="Name" value="BaseProtectedField">
+<param name="Local" value="ok_inherited_members.TBase.html#BaseProtectedField">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="Y">
 <param name="Local" value="ok_inherited_members.TBase.html#Y">
 </object>
@@ -499,6 +527,10 @@
 <li><object type="text/sitemap">
 <param name="Name" value="BaseMethod2">
 <param name="Local" value="ok_inherited_members.TBase.html#BaseMethod2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="BaseProtectedMethod">
+<param name="Local" value="ok_inherited_members.TBase.html#BaseProtectedMethod">
 </object>
 </ul>
 </ul>
@@ -583,6 +615,10 @@
 <param name="Local" value="ok_inherited_members.TDerived.html#DerivedField3">
 </object>
 <li><object type="text/sitemap">
+<param name="Name" value="DerivedProtectedField">
+<param name="Local" value="ok_inherited_members.TDerived.html#DerivedProtectedField">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="Y2">
 <param name="Local" value="ok_inherited_members.TDerived.html#Y2">
 </object>
@@ -617,6 +653,10 @@
 <li><object type="text/sitemap">
 <param name="Name" value="DerivedMethod2">
 <param name="Local" value="ok_inherited_members.TDerived.html#DerivedMethod2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="DerivedProtectedMethod">
+<param name="Local" value="ok_inherited_members.TDerived.html#DerivedProtectedMethod">
 </object>
 </ul>
 </ul>
@@ -701,6 +741,10 @@
 <param name="Local" value="ok_inherited_members.TNewDerived.html#NewDerivedField3">
 </object>
 <li><object type="text/sitemap">
+<param name="Name" value="NewDerivedProtectedField">
+<param name="Local" value="ok_inherited_members.TNewDerived.html#NewDerivedProtectedField">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="Y3">
 <param name="Local" value="ok_inherited_members.TNewDerived.html#Y3">
 </object>
@@ -735,6 +779,10 @@
 <li><object type="text/sitemap">
 <param name="Name" value="NewDerivedMethod2">
 <param name="Local" value="ok_inherited_members.TNewDerived.html#NewDerivedMethod2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="NewDerivedProtectedMethod">
+<param name="Local" value="ok_inherited_members.TNewDerived.html#NewDerivedProtectedMethod">
 </object>
 </ul>
 </ul>

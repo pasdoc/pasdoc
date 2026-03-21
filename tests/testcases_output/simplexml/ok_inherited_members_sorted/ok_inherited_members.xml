@@ -5,6 +5,8 @@
     </routine>
     <routine name="BaseMethod2" declaration="procedure BaseMethod2;" visibility="public" type="procedure">
     </routine>
+    <routine name="BaseProtectedMethod" declaration="procedure BaseProtectedMethod;" visibility="protected" type="procedure">
+    </routine>
     <constant name="BaseConst" declaration="BaseConst = 42;" visibility="public">
       <description><detailed>Test sorting</detailed></description>
     </constant>
@@ -19,6 +21,8 @@
     <variable name="BaseField2" declaration="BaseField2: String;" visibility="public">
     </variable>
     <variable name="BaseField3" declaration="var BaseField3: String;" visibility="public">
+    </variable>
+    <variable name="BaseProtectedField" declaration="BaseProtectedField: Integer;" visibility="protected">
     </variable>
     <variable name="Y" declaration="Y: Integer;" visibility="public">
     </variable>
@@ -48,6 +52,8 @@
     </routine>
     <routine name="DerivedMethod2" declaration="procedure DerivedMethod2;" visibility="public" type="procedure">
     </routine>
+    <routine name="DerivedProtectedMethod" declaration="procedure DerivedProtectedMethod;" visibility="protected" type="procedure">
+    </routine>
     <constant name="DerivedConst" declaration="DerivedConst = 42;" visibility="public">
       <description><detailed>Test sorting</detailed></description>
     </constant>
@@ -62,6 +68,8 @@
     <variable name="DerivedField2" declaration="DerivedField2: String;" visibility="public">
     </variable>
     <variable name="DerivedField3" declaration="var DerivedField3: String;" visibility="public">
+    </variable>
+    <variable name="DerivedProtectedField" declaration="DerivedProtectedField: Integer;" visibility="protected">
     </variable>
     <variable name="Y2" declaration="Y2: Integer;" visibility="public">
     </variable>
@@ -91,6 +99,8 @@
     </routine>
     <routine name="NewDerivedMethod2" declaration="procedure NewDerivedMethod2;" visibility="public" type="procedure">
     </routine>
+    <routine name="NewDerivedProtectedMethod" declaration="procedure NewDerivedProtectedMethod;" visibility="protected" type="procedure">
+    </routine>
     <constant name="NewDerivedConst" declaration="NewDerivedConst = 42;" visibility="public">
       <description><detailed>Test sorting</detailed></description>
     </constant>
@@ -105,6 +115,8 @@
     <variable name="NewDerivedField2" declaration="NewDerivedField2: String;" visibility="public">
     </variable>
     <variable name="NewDerivedField3" declaration="var NewDerivedField3: String;" visibility="public">
+    </variable>
+    <variable name="NewDerivedProtectedField" declaration="NewDerivedProtectedField: Integer;" visibility="protected">
     </variable>
     <variable name="Y3" declaration="Y3: Integer;" visibility="public">
     </variable>

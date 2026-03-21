@@ -182,7 +182,7 @@ public BaseConst2 = 'blabla';\end{ttfamily}
 \par  \end{list}
 \subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
 \begin{list}{}{
-\settowidth{\tmplength}{\textbf{BaseField2}}
+\settowidth{\tmplength}{\textbf{BaseProtectedField}}
 \setlength{\itemindent}{0cm}
 \setlength{\listparindent}{0cm}
 \setlength{\leftmargin}{\evensidemargin}
@@ -255,6 +255,20 @@ public BaseField2: String;\end{ttfamily}
 \fi
 \begin{ttfamily}
 public var BaseField3: String;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_inherited_members.TBase-BaseProtectedField}
+\index{BaseProtectedField}
+\item[\textbf{BaseProtectedField}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+protected BaseProtectedField: Integer;\end{ttfamily}
 
 \ifpdf
 \end{flushleft}
@@ -337,6 +351,32 @@ public procedure BaseMethod; virtual;\end{ttfamily}
 \fi
 \begin{ttfamily}
 public procedure BaseMethod2;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\paragraph*{BaseProtectedMethod}\hspace*{\fill}
+
+\label{ok_inherited_members.TBase-BaseProtectedMethod}
+\index{BaseProtectedMethod}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+protected procedure BaseProtectedMethod;\end{ttfamily}
 
 \ifpdf
 \end{flushleft}
@@ -436,7 +476,7 @@ public DerivedConst2 = 'blabla';\end{ttfamily}
 \par  \end{list}
 \subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
 \begin{list}{}{
-\settowidth{\tmplength}{\textbf{DerivedField2}}
+\settowidth{\tmplength}{\textbf{DerivedProtectedField}}
 \setlength{\itemindent}{0cm}
 \setlength{\listparindent}{0cm}
 \setlength{\leftmargin}{\evensidemargin}
@@ -509,6 +549,20 @@ public DerivedField2: String;\end{ttfamily}
 \fi
 \begin{ttfamily}
 public var DerivedField3: String;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_inherited_members.TDerived-DerivedProtectedField}
+\index{DerivedProtectedField}
+\item[\textbf{DerivedProtectedField}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+protected DerivedProtectedField: Integer;\end{ttfamily}
 
 \ifpdf
 \end{flushleft}
@@ -591,6 +645,32 @@ public procedure DerivedMethod; virtual;\end{ttfamily}
 \fi
 \begin{ttfamily}
 public procedure DerivedMethod2;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\paragraph*{DerivedProtectedMethod}\hspace*{\fill}
+
+\label{ok_inherited_members.TDerived-DerivedProtectedMethod}
+\index{DerivedProtectedMethod}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+protected procedure DerivedProtectedMethod;\end{ttfamily}
 
 \ifpdf
 \end{flushleft}
@@ -690,7 +770,7 @@ public NewDerivedConst2 = 'blabla';\end{ttfamily}
 \par  \end{list}
 \subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
 \begin{list}{}{
-\settowidth{\tmplength}{\textbf{NewDerivedField2}}
+\settowidth{\tmplength}{\textbf{NewDerivedProtectedField}}
 \setlength{\itemindent}{0cm}
 \setlength{\listparindent}{0cm}
 \setlength{\leftmargin}{\evensidemargin}
@@ -763,6 +843,20 @@ public NewDerivedField2: String;\end{ttfamily}
 \fi
 \begin{ttfamily}
 public var NewDerivedField3: String;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+
+\par  \label{ok_inherited_members.TNewDerived-NewDerivedProtectedField}
+\index{NewDerivedProtectedField}
+\item[\textbf{NewDerivedProtectedField}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+protected NewDerivedProtectedField: Integer;\end{ttfamily}
 
 \ifpdf
 \end{flushleft}
@@ -845,6 +939,32 @@ public procedure NewDerivedMethod; virtual;\end{ttfamily}
 \fi
 \begin{ttfamily}
 public procedure NewDerivedMethod2;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\end{list}
+\paragraph*{NewDerivedProtectedMethod}\hspace*{\fill}
+
+\label{ok_inherited_members.TNewDerived-NewDerivedProtectedMethod}
+\index{NewDerivedProtectedMethod}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+protected procedure NewDerivedProtectedMethod;\end{ttfamily}
 
 \ifpdf
 \end{flushleft}

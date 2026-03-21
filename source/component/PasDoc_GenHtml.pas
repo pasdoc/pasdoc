@@ -1031,9 +1031,10 @@ begin
       begin
         WriteDirectLine(
           '<label><input type="checkbox" autocomplete="off"' +
+          ' id="checkbox-inherited-member"' +
           // default is checked when InheritedMembers=imDefaultShow
           IfThen(InheritedMembers = imDefaultShow, ' checked', '') +
-          ' onchange="pasdocToggleVisibility(''inherited-member'', this)"> ' +
+          ' onchange="pasdocUpdateMembers(''inherited-member'')"> ' +
           ConvertString(FLanguage.Translation[trInherited]) +
           '</label>');
       end;
@@ -1046,9 +1047,10 @@ begin
               to be always toggled off on page reload, since we always hide the
               relevant items on page reload. }
             '<label><input type="checkbox" autocomplete="off"' +
-            ' onchange="pasdocToggleVisibility(''visibility-' +
+            ' id="checkbox-visibility-' + VisToStr(Vis) + '"' +
+            ' onchange="pasdocUpdateMembers(''visibility-' +
             VisToStr(Vis) +
-            ''', this)"> ' +
+            ''')"> ' +
             ConvertString(FLanguage.Translation[
               VisibilityTranslationId(Vis)]) +
             '</label>');
@@ -2071,10 +2073,36 @@ begin
       '</style>' + LineEnding;
     Result := Result +
       '<script>' + LineEnding +
-      'function pasdocToggleVisibility(className, checkbox) {' + LineEnding +
+      '/* PasDoc JavaScript for toggleable visibility and/or inherited members. */' + LineEnding +
+      LineEnding +
+      '/* Get checkbox value, or true if the checkbox does not exist (e.g. for visibilities that are not toggable). */' + LineEnding +
+      'function getCheckboxValue(checkboxId) {' + LineEnding +
+      '  var checkbox = document.getElementById(checkboxId);' + LineEnding +
+      '  return checkbox ? checkbox.checked : true;' + LineEnding +
+      '}' + LineEnding +
+      LineEnding +
+      '/* Update display of members that are toggable because' + LineEnding +
+      '   1. their visibility is toggable (--visible-members=xxx? in PasDoc)' + LineEnding +
+      '   2. or they are from ancestors (inherited), and thus toggable (see --inherited-members in PasDoc)' + LineEnding +
+      '*/ ' + LineEnding +
+      'function pasdocUpdateMembers(className) {' + LineEnding +
       '  var elements = document.getElementsByClassName(className);' + LineEnding +
-      '  var show = checkbox.checked;' + LineEnding +
+      '  var showInherited = getCheckboxValue("checkbox-inherited-member");' + LineEnding +
+      '  var showVisibilities = {};' + LineEnding;
+    for Vis := Low(TVisibility) to High(TVisibility) do
+      Result := Result + '  showVisibilities["visibility-' + VisToStr(Vis) + '"] = getCheckboxValue("checkbox-visibility-' + VisToStr(Vis) + '");' + LineEnding;
+    Result := Result +
       '  for (var i = 0; i < elements.length; i++) {' + LineEnding +
+      '    var show = true;' + LineEnding +
+      '    if (elements[i].classList.contains("inherited-member")) {' + LineEnding +
+      '      show = show && showInherited;' + LineEnding +
+      '    }' + LineEnding +
+      '    for (var visibility in showVisibilities) {' + LineEnding +
+      '      if (elements[i].classList.contains(visibility)) {' + LineEnding +
+      '        show = show && showVisibilities[visibility];' + LineEnding +
+      '        break;' + LineEnding +
+      '      }' + LineEnding +
+      '    }' + LineEnding +
       // We use "revert" instead of nothing, to override "display: none" in CSS.
       '    elements[i].style.display = show ? "revert" : "none";' + LineEnding +
       '  }' + LineEnding +

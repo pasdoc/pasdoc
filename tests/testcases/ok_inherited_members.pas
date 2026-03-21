@@ -22,6 +22,9 @@ type
     procedure BaseMethod2;
     property BaseProp: Integer read BaseField write BaseField;
     property BaseProp2: String read BaseField2 write BaseField2;
+  protected
+    BaseProtectedField: Integer;
+    procedure BaseProtectedMethod;
   end;
 
   TDerived = class(TBase)
@@ -43,6 +46,9 @@ type
     procedure DerivedMethod2;
     property DerivedProp: Integer read DerivedField write DerivedField;
     property DerivedProp2: String read DerivedField2 write DerivedField2;
+  protected
+    DerivedProtectedField: Integer;
+    procedure DerivedProtectedMethod;
   end;
 
   TNewDerived = class(TDerived)
@@ -64,6 +70,9 @@ type
     procedure NewDerivedMethod2;
     property NewDerivedProp: Integer read NewDerivedField write NewDerivedField;
     property NewDerivedProp2: String read NewDerivedField2 write NewDerivedField2;
+  protected
+    NewDerivedProtectedField: Integer;
+    procedure NewDerivedProtectedMethod;
   end;
 
 implementation
