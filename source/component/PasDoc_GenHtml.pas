@@ -1020,12 +1020,23 @@ begin
     and "Description" when there are no items. }
   if AnyItem then
   begin
-    { Write toggle checkboxes for toggleable visibilities }
-    if ToggleVisibilities <> [] then
+    { Write checkboxes to toggle visibilities and/or inherited members }
+    if (ToggleVisibilities <> []) or
+       (InheritedMembers <> imNever) then
     begin
       WriteDirectLine('<div class="show-members-toggles">');
       WriteDirectLine('<span class="show-members-toggles-label">' +
         ConvertString(FLanguage.Translation[trShowAdditionalMembers]) + ':</span>');
+      if InheritedMembers <> imNever then
+      begin
+        WriteDirectLine(
+          '<label><input type="checkbox" autocomplete="off"' +
+          // default is checked when InheritedMembers=imDefaultShow
+          IfThen(InheritedMembers = imDefaultShow, ' checked', '') +
+          ' onchange="pasdocToggleVisibility(''inherited-member'', this)">' +
+          ConvertString(FLanguage.Translation[trInherited]) +
+          '</label>');
+      end;
       for Vis := Low(TVisibility) to High(TVisibility) do
         if Vis in ToggleVisibilities then
           WriteDirectLine(
@@ -2045,14 +2056,17 @@ begin
   Result := Result + '<link rel="StyleSheet" type="text/css" href="' +
     EscapeURL('pasdoc.css') + '">' + LineEnding;
 
-  // CSS and JavaScript for toggleable visibility
-  if ToggleVisibilities <> [] then
+  // CSS and JavaScript for toggleable visibility and/or inherited members.
+  if (ToggleVisibilities <> []) or
+     (InheritedMembers <> imNever) then
   begin
     Result := Result + '<style>' + LineEnding;
     for Vis := Low(TVisibility) to High(TVisibility) do
       if Vis in ToggleVisibilities then
         Result := Result + '.visibility-' + VisToStr(Vis) +
           ' { display: none; }' + LineEnding;
+    if InheritedMembers = imDefaultHide then
+      Result := Result + '.inherited-member { display: none; }' + LineEnding;
     Result := Result +
       '</style>' + LineEnding;
     Result := Result +
