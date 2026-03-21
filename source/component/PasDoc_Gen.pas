@@ -1233,6 +1233,7 @@ var
       ACio.OutputFileName := ACio.FullLink;
       AssignCioAncestorLinks(ACio);
       AssignLinks(U, ACio, nil, ACio.Fields);
+      AssignLinks(U, ACio, nil, ACio.Constants);
       AssignLinks(U, ACio, nil, ACio.Methods);
       AssignLinks(U, ACio, nil, ACio.Properties);
       AssignLinks(U, ACio, nil, ACio.Types);
@@ -2345,6 +2346,7 @@ procedure TDocGenerator.ExpandDescriptions;
       begin
         ExpandPasItem(PreExpand, ACio);
         ExpandCollection(PreExpand, ACio.Fields);
+        ExpandCollection(PreExpand, ACio.Constants);
         ExpandCollection(PreExpand, ACio.Methods);
         ExpandCollection(PreExpand, ACio.Properties);
         ExpandCollection(PreExpand, ACio.Types);

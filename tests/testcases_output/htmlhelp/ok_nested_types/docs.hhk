@@ -13,9 +13,11 @@
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="OuterConst1">
+<param name="Local" value="ok_nested_types.TOuterClass.html#OuterConst1">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="OuterConst2">
+<param name="Local" value="ok_nested_types.TOuterClass.html#OuterConst2">
 </object>
 <li><object type="text/sitemap">
 <param name="Name" value="OuterPublicProc">

@@ -10,8 +10,10 @@
       <description><detailed>Description of <code>OuterPublicProc</code></detailed></description>
     </routine>
     <constant name="OuterConst1" declaration="OuterConst1 = 'Blah1';" visibility="public">
+      <description><detailed>Description of <code>OuterConst1</code></detailed></description>
     </constant>
     <constant name="OuterConst2" declaration="OuterConst2 = 'Blah2';" visibility="public">
+      <description><detailed>Description of <code>OuterConst2</code></detailed></description>
     </constant>
     <structure name="TInnerImplicitRecord" visibility="public" name_with_generic="TInnerImplicitRecord" type="record">
       <description><detailed><code>TInnerImplicitRecord</code> is a nested record</detailed></description>
