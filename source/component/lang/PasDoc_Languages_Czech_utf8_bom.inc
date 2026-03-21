@@ -1,17 +1,4 @@
-﻿{
-  This is translation for Czech language.
-  Pasted into separate file, to minimize chance of messing character codes
-  (and also, to ease iconv call).
-
-  PasDoc_Languages_Czech_ISO_8859_2.inc contains ISO-8859-2 version.
-
-  PasDoc_Languages_Czech_CP1250.inc contans Windows CP1250 version,
-  which should be automatically generated from *_ISO_8859_2.inc using
-  iconv ("make PasDoc_Languages_Czech_CP1250.inc" in this dir takes
-  care of that).
-}
-
-RTransTable = (
+﻿RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Czech',
   //map

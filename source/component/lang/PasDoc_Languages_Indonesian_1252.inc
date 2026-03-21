@@ -1,3 +1,4 @@
+{ This file is auto-generated, do not edit it directly. Edit instead the source: PasDoc_Languages_Indonesian_utf8_bom.inc }
 RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Indonesian',

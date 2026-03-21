@@ -1,3 +1,4 @@
+{ This file is auto-generated, do not edit it directly. Edit instead the source: PasDoc_Languages_Danish_utf8_bom.inc }
 RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Danish',
@@ -36,7 +37,7 @@ RTransTable = (
       {trVariables} 'Variable',
       {trAuthors} 'Forfatre',
         {trAuthor} 'Forfatter',
-      {trCreated} 'Udfï¿½rt',
+      {trCreated} 'Udført',
       {trLastModified} 'Sidst Modificieret',
     {trSubroutine} strToDo, //'Subroutine',
       {trParameters} strToDo, //'Parameters',
@@ -83,7 +84,7 @@ RTransTable = (
     {trValues} strToDo, //'Values',
   //tags with inbuilt heading
     {trWarningTag} 'Advarsel',
-    {trNoteTag} 'BemÃ¦rk',
+    {trNoteTag} 'Bemærk',
   //empty
     {trNone} 'Ingen',
     {trNoCIOs} strToDo, //'The units do not contain any classes, interfaces, objects or records.',
@@ -94,7 +95,7 @@ RTransTable = (
     {trNoFunctions} strToDo, //'The units do not contain any functions or procedures.',
     {trNoIdentifiers} strToDo, //'The units do not contain any identifiers.',
   //misc
-    {trHelp} 'Hjï¿½lp',
+    {trHelp} 'Hjælp',
     {trLegend} 'Legende',
     {trMarker} strToDo, //'Marker',
     {trWarningOverwrite} 'Advarsel: Editer ikke denne fil, den er autogeneret og vil sansylgvis blive overskret',

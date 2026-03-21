@@ -1,14 +1,15 @@
+{ This file is auto-generated, do not edit it directly. Edit instead the source: PasDoc_Languages_German_utf8_bom.inc }
 RTransTable = (
-    {trNoTrans} '<hï¿½h?>', //no ID assigned, so far
+    {trNoTrans} '<häh?>', //no ID assigned, so far
     {trLanguage} 'German',
   //map
     {trUnits} strKeep, //'Units',
     {trClassHierarchy} 'Klassenhierarchie',
-    {trCio} 'Klassen, Interfaces und Objects',
+    {trCio} 'Klassen, Interfaces und Objekte',
     {trNestedCR} strToDo, //'Nested Classes and Records',
     {trNestedTypes} strToDo, //'Nested Types',
     {trIdentifiers} 'Bezeichner',
-    {trGvUses} 'Graph der Unit-Abhï¿½ngigkeiten',
+    {trGvUses} 'Graph der Unit-Abhängigkeiten',
     {trGvClasses} 'Graph der Klassenhierarchie',
   //tables and members
     {trClasses} 'Klassen',
@@ -37,7 +38,7 @@ RTransTable = (
       {trAuthors} 'Autoren',
         {trAuthor} 'Autor',
       {trCreated} 'Erstellt',
-      {trLastModified} 'Letzte ï¿½nderung',
+      {trLastModified} 'Letzte Änderung',
     {trSubroutine} 'Unterprogramm',
       {trParameters} 'Parameter',
       {trReturns} 'Result',
@@ -58,15 +59,15 @@ RTransTable = (
   //hints
     {trDeprecated} 'Dieses Symbol sollte nicht (mehr) verwendet werden.',
     {trPlatformSpecific} 'Dieses Symbol ist plattformspezifisch.',
-    {trLibrarySpecific} 'Dieses Symbol ist spezifisch fï¿½r eine bestimmte Bibliothek.',
+    {trLibrarySpecific} 'Dieses Symbol ist spezifisch für eine bestimmte Bibliothek.',
     {trExperimental} strToDo, //'this symbol is experimental',
     {trUnimplemented} strToDo, //'this symbol is unimplemented',
   //headings
-    {trOverview} 'ï¿½bersicht',
-    {trIntroduction} 'Einfï¿½hrung',
+    {trOverview} 'Übersicht',
+    {trIntroduction} 'Einführung',
     {trConclusion} 'Fazit',
     {trAdditionalFile} 'weitere Datei',
-    {trEnclosingClass} 'Einschlieï¿½ende Klasse',
+    {trEnclosingClass} 'Einschließende Klasse',
     {trHeadlineCio} 'Alle Klassen, Schnittstellen, Objekte und Records',
     {trHeadlineConstants} 'Alle Konstanten',
     {trHeadlineFunctionsAndProcedures} 'Alle Funktionen und Prozeduren',
@@ -78,7 +79,7 @@ RTransTable = (
   //column headings
     {trDeclaration} 'Deklaration',
     {trDescription} 'Beschreibung',
-    {trDescriptions} 'Ausfï¿½hrliche Beschreibungen',
+    {trDescriptions} 'Ausführliche Beschreibungen',
     {trName} strKeep, //'Name',
     {trValues} 'Werte',
   //tags with inbuilt heading
@@ -97,7 +98,7 @@ RTransTable = (
     {trHelp} 'Hilfe',
     {trLegend} 'Legende',
     {trMarker} 'Markierung',
-    {trWarningOverwrite} 'Achtung: Nicht ï¿½ndern - diese Datei wurde automatisch erstellt und wird mï¿½glicherweise ï¿½berschrieben',
+    {trWarningOverwrite} 'Achtung: Nicht ändern - diese Datei wurde automatisch erstellt und wird möglicherweise überschrieben',
     {trWarning} 'Warnung',
     {trGeneratedBy} 'Erstellt mit',
     {trGeneratedOn} strToDo, //'Generated on'

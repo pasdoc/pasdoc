@@ -2,7 +2,7 @@
 
 RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
-    {trLanguage} 'Chinese_utf8',
+    {trLanguage} 'Chinese',
   //map
     {trUnits} '单元',
     {trClassHierarchy} '类继承',
