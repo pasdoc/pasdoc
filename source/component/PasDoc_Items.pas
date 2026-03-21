@@ -1211,26 +1211,34 @@ type
     property PasItemAt[const AIndex: Integer]: TPasItem read GetPasItemAt
       write SetPasItemAt;
 
-    { This sorts all items on this list by their name,
-      and also calls @link(TPasItem.Sort Sort(SortSettings))
+    { Sort all items by their (qualified) name,
+      and call @link(TPasItem.Sort Sort(SortSettings))
       for each of these items.
-      This way it sorts recursively everything in this list.
+      This way we sort recursively everything in this list.
 
       This is equivalent to doing both
       @link(SortShallow) and @link(SortOnlyInsideItems). }
     procedure SortDeep(const SortSettings: TSortSettings);
 
-    { This calls @link(TPasItem.Sort Sort(SortSettings))
+    { Call @link(TPasItem.Sort Sort(SortSettings))
       for each of items on the list.
       It does @italic(not) sort the items on this list. }
     procedure SortOnlyInsideItems(const SortSettings: TSortSettings);
 
-    { This sorts all items on this list by their name.
+    { Sort all items on this list by their name, qualified or not.
       Unlike @link(SortDeep), it does @italic(not) call @link(TPasItem.Sort Sort)
       for each of these items.
       So "items inside items" (e.g. class methods, if this list contains
-      TPasCio objects) remain unsorted. }
-    procedure SortShallow;
+      TPasCio objects) remain unsorted.
+
+      @param(Unqualified
+
+        When @true, we sort first by @link(TPasItem.Name).
+
+        When @false, we sort first by @link(TPasItem.UnitRelativeQualifiedName),
+        which includes unit and class names.)
+    }
+    procedure SortShallow(const Unqualified: Boolean = false);
 
     { Sets FullDeclaration of every item to
       @orderedList(
@@ -1278,10 +1286,8 @@ type
     function FindListItem(const AName: string): TPasItem;
   end;
 
-  { Collection of classes / records / interfaces. }
+  { Collection of CIOs (classes, records, interfaces...) nested in outer CIO. }
   TPasNestedCios = class(TPasTypes)
-  public
-    constructor Create; reintroduce;
   end;
 
   { Collection of units. }
@@ -1405,6 +1411,25 @@ begin
     Result := CompareText(
       P1.DetailedDescription,
       P2.DetailedDescription);
+end;
+
+{ Compare 2 TPasItem instances, first by unqualified name.
+  Declared as 2 TBaseItem (because this callback is used with TObjectList<TBaseItem>). }
+function ComparePasItemsByNameUnqualified(
+  {$ifdef GENERICS_CONSTREF}constref{$else}const{$endif}
+  PItem1, PItem2: TBaseItem): Integer;
+var
+  P1, P2: TPasItem;
+begin
+  P1 := TPasItem(PItem1);
+  P2 := TPasItem(PItem2);
+
+  Result := CompareText(
+    P1.Name,
+    P2.Name);
+  if Result <> 0 then Exit;
+
+  Result := ComparePasItemsByName(PItem1, PItem2);
 end;
 
 { TBaseItem ------------------------------------------------------------------- }
@@ -2344,9 +2369,12 @@ begin
   Items[AIndex] := Value;
 end;
 
-procedure TPasItems.SortShallow;
+procedure TPasItems.SortShallow(const Unqualified: Boolean);
 begin
-  Sort(TBaseItemComparer.Construct({$IFDEF FPC}@{$ENDIF} ComparePasItemsByName));
+  if Unqualified then
+    Sort(TBaseItemComparer.Construct({$IFDEF FPC}@{$ENDIF} ComparePasItemsByNameUnqualified))
+  else
+    Sort(TBaseItemComparer.Construct({$IFDEF FPC}@{$ENDIF} ComparePasItemsByName));
 end;
 
 procedure TPasItems.SortOnlyInsideItems(const SortSettings: TSortSettings);
@@ -2472,13 +2500,6 @@ begin
   Result := nil;
 end;
 
-{ TPasNestedCios ------------------------------------------------------------- }
-
-constructor TPasNestedCios.Create;
-begin
-  inherited Create(True);
-end;
-
 { TPasCio -------------------------------------------------------------------- }
 
 constructor TPasCio.Create;
@@ -2490,7 +2511,7 @@ begin
   FMethods := TPasRoutines.Create(True);
   FProperties := TPasProperties.Create(True);
   FAncestors := TStringPairVector.Create(True);
-  FCios := TPasNestedCios.Create;
+  FCios := TPasNestedCios.Create(True);
   FTypes := TPasTypes.Create(True);
 end;
 

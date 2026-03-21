@@ -56,7 +56,8 @@ uses
   PasDoc_TagManager,
   PasDoc_Aspell,
   PasDoc_StreamUtils,
-  PasDoc_StringPairVector;
+  PasDoc_StringPairVector,
+  PasDoc_SortSettings;
 
 type
   { Overview files that pasdoc generates for multiple-document-formats
@@ -300,6 +301,7 @@ type
 
     FExternalClassHierarchy: TStrings;
     FToggleVisibilities: TVisibilities;
+    FSortSettings: TSortSettings;
 
     procedure SetAbbreviations(const Value: TStringList);
     function GetLanguage: TLanguageID;
@@ -1079,6 +1081,17 @@ type
       in HTML, with checkboxes to toggle their display. }
     property ToggleVisibilities: TVisibilities
       read FToggleVisibilities write FToggleVisibilities;
+
+    { How items should be sorted in output.
+      See @url(https://pasdoc.github.io/SortOption --sort documentation).
+
+      The @link(TPasDoc) sorts the items in @link(Units) before
+      executing our @link(WriteDocumentation), so @link(TDocGenerator)
+      @italic(usually) doesn't need to worry about sorting anymore...
+      Except if output rearranges/sums items, like HTML output does
+      for InheritedMembers<>imNever, in which case they need to be sorted again. }
+    property SortSettings: TSortSettings
+      read FSortSettings write FSortSettings default [];
   end;
 
 function StringToLinkLook(const S: String): TLinkLook;

@@ -195,8 +195,14 @@ type
     property ToggleVisibilities: TVisibilities read FToggleVisibilities write FToggleVisibilities;
     property CacheDir: string read FCacheDir write FCacheDir;
 
-    { This determines how items inside will be sorted.
-      See @url(https://pasdoc.github.io/SortOption --sort documentation). }
+    { How items will be sorted.
+      See @url(https://pasdoc.github.io/SortOption --sort documentation).
+
+      This class sorts the items in @link(TDocGenerator.Units) before
+      executing @link(TDocGenerator.WriteDocumentation), so @link(TDocGenerator)
+      @italic(usually) doesn't need to worry about sorting anymore...
+      Except if output rearranges/sums items, like HTML output does
+      for InheritedMembers<>imNever, in which case they need to be sorted again. }
     property SortSettings: TSortSettings
       read FSortSettings write FSortSettings default [];
 
@@ -576,6 +582,7 @@ begin
   end;
 
   Generator.Title := Title;
+  Generator.SortSettings := SortSettings;
   Generator.ToggleVisibilities := ToggleVisibilities;
   Generator.Units := FUnits;
   Generator.Introduction := FIntroduction;

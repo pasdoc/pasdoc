@@ -43,14 +43,15 @@ unit PasDoc_GenHtml;
 interface
 
 uses
+  Classes, Contnrs,
   PasDoc_Utils,
   PasDoc_Gen,
   PasDoc_Items,
   PasDoc_Languages,
   PasDoc_StringVector,
   PasDoc_Types,
-  Classes, Contnrs,
-  PasDoc_StringPairVector;
+  PasDoc_StringPairVector,
+  PasDoc_SortSettings;
 
 type
   { @abstract(HTML documentation generator.)
@@ -763,6 +764,53 @@ const
     end;
   end;
 
+  { Add all members from CioToAdd and its ancestors to the lists of members. }
+  procedure AddAllMembers(const CioToAdd: TPasCio;
+    const AllConstants: TPasItems;
+    const AllFields: TPasItems;
+    const AllMethods: TPasRoutines;
+    const AllProperties: TPasProperties;
+    const AllTypes: TPasTypes;
+    const AllCios: TPasNestedCios);
+  begin
+    { Add ancestor stuff first, this makes more natural order
+      (useful when --sort doesn't indicate to sort given members). }
+    if CioToAdd.FirstAncestor is TPasCio then
+      AddAllMembers(TPasCio(CioToAdd.FirstAncestor),
+        AllConstants, AllFields, AllMethods, AllProperties, AllTypes, AllCios);
+    AllConstants.AddRange(CioToAdd.Constants);
+    AllFields.AddRange(CioToAdd.Fields);
+    AllMethods.AddRange(CioToAdd.Methods);
+    AllProperties.AddRange(CioToAdd.Properties);
+    AllTypes.AddRange(CioToAdd.Types);
+    AllCios.AddRange(CioToAdd.Cios);
+  end;
+
+  { Sort all lists of members. }
+  procedure SortAllLists(const IsRecord: boolean;
+    const AllConstants: TPasItems;
+    const AllFields: TPasItems;
+    const AllMethods: TPasRoutines;
+    const AllProperties: TPasProperties;
+    const AllTypes: TPasTypes;
+    const AllCios: TPasNestedCios);
+  begin
+    if ssConstants in SortSettings then
+      AllConstants.SortShallow(true);
+    if IsRecord and (ssRecordFields in SortSettings)  then
+      AllFields.SortShallow(true);
+    if (not IsRecord) and (ssNonRecordFields in SortSettings)  then
+      AllFields.SortShallow(true);
+    if ssMethods in SortSettings then
+      AllMethods.SortShallow(true);
+    if ssProperties in SortSettings then
+      AllProperties.SortShallow(true);
+    if ssTypes in SortSettings then
+      AllTypes.SortShallow(true);
+    if ssCios in SortSettings then
+      AllCios.SortShallow(true);
+  end;
+
 var
   i: Integer;
   s: string;
@@ -777,6 +825,7 @@ var
   AllProperties: TPasProperties;
   AllTypes: TPasTypes;
   AllCios: TPasNestedCios;
+  FreeAllLists: Boolean;
 begin
   if not Assigned(CIO) then Exit;
 
@@ -796,10 +845,25 @@ begin
   AllProperties := CIO.Properties;
   AllTypes := CIO.Types;
   AllCios := CIO.Cios;
+  FreeAllLists := false;
 
-  if InheritedMembers <> imNever then
+  if (InheritedMembers <> imNever) and
+     (Cio.FirstAncestor is TPasCio) then
   begin
-    // TODO: add inherited members to All* lists
+    AllConstants := TPasItems.Create(false);
+    AllFields := TPasItems.Create(false);
+    AllMethods := TPasRoutines.Create(false);
+    AllProperties := TPasProperties.Create(false);
+    AllTypes := TPasTypes.Create(false);
+    AllCios := TPasNestedCios.Create(false);
+    FreeAllLists := true;
+    AddAllMembers(
+      // TPasCio(Cio.FirstAncestor),
+      // Start from Cio itself, because we need to add our own members to new lists
+      Cio,
+      AllConstants, AllFields, AllMethods, AllProperties, AllTypes, AllCios);
+    SortAllLists(Cio.MyType in CIORecordType,
+      AllConstants, AllFields, AllMethods, AllProperties, AllTypes, AllCios);
   end;
 
   SectionsAvailable := [dsDescription];
@@ -953,6 +1017,16 @@ begin
     WriteFieldsDetailed(AllFields);
     WriteMethodsDetailed(AllMethods);
     WritePropertiesDetailed(AllProperties);
+  end;
+
+  if FreeAllLists then
+  begin
+    FreeAndNil(AllConstants);
+    FreeAndNil(AllFields);
+    FreeAndNil(AllMethods);
+    FreeAndNil(AllProperties);
+    FreeAndNil(AllTypes);
+    FreeAndNil(AllCios);
   end;
 
   WriteAuthors(HL + 1, CIO.Authors);
