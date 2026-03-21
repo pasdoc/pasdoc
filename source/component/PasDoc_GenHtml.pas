@@ -79,16 +79,32 @@ type
       @param CssClass is the link's CSS class }
     function MakeLink(const href, caption, CssClass: string): string;
 
-    { Used by WriteItemsSummary and WriteItemsDetailed. }
-    procedure WriteItemTableRow(Item: TPasItem; ShowVisibility: boolean;
-      WriteItemLink: boolean; MakeAnchor: boolean);
+    { Write table row, used by both WriteItemsSummary and WriteItemsDetailed.
 
+      @param(CioToDistinguishInherited If non-nil, this is used
+        to decide to which items we add CSS class 'inherited-member'.
+        Leave as @nil if you don't want to add 'inherited-member' in table row
+        ever.) }
+    procedure WriteItemTableRow(Item: TPasItem; ShowVisibility: boolean;
+      WriteItemLink: boolean; MakeAnchor: boolean;
+      const CioToDistinguishInherited: TPasCio);
+
+    { Writes list of Items, listing their declarations.
+      @param(CioToDistinguishInherited If non-nil, this is used
+        to decide to which items we add CSS class 'inherited-member'.
+        Leave as @nil if you output list of stuff in a unit, not in CIO.) }
     procedure WriteItemsSummary(Items: TPasItems; ShowVisibility: boolean;
       HeadingLevel: Integer;
-      const SectionAnchor: string; SectionName: TTranslationId);
+      const SectionAnchor: string; SectionName: TTranslationId;
+      const CioToDistinguishInherited: TPasCio = nil);
 
+    { Writes list of Items, listing their descriptions.
+      @param(CioToDistinguishInherited If non-nil, this is used
+        to decide to which items we add CSS class 'inherited-member'.
+        Leave as @nil if you output list of stuff in a unit, not in CIO.) }
     procedure WriteItemsDetailed(Items: TPasItems; ShowVisibility: boolean;
-      HeadingLevel: Integer; SectionName: TTranslationId);
+      HeadingLevel: Integer; SectionName: TTranslationId;
+      const CioToDistinguishInherited: TPasCio = nil);
 
     { Writes information on doc generator to current output stream,
       including link to pasdoc homepage. }
@@ -643,45 +659,49 @@ const
   procedure WriteMethodsSummary(const AllMethods: TPasRoutines);
   begin
     WriteItemsSummary(AllMethods, CIO.ShowVisibility, HL + 1,
-      SectionAnchors[dsMethods], trMethods);
+      SectionAnchors[dsMethods], trMethods, CIO);
   end;
 
   procedure WriteMethodsDetailed(const AllMethods: TPasRoutines);
   begin
-    WriteItemsDetailed(AllMethods, CIO.ShowVisibility, HL + 1, trMethods);
+    WriteItemsDetailed(AllMethods, CIO.ShowVisibility, HL + 1,
+      trMethods, CIO);
   end;
 
   procedure WritePropertiesSummary(const AllProperties: TPasProperties);
   begin
     WriteItemsSummary(AllProperties, CIO.ShowVisibility, HL + 1,
-      SectionAnchors[dsProperties], trProperties);
+      SectionAnchors[dsProperties], trProperties, CIO);
   end;
 
   procedure WritePropertiesDetailed(const AllProperties: TPasProperties);
   begin
-    WriteItemsDetailed(AllProperties, CIO.ShowVisibility, HL + 1, trProperties);
+    WriteItemsDetailed(AllProperties, CIO.ShowVisibility, HL + 1,
+      trProperties, CIO);
   end;
 
   procedure WriteConstantsSummary(const AllConstants: TPasItems);
   begin
     WriteItemsSummary(AllConstants, CIO.ShowVisibility, HL + 1,
-      SectionAnchors[dsConstants], trConstants);
+      SectionAnchors[dsConstants], trConstants, CIO);
   end;
 
   procedure WriteConstantsDetailed(const AllConstants: TPasItems);
   begin
-    WriteItemsDetailed(AllConstants, CIO.ShowVisibility, HL + 1, trConstants);
+    WriteItemsDetailed(AllConstants, CIO.ShowVisibility, HL + 1,
+      trConstants, CIO);
   end;
 
   procedure WriteFieldsSummary(const AllFields: TPasItems);
   begin
     WriteItemsSummary(AllFields, CIO.ShowVisibility, HL + 1,
-      SectionAnchors[dsFields], trFields);
+      SectionAnchors[dsFields], trFields, CIO);
   end;
 
   procedure WriteFieldsDetailed(const AllFields: TPasItems);
   begin
-    WriteItemsDetailed(AllFields, CIO.ShowVisibility, HL + 1, trFields);
+    WriteItemsDetailed(AllFields, CIO.ShowVisibility, HL + 1,
+      trFields, CIO);
   end;
 
   procedure WriteNestedCioSummary(const AllCios: TPasNestedCios);
@@ -707,18 +727,19 @@ const
       end;
     end;
     WriteItemsSummary(AllCios, CIO.ShowVisibility, HL + 1,
-      SectionAnchors[dsNestedCRs], trNestedCR);
+      SectionAnchors[dsNestedCRs], trNestedCR, CIO);
   end;
 
   procedure WriteNestedTypesSummary(const AllTypes: TPasTypes);
   begin
     WriteItemsSummary(AllTypes, CIO.ShowVisibility, HL + 1,
-      SectionAnchors[dsNestedTypes], trNestedTypes);
+      SectionAnchors[dsNestedTypes], trNestedTypes, CIO);
   end;
 
   procedure WriteNestedTypesDetailed(const AllTypes: TPasTypes);
   begin
-    WriteItemsDetailed(AllTypes, CIO.ShowVisibility, HL + 1, trNestedTypes);
+    WriteItemsDetailed(AllTypes, CIO.ShowVisibility, HL + 1,
+      trNestedTypes, CIO);
   end;
 
   { Writes all ancestors of the given Item (with given Name).
@@ -1284,9 +1305,16 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteItemTableRow(
   Item: TPasItem; ShowVisibility: boolean;
-  WriteItemLink: boolean; MakeAnchor: boolean);
+  WriteItemLink: boolean; MakeAnchor: boolean;
+  const CioToDistinguishInherited: TPasCio);
+var
+  ItemCssClasses: string;
 begin
-  WriteStartOfTableRow('visibility-' + VisToStr(Item.Visibility));
+  ItemCssClasses := 'visibility-' + VisToStr(Item.Visibility);
+  if (CioToDistinguishInherited <> nil) and
+     (CioToDistinguishInherited <> Item.MyObject) then
+    ItemCssClasses := ItemCssClasses + ' inherited-member';
+  WriteStartOfTableRow(ItemCssClasses);
 
   if ShowVisibility then
     WriteVisibilityCell(Item);
@@ -1302,7 +1330,8 @@ end;
 
 procedure TGenericHTMLDocGenerator.WriteItemsSummary(
   Items: TPasItems; ShowVisibility: boolean; HeadingLevel: Integer;
-  const SectionAnchor: string; SectionName: TTranslationId);
+  const SectionAnchor: string; SectionName: TTranslationId;
+  const CioToDistinguishInherited: TPasCio);
 var
   i: Integer;
 begin
@@ -1315,18 +1344,21 @@ begin
   WriteStartOfTable1Column('summary');
 
   for i := 0 to Items.Count - 1 do
-    WriteItemTableRow(Items.PasItemAt[i], ShowVisibility, true, false);
+    WriteItemTableRow(Items.PasItemAt[i], ShowVisibility, true, false,
+      CioToDistinguishInherited);
 
   WriteEndOfTable;
 end;
 
 procedure TGenericHTMLDocGenerator.WriteItemsDetailed(
   Items: TPasItems; ShowVisibility: boolean;
-  HeadingLevel: Integer; SectionName: TTranslationId);
+  HeadingLevel: Integer; SectionName: TTranslationId;
+  const CioToDistinguishInherited: TPasCio);
 var
   Item: TPasItem;
   i: Integer;
   ColumnsCount: Cardinal;
+  ItemCssClasses: string;
 begin
   if ObjectVectorIsNilOrEmpty(Items) then Exit;
 
@@ -1340,8 +1372,12 @@ begin
     ColumnsCount := 1;
     if ShowVisibility then Inc(ColumnsCount);
 
-    WriteStartOfTable('detail visibility-' + VisToStr(Item.Visibility));
-    WriteItemTableRow(Item, ShowVisibility, false, true);
+    ItemCssClasses := 'detail visibility-' + VisToStr(Item.Visibility);
+    if (CioToDistinguishInherited <> nil) and
+       (CioToDistinguishInherited <> Item.MyObject) then
+      ItemCssClasses := ItemCssClasses + ' inherited-member';
+    WriteStartOfTable(ItemCssClasses);
+    WriteItemTableRow(Item, ShowVisibility, false, true, nil);
 
     { Using colspan="0" below would be easier, but Konqueror and IE
       can't handle it correctly. It seems that they treat it as colspan="1" ? }
