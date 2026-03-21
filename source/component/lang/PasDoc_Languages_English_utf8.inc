@@ -109,5 +109,6 @@ RTransTable = (
     {trAttributes} 'Attributes',
     {trSourcePosition} 'Source: %s (line %d).',
     {trShowAdditionalMembers} 'Show Additional Members',
+    {trInherited} 'Inherited',
     ''  //dummy
   );

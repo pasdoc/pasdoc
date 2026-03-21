@@ -239,6 +239,7 @@ type
     trAttributes,
     trSourcePosition,
     trShowAdditionalMembers,
+    trInherited,
     trDummy
   );
 
