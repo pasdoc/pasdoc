@@ -785,7 +785,7 @@ begin
   SectionHeads[dsConstants] := FLanguage.Translation[trConstants];
   SectionHeads[dsFields]:= FLanguage.Translation[trFields];
   SectionHeads[dsMethods]:= FLanguage.Translation[trMethods];
-  SectionHeads[dsProperties ]:= FLanguage.Translation[trProperties];
+  SectionHeads[dsProperties]:= FLanguage.Translation[trProperties];
   SectionHeads[dsNestedTypes]:= FLanguage.Translation[trNestedTypes];
   SectionHeads[dsNestedCRs]:= FLanguage.Translation[trNestedCR];
   SectionHeads[dsEnclosingClass]:= FLanguage.Translation[trEnclosingClass];
@@ -897,7 +897,7 @@ begin
   if CIO.MyObject <> nil then
   begin
     WriteAnchor(SectionAnchors[dsEnclosingClass]);
-    WriteHeading(HL + 1, 'hierarchy', SectionHeads[dsEnclosingClass]);
+    WriteHeading(HL + 1, 'enclosingclass', SectionHeads[dsEnclosingClass]);
     WriteDirect('<ul class="hierarchy"><li class="thisitem">');
     WriteLink(CIO.MyObject.FullLink, CIO.MyObject.Name, 'ancestor');
     WriteDirect('</li></ul>');
