@@ -152,8 +152,12 @@ type
     procedure WriteStartOfTable2Columns(const CssClass: string; const t1, t2: string);
     procedure WriteStartOfTable3Columns(const CssClass: string; const t1, t2, t3: string);
 
-    procedure WriteStartOfTableRow(const CssClass: string); overload;
-    procedure WriteStartOfTableRow(const CssClass, ExtraClass: string); overload;
+    { Write <tr...> to start table row.
+      We always add CSS class list or list2, depending on FOddTableRow,
+      and then we invert FOddTableRow.
+      We also add ExtraClasses to the CSS class list,
+      if ExtraClasses is not empty. }
+    procedure WriteStartOfTableRow(const ExtraClasses: String = '');
 
     { Writes a cell into a table row with the Item's visibility image. }
     procedure WriteVisibilityCell(const Item: TPasItem);
@@ -1102,7 +1106,7 @@ procedure TGenericHTMLDocGenerator.WriteCIOSummary(HL: integer; c: TPasItems);
 
   procedure WriteCioRow(ACio: TPasCio);
   begin
-    WriteStartOfTableRow('');
+    WriteStartOfTableRow;
     { name of class/interface/object and unit }
     WriteStartOfTableCell('itemname');
     WriteConverted(GetCIOTypeName(ACio.MyType));
@@ -1266,7 +1270,7 @@ procedure TGenericHTMLDocGenerator.WriteItemTableRow(
   Item: TPasItem; ShowVisibility: boolean;
   WriteItemLink: boolean; MakeAnchor: boolean);
 begin
-  WriteStartOfTableRow('', 'visibility-' + VisToStr(Item.Visibility));
+  WriteStartOfTableRow('visibility-' + VisToStr(Item.Visibility));
 
   if ShowVisibility then
     WriteVisibilityCell(Item);
@@ -1737,7 +1741,7 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
         FLanguage.Translation[trDescription]);
       for j := 0 to c.Count - 1 do begin
         Item := c.PasItemAt[j];
-        WriteStartOfTableRow('');
+        WriteStartOfTableRow;
         WriteStartOfTableCell('itemname');
         WriteLink(Item.FullLink, Item.Name, 'bold');
         WriteEndOfTableCell;
@@ -1837,7 +1841,7 @@ procedure TGenericHTMLDocGenerator.WriteOverviewFiles;
       for j := 0 to Items.Count - 1 do
       begin
         Item := Items.PasItemAt[j];
-        WriteStartOfTableRow('');
+        WriteStartOfTableRow;
 
         WriteStartOfTableCell('itemname');
         WriteLink(Item.FullLink, Item.UnitRelativeQualifiedName, 'bold');
@@ -2113,32 +2117,22 @@ begin
   WriteDirect(s+'>');
 end;
 
-procedure TGenericHTMLDocGenerator.WriteStartOfTableRow(const CssClass: string);
-begin
-  WriteStartOfTableRow(CssClass, '');
-end;
-
-procedure TGenericHTMLDocGenerator.WriteStartOfTableRow(
-  const CssClass, ExtraClass: string);
+procedure TGenericHTMLDocGenerator.WriteStartOfTableRow(const ExtraClasses: String);
 var
   s: string;
 begin
-  if CssClass <> '' then begin
-    s := Format('<tr class="%s', [CssClass]);
-    if ExtraClass <> '' then
-      s := s + ' ' + ExtraClass;
-    s := s + '"';
-  end else begin
-    s := '<tr class="list';
-    if FOddTableRow then begin
-      s := s + '2';
-    end;
-    FOddTableRow := not FOddTableRow;
-    if ExtraClass <> '' then
-      s := s + ' ' + ExtraClass;
-    s := s + '"';
+  s := '<tr class="list';
+
+  if FOddTableRow then begin
+    s := s + '2';
   end;
-  WriteDirectLine(s + '>');
+  FOddTableRow := not FOddTableRow;
+
+  if ExtraClasses <> '' then
+    s := s + ' ' + ExtraClasses;
+
+  s := s + '">';
+  WriteDirectLine(s);
 end;
 
 { ---------------------------------------------------------------------------- }
