@@ -501,6 +501,7 @@ begin
       { P is not excluded itself, so process it recursively to exclude its parts.  }
       if P is TPasCio then
       begin
+        RemoveExcludedItems(TPasCio(p).Constants);
         RemoveExcludedItems(TPasCio(p).Fields);
         RemoveExcludedItems(TPasCio(p).Properties);
         RemoveExcludedItems(TPasCio(p).Methods);
