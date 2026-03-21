@@ -332,7 +332,7 @@
 '  color: gray;' + LineEnding +
 '}' + LineEnding +
 '' + LineEnding +
-'.visibility-toggles {' + LineEnding +
+'.show-members-toggles {' + LineEnding +
 '  margin: 0.75em 0;' + LineEnding +
 '  padding: 0.4em 0.75em;' + LineEnding +
 '  background: var(--pasdoc-code-bg);' + LineEnding +
@@ -340,11 +340,11 @@
 '  border-radius: 0.25rem;' + LineEnding +
 '  font-size: 0.875rem;' + LineEnding +
 '}' + LineEnding +
-'.visibility-toggles .visibility-toggles-label {' + LineEnding +
+'.show-members-toggles .show-members-toggles-label {' + LineEnding +
 '  color: var(--pasdoc-muted);' + LineEnding +
 '  margin-right: 0.75em;' + LineEnding +
 '}' + LineEnding +
-'.visibility-toggles label { margin-right: 1em; user-select: none; cursor: pointer; }' + LineEnding +
+'.show-members-toggles label { margin-right: 1em; user-select: none; cursor: pointer; }' + LineEnding +
 '' + LineEnding +
 '/* === Search form === */' + LineEnding +
 '' + LineEnding +

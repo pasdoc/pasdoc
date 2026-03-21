@@ -1023,8 +1023,8 @@ begin
     { Write toggle checkboxes for toggleable visibilities }
     if ToggleVisibilities <> [] then
     begin
-      WriteDirectLine('<div class="visibility-toggles">');
-      WriteDirectLine('<span class="visibility-toggles-label">' +
+      WriteDirectLine('<div class="show-members-toggles">');
+      WriteDirectLine('<span class="show-members-toggles-label">' +
         ConvertString(FLanguage.Translation[trShowAdditionalMembers]) + ':</span>');
       for Vis := Low(TVisibility) to High(TVisibility) do
         if Vis in ToggleVisibilities then
