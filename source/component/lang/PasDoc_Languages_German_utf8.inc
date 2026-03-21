@@ -1,10 +1,11 @@
+{ This file is auto-generated, do not edit it directly. Edit instead the source: PasDoc_Languages_German_utf8_bom.inc }
 RTransTable = (
     {trNoTrans} '<häh?>', //no ID assigned, so far
     {trLanguage} 'German',
   //map
     {trUnits} strKeep, //'Units',
     {trClassHierarchy} 'Klassenhierarchie',
-    {trCio} 'Klassen, Interfaces und Objects',
+    {trCio} 'Klassen, Interfaces und Objekte',
     {trNestedCR} strToDo, //'Nested Classes and Records',
     {trNestedTypes} strToDo, //'Nested Types',
     {trIdentifiers} 'Bezeichner',

@@ -1,3 +1,4 @@
+{ This file is auto-generated, do not edit it directly. Edit instead the source: PasDoc_Languages_Brasilian_utf8_bom.inc }
 RTransTable = (
     {trNoTrans} '<what?>', //no ID assigned, so far
     {trLanguage} 'Brazilian',
@@ -5,8 +6,8 @@ RTransTable = (
     {trUnits} strKeep,
     {trClassHierarchy} 'Hierarquia de Classes',
     {trCio} 'Classes, Interfaces, Objetos e Registros',
-    {trNestedCR} 'Classes e Registros Aninhados',
-    {trNestedTypes} 'Tipos Aninhados',
+    {trNestedCR} 'Classes e registros aninhados',
+    {trNestedTypes} 'Tipos aninhados',
     {trIdentifiers} 'Identificadores',
     {trGvUses} 'Diagrama de dependências de units',
     {trGvClasses} 'Diagrama de hierarquia de Classes',
