@@ -464,8 +464,9 @@ procedure TPasdocOptions.InterpretCommandline(PasDoc: TPasDoc);
     end;
 
     Generator.NumericFilenames := OptionNumericFilenames.TurnedOn;
-
     Generator.UseTipueSearch := OptionUseTipueSearch.TurnedOn;
+    Generator.InheritedMembers := StringToInheritedMembers(
+      OptionInheritedMembers.Value);
 
     Result := Generator;
   end;
@@ -647,8 +648,6 @@ begin
   PasDoc.Generator.LinkLook := StringToLinkLook(OptionLinkLook.Value);
   if OptionFullLink.TurnedOn then // support deprecated --full-link option for backward compatibility
     PasDoc.Generator.LinkLook := llFull;
-  PasDoc.Generator.InheritedMembers := StringToInheritedMembers(
-    OptionInheritedMembers.Value);
 
   { interpret OptionSort value }
   PasDoc.SortSettings := [];

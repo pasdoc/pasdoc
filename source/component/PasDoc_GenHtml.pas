@@ -54,6 +54,10 @@ uses
   PasDoc_SortSettings;
 
 type
+  { Show we show inherited members (in outputs that make it possible,
+    which right now means only HTML output). }
+  TInheritedMembers = (imNever, imDefaultShow, imDefaultHide);
+
   { @abstract(HTML documentation generator.)
     Extends @link(TDocGenerator) and overwrites many of its methods to generate
     output in HTML format. }
@@ -66,8 +70,8 @@ type
     FCSS: string;
     FBootstrap: boolean;
     FOddTableRow: boolean;
-
     FImages: TStringList;
+    FInheritedMembers: TInheritedMembers;
 
     { Makes a link.
       @param href is the link's reference
@@ -325,21 +329,31 @@ type
     property Header: string read FHeader write FHeader;
     { some HTML code to be written as footer for every page }
     property Footer: string read FFooter write FFooter;
+
     property HtmlBodyBegin: string read FHtmlBodyBegin write FHtmlBodyBegin;
     property HtmlBodyEnd: string read FHtmlBodyEnd write FHtmlBodyEnd;
     property HtmlHead: string read FHtmlHead write FHtmlHead;
+
     { Contents of the main CSS file (pasdoc.css). }
     property CSS: string read FCSS write FCSS;
+
     { If true, add Bootstrap CSS and JS. Definitions in @link(CSS) will be
       evaluated after Bootstrap's ones. }
     property Bootstrap: boolean read FBootstrap write FBootstrap default true;
+
     { if set to true, numeric filenames will be used rather than names with multiple dots }
     property NumericFilenames: boolean read FNumericFilenames write FNumericFilenames
       default false;
+
     { Enable Tipue fulltext search. See
       @url(https://pasdoc.github.io/UseTipueSearchOption --use-tipue-search documentation). }
     property UseTipueSearch: boolean read FUseTipueSearch write FUseTipueSearch
       default False;
+
+    { Show inherited members (in outputs that make it possible,
+      which right now means only HTML output). }
+    property InheritedMembers: TInheritedMembers
+      read FInheritedMembers write FInheritedMembers default imNever;
   end;
 
   { Right now this is the same thing as TGenericHTMLDocGenerator.
@@ -357,6 +371,8 @@ const
   DefaultPasdocCss = {$I pasdoc.css.inc};
 
 function SignatureToHtmlId(const Signature: string): string;
+
+function StringToInheritedMembers(const S: String): TInheritedMembers;
 
 implementation
 
@@ -3030,6 +3046,22 @@ begin
       '"></script>' + LineEnding;
   end;
   Result := Result + inherited;
+end;
+
+{ global routines ------------------------------------------------------------ }
+
+function StringToInheritedMembers(const S: String): TInheritedMembers;
+const
+  Names: array[TInheritedMembers] of string = (
+    'never',
+    'default-show',
+    'default-hide'
+  );
+begin
+  for Result := Low(TInheritedMembers) to High(TInheritedMembers) do
+    if SameText(S, Names[Result]) then
+      Exit;
+  raise EConvertError.CreateFmt('Invalid inherited members name: "%s"', [S]);
 end;
 
 end.

@@ -134,10 +134,6 @@ type
 
   TListItemSpacing = (lisCompact, lisParagraph);
 
-  { Show we show inherited members (in outputs that make it possible,
-    which right now means only HTML output). }
-  TInheritedMembers = (imNever, imDefaultShow, imDefaultHide);
-
   { Collected information about @@xxxList item. }
   TListItemData = class
   private
@@ -248,7 +244,6 @@ type
     FLinkGraphVizClasses: string;
     FAutoAbstract: boolean;
     FLinkLook: TLinkLook;
-    FInheritedMembers: TInheritedMembers;
     FConclusion: TExternalItem;
     FIntroduction: TExternalItem;
     FAdditionalFiles: TExternalItemList;
@@ -1035,11 +1030,6 @@ type
       @url(https://pasdoc.github.io/LinkLookOption --link-look documentation). }
     property LinkLook: TLinkLook read FLinkLook write FLinkLook default llDefault;
 
-    { Show inherited members (in outputs that make it possible,
-      which right now means only HTML output). }
-    property InheritedMembers: TInheritedMembers
-      read FInheritedMembers write FInheritedMembers default imNever;
-
     property WriteUsesClause: boolean
       read FWriteUsesClause write FWriteUsesClause default false;
 
@@ -1095,7 +1085,6 @@ type
   end;
 
 function StringToLinkLook(const S: String): TLinkLook;
-function StringToInheritedMembers(const S: String): TInheritedMembers;
 
 implementation
 
@@ -4496,20 +4485,6 @@ begin
     if SameText(S, Names[Result]) then
       Exit;
   raise EConvertError.CreateFmt('Invalid link look name: "%s"', [S]);
-end;
-
-function StringToInheritedMembers(const S: String): TInheritedMembers;
-const
-  Names: array[TInheritedMembers] of string = (
-    'never',
-    'default-show',
-    'default-hide'
-  );
-begin
-  for Result := Low(TInheritedMembers) to High(TInheritedMembers) do
-    if SameText(S, Names[Result]) then
-      Exit;
-  raise EConvertError.CreateFmt('Invalid inherited members name: "%s"', [S]);
 end;
 
 end.
