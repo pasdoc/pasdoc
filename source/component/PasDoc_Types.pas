@@ -129,6 +129,8 @@ type
     @url(https://pasdoc.github.io/ImplicitVisibilityOption --implicit-visibility documentation). }
   TImplicitVisibility = (ivPublic, ivPublished, ivImplicit);
 
+function StringToImplicitVisibility(const S: String): TImplicitVisibility;
+
 { FPC 3.2.3 (fixes_3_2 branch) fails when querying TDictionary from
   Generics.Collections, specific problem on Darwin x86_64:
 
@@ -271,6 +273,20 @@ begin
   Result := NameParts[0];
   for i := 1 to Length(NameParts) - 1 do
     Result := Result + '.' + NameParts[i];
+end;
+
+function StringToImplicitVisibility(const S: String): TImplicitVisibility;
+const
+  Names: array[TImplicitVisibility] of string = (
+    'public',
+    'published',
+    'implicit'
+  );
+begin
+  for Result := Low(TImplicitVisibility) to High(TImplicitVisibility) do
+    if SameText(S, Names[Result]) then
+      Exit;
+  raise EPasDoc.CreateFmt('Invalid implicit visibility name: "%s"', [S]);
 end;
 
 end.

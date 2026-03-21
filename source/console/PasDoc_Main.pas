@@ -83,6 +83,7 @@ type
     OptionCSSBasedOnBootstrap: TStringOption;
     OptionAutoAbstract: TBoolOption;
     OptionLinkLook: TStringOption;
+    OptionInheritedMembers: TStringOption;
     OptionUseTipueSearch: TBoolOption;
     OptionSort: TSetOption;
     OptionIntroduction: TStringOption;
@@ -304,6 +305,11 @@ begin
   OptionLinkLook.Explanation := 'How links are displayed in documentation: "default" (show the complete link name, as specified by @link), "full" (show the complete link name, and try to make each part of it a link), or "stripped" (show only last part of the link)';
   OptionLinkLook.Value := 'default'; { default value is 'default' }
   AddOption(OptionLinkLook);
+
+  OptionInheritedMembers := TStringOption.Create(#0, 'inherited-members');
+  OptionInheritedMembers.Explanation := 'Show inherited members (in HTML). Possible values: "never", "default-show", "default-hide"';
+  OptionInheritedMembers.Value := 'never'; { default value is 'never' }
+  AddOption(OptionInheritedMembers);
 
   OptionFullLink := TBoolOption.Create(#0, 'full-link');
   OptionFullLink.Explanation := 'Obsolete name for --link-look=full';
@@ -637,21 +643,12 @@ begin
       OptionSpellCheckIgnoreWords.Value);
 
   PasDoc.CacheDir := OptionCacheDir.Value;
-
   PasDoc.Generator.AutoAbstract := OptionAutoAbstract.TurnedOn;
-
-  if SameText(OptionLinkLook.Value, 'default') then
-    PasDoc.Generator.LinkLook := llDefault else
-  if SameText(OptionLinkLook.Value, 'full') then
-    PasDoc.Generator.LinkLook := llFull else
-  if SameText(OptionLinkLook.Value, 'stripped') then
-    PasDoc.Generator.LinkLook := llStripped else
-    raise EInvalidCommandLine.CreateFmt(
-      'Invalid argument for "--'+OptionLinkLook.LongForm+'" option : "%s"',
-      [OptionLinkLook.Value]);
-
-  if OptionFullLink.TurnedOn then
+  PasDoc.Generator.LinkLook := StringToLinkLook(OptionLinkLook.Value);
+  if OptionFullLink.TurnedOn then // support deprecated --full-link option for backward compatibility
     PasDoc.Generator.LinkLook := llFull;
+  PasDoc.Generator.InheritedMembers := StringToInheritedMembers(
+    OptionInheritedMembers.Value);
 
   { interpret OptionSort value }
   PasDoc.SortSettings := [];
@@ -670,16 +667,7 @@ begin
     end;
   end;
 
-  if SameText(OptionImplicitVisibility.Value, 'public') then
-    PasDoc.ImplicitVisibility := ivPublic else
-  if SameText(OptionImplicitVisibility.Value, 'published') then
-    PasDoc.ImplicitVisibility := ivPublished else
-  if SameText(OptionImplicitVisibility.Value, 'implicit') then
-    PasDoc.ImplicitVisibility := ivImplicit else
-    raise EInvalidCommandLine.CreateFmt(
-      'Invalid argument for "--'+OptionImplicitVisibility.LongForm+'" option : "%s"',
-      [OptionImplicitVisibility.Value]);
-
+  PasDoc.ImplicitVisibility := StringToImplicitVisibility(OptionImplicitVisibility.Value);
   PasDoc.HandleMacros := not OptionNoMacro.TurnedOn;
   PasDoc.AutoLink := OptionAutoLink.TurnedOn;
 

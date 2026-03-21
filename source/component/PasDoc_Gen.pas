@@ -133,6 +133,10 @@ type
 
   TListItemSpacing = (lisCompact, lisParagraph);
 
+  { Show we show inherited members (in outputs that make it possible,
+    which right now means only HTML output). }
+  TInheritedMembers = (imNever, imDefaultShow, imDefaultHide);
+
   { Collected information about @@xxxList item. }
   TListItemData = class
   private
@@ -243,6 +247,7 @@ type
     FLinkGraphVizClasses: string;
     FAutoAbstract: boolean;
     FLinkLook: TLinkLook;
+    FInheritedMembers: TInheritedMembers;
     FConclusion: TExternalItem;
     FIntroduction: TExternalItem;
     FAdditionalFiles: TExternalItemList;
@@ -1019,19 +1024,25 @@ type
     property SpellCheckIgnoreWords: TStringList
       read FSpellCheckIgnoreWords write SetSpellCheckIgnoreWords;
 
-    { The meaning of this is just like @--auto-abstract command-line option.
-      It is used in @link(ExpandDescriptions). }
+    { Automatically detect abstract (summary) descriptions without @@abstract tag.
+      See @--auto-abstract command-line option docs on https://pasdoc.github.io/AutoAbstractOption .
+      This is used in @link(ExpandDescriptions). }
     property AutoAbstract: boolean read FAutoAbstract write FAutoAbstract default false;
 
-    { This controls @link(SearchLink) behavior, as described in
+    { How @link(SearchLink) behaves. This meaning is described in
       @url(https://pasdoc.github.io/LinkLookOption --link-look documentation). }
     property LinkLook: TLinkLook read FLinkLook write FLinkLook default llDefault;
+
+    { Show inherited members (in outputs that make it possible,
+      which right now means only HTML output). }
+    property InheritedMembers: TInheritedMembers
+      read FInheritedMembers write FInheritedMembers default imNever;
 
     property WriteUsesClause: boolean
       read FWriteUsesClause write FWriteUsesClause default false;
 
-    { This controls auto-linking, see
-      @url(https://pasdoc.github.io/AutoLinkOption --auto-link documentation). }
+    { Automatically link identifiers to their documentation, even without @@link tags.
+      See @url(https://pasdoc.github.io/AutoLinkOption --auto-link documentation). }
     property AutoLink: boolean
       read FAutoLink write FAutoLink default false;
 
@@ -1069,6 +1080,9 @@ type
     property ToggleVisibilities: TVisibilities
       read FToggleVisibilities write FToggleVisibilities;
   end;
+
+function StringToLinkLook(const S: String): TLinkLook;
+function StringToInheritedMembers(const S: String): TInheritedMembers;
 
 implementation
 
@@ -4451,6 +4465,36 @@ function TDocGenerator.StoredExternalClassHierarchy: boolean;
 begin
   Result := Trim(FExternalClassHierarchy.Text) <>
     Trim(DefaultExternalClassHierarchy);
+end;
+
+{ global routines ------------------------------------------------------------ }
+
+function StringToLinkLook(const S: String): TLinkLook;
+const
+  Names: array[TLinkLook] of string = (
+    'default',
+    'full',
+    'stripped'
+  );
+begin
+  for Result := Low(TLinkLook) to High(TLinkLook) do
+    if SameText(S, Names[Result]) then
+      Exit;
+  raise EConvertError.CreateFmt('Invalid link look name: "%s"', [S]);
+end;
+
+function StringToInheritedMembers(const S: String): TInheritedMembers;
+const
+  Names: array[TInheritedMembers] of string = (
+    'never',
+    'default-show',
+    'default-hide'
+  );
+begin
+  for Result := Low(TInheritedMembers) to High(TInheritedMembers) do
+    if SameText(S, Names[Result]) then
+      Exit;
+  raise EConvertError.CreateFmt('Invalid inherited members name: "%s"', [S]);
 end;
 
 end.
