@@ -22,7 +22,7 @@
 
 {$I pasdoc_versions.inc}
 
-{ Use TBufferedFileStream , both in FPC and Delphi:
+{ Use TBufferedFileStream, always now both in FPC and Delphi:
   https://docwiki.embarcadero.com/Libraries/Sydney/en/System.Classes.TBufferedFileStream
   https://www.freepascal.org/docs-html/fcl/bufstream/tbufferedfilestream.html . }
 {$DEFINE USE_BUFFERED_STREAM}
@@ -75,4 +75,29 @@
 // Needed by naive_dictionary_fix.inc
 {$ifdef FPC}
   {$modeswitch advancedrecords}
+{$endif}
+
+{ FPC 3.3.1 produces many false warnings. }
+{$ifdef FPC}
+  {$ifndef VER3_0}
+    {$ifndef VER3_2}
+      { 2 warnings below are common because of case analysis.
+        See https://castle-engine.io/coding_conventions#case_analysis .
+        Adjusting code to avoid these warnings is possible in some cases,
+        but is troublesome (not all cases have nice solutions, and it is even
+        harder when we also have to support older FPC versions and Delphi
+        that don't do this analysis).
+        So we disable these warnings for now.
+
+        Note: For unknown reasons, 2 warnings
+        "Warning: (6060) Case statement does not handle all possible cases"
+        in PasDoc_Parser.pas are still generated. }
+      {$warn 6060 off} // case statement does not handle all possible cases
+      {$warn 6018 off} // unreachable code
+
+      { This happens because unfortunately FPC 3.3.1 doesn't understand
+        that writing e.g. "WriteBuffer(Tmp, SizeOf(Tmp));" means we use Tmp value. }
+      {$warn 5027 off} // Local variable is assigned but never used
+    {$endif}
+  {$endif}
 {$endif}
