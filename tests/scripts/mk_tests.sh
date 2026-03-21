@@ -327,8 +327,8 @@ all_tests_for_current_format ()
   mk_test ok_type_aliases ok_type_aliases.pas
   mk_test ok_asm ok_asm.pas
   mk_test ok_ancestors_links ok_ancestors_links.pas
-  mk_test ok_inherited_members_unsorted --inherited-members=default-show ok_inherited_members_links.pas
-  mk_test ok_inherited_members_sorted  --inherited-members=default-show "${SORT_ALL}" ok_inherited_members_sorted.pas
+  mk_test ok_inherited_members_unsorted --inherited-members=default-show ok_inherited_members.pas
+  mk_test ok_inherited_members_sorted  --inherited-members=default-show "${SORT_ALL}" ok_inherited_members.pas
 }
 
 # parse params ----------------------------------------

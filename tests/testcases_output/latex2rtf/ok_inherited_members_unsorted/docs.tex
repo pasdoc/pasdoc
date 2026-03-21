@@ -1,0 +1,887 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\textwidth 16.5cm
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% definitons for warning and note tag
+\usepackage[most]{tcolorbox}
+\newtcolorbox{tcbwarning}{
+ breakable,
+ enhanced jigsaw,
+ top=0pt,
+ bottom=0pt,
+ titlerule=0pt,
+ bottomtitle=0pt,
+ rightrule=0pt,
+ toprule=0pt,
+ bottomrule=0pt,
+ colback=white,
+ arc=0pt,
+ outer arc=0pt,
+ title style={white},
+ fonttitle=\color{black}\bfseries,
+ left=8pt,
+ colframe=red,
+ title={Warning:},
+}
+\newtcolorbox{tcbnote}{
+ breakable,
+ enhanced jigsaw,
+ top=0pt,
+ bottom=0pt,
+ titlerule=0pt,
+ bottomtitle=0pt,
+ rightrule=0pt,
+ toprule=0pt,
+ bottomrule=0pt,
+ colback=white,
+ arc=0pt,
+ outer arc=0pt,
+ title style={white},
+ fonttitle=\color{black}\bfseries,
+ left=8pt,
+ colframe=yellow,
+ title={Note:},
+}
+
+\begin{document}
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}inherited{\_}members}
+\section{Overview}
+\begin{description}
+\item[\texttt{\begin{ttfamily}TBase\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TDerived\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TNewDerived\end{ttfamily} Class}]
+\end{description}
+\section{Classes, Interfaces, Objects and Records}
+\subsection*{TBase Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TBase {$>$} TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{BaseProp}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public property BaseProp: Integer read BaseField write BaseField;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{BaseProp2}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public property BaseProp2: String read BaseField2 write BaseField2;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsubsection*{\large{\textbf{Constants}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{BaseConst}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public BaseConst = 42;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Test sorting
+
+\end{list}
+\paragraph*{BaseConst2}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public BaseConst2 = 'blabla';\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{BaseField}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public BaseField: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{BaseField2}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public BaseField2: String;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{A}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public A: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Z}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public Z: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{B}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public B: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Y}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public Y: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{BaseField3}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public var BaseField3: String;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{BaseMethod}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure BaseMethod; virtual;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{BaseMethod2}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure BaseMethod2;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{TDerived Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TDerived {$>$} \begin{ttfamily}TBase\end{ttfamily}(\ref{ok_inherited_members.TBase}) {$>$} 
+TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{DerivedProp}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public property DerivedProp: Integer read DerivedField write DerivedField;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{DerivedProp2}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public property DerivedProp2: String read DerivedField2 write DerivedField2;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsubsection*{\large{\textbf{Constants}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{DerivedConst}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public DerivedConst = 42;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Test sorting
+
+\end{list}
+\paragraph*{DerivedConst2}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public DerivedConst2 = 'blabla';\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{DerivedField}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public DerivedField: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{DerivedField2}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public DerivedField2: String;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{A2}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public A2: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Z2}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public Z2: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{B2}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public B2: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Y2}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public Y2: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{DerivedField3}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public var DerivedField3: String;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{DerivedMethod}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure DerivedMethod; virtual;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{DerivedMethod2}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure DerivedMethod2;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsection*{TNewDerived Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TNewDerived {$>$} \begin{ttfamily}TDerived\end{ttfamily}(\ref{ok_inherited_members.TDerived}) {$>$} \begin{ttfamily}TBase\end{ttfamily}(\ref{ok_inherited_members.TBase}) {$>$} 
+TObject
+%%%%Description
+\subsubsection*{\large{\textbf{Properties}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{NewDerivedProp}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public property NewDerivedProp: Integer read NewDerivedField write NewDerivedField;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{NewDerivedProp2}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public property NewDerivedProp2: String read NewDerivedField2 write NewDerivedField2;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsubsection*{\large{\textbf{Constants}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{NewDerivedConst}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public NewDerivedConst = 42;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Test sorting
+
+\end{list}
+\paragraph*{NewDerivedConst2}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public NewDerivedConst2 = 'blabla';\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsubsection*{\large{\textbf{Fields}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{NewDerivedField}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public NewDerivedField: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{NewDerivedField2}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public NewDerivedField2: String;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{A3}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public A3: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Z3}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public Z3: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{B3}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public B3: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{Y3}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public Y3: Integer;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{NewDerivedField3}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public var NewDerivedField3: String;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\subsubsection*{\large{\textbf{Methods}}\normalsize\hspace{1ex}\hfill}
+\paragraph*{NewDerivedMethod}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure NewDerivedMethod; virtual;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\paragraph*{NewDerivedMethod2}\hspace*{\fill}
+
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+public procedure NewDerivedMethod2;\end{ttfamily}
+
+
+\end{flushleft}
+\end{list}
+\end{document}

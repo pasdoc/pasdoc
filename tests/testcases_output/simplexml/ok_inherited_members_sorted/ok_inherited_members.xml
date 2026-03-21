@@ -1,0 +1,131 @@
+<unit name="ok_inherited_members">
+  <structure name="TBase" name_with_generic="TBase" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <routine name="BaseMethod" declaration="procedure BaseMethod; virtual;" visibility="public" type="procedure">
+    </routine>
+    <routine name="BaseMethod2" declaration="procedure BaseMethod2;" visibility="public" type="procedure">
+    </routine>
+    <constant name="BaseConst" declaration="BaseConst = 42;" visibility="public">
+      <description><detailed>Test sorting</detailed></description>
+    </constant>
+    <constant name="BaseConst2" declaration="BaseConst2 = 'blabla';" visibility="public">
+    </constant>
+    <variable name="A" declaration="A: Integer;" visibility="public">
+    </variable>
+    <variable name="B" declaration="B: Integer;" visibility="public">
+    </variable>
+    <variable name="BaseField" declaration="BaseField: Integer;" visibility="public">
+    </variable>
+    <variable name="BaseField2" declaration="BaseField2: String;" visibility="public">
+    </variable>
+    <variable name="BaseField3" declaration="var BaseField3: String;" visibility="public">
+    </variable>
+    <variable name="Y" declaration="Y: Integer;" visibility="public">
+    </variable>
+    <variable name="Z" declaration="Z: Integer;" visibility="public">
+    </variable>
+    <property name="BaseProp" declaration="property BaseProp: Integer read BaseField write BaseField;" visibility="public" indexdecl="" type="Integer" reader="BaseField" writer="BaseField" default_in_class="False" default_value="" nodefault="False"   stored="">
+    </property>
+    <property name="BaseProp2" declaration="property BaseProp2: String read BaseField2 write BaseField2;" visibility="public" indexdecl="" type="String" reader="BaseField2" writer="BaseField2" default_in_class="False" default_value="" nodefault="False"   stored="">
+    </property>
+    <type name="TBaseEnum" declaration="TBaseEnum = (...);" visibility="public">
+      <constant name="meOne" declaration="meOne" visibility="published">
+      </constant>
+      <constant name="meTwo" declaration="meTwo" visibility="published">
+      </constant>
+    </type>
+    <type name="TBaseType" declaration="TBaseType = Integer;" visibility="public">
+    </type>
+    <structure name="TBaseNestedCio" visibility="public" name_with_generic="TBaseNestedCio" type="class">
+      <ancestor name="TObject" declaration="TObject" />
+      <routine name="NestedMethod" declaration="procedure NestedMethod;" visibility="public" type="procedure">
+      </routine>
+    </structure>
+  </structure>
+  <structure name="TDerived" name_with_generic="TDerived" type="class">
+    <ancestor name="TBase" declaration="TBase" />
+    <routine name="DerivedMethod" declaration="procedure DerivedMethod; virtual;" visibility="public" type="procedure">
+    </routine>
+    <routine name="DerivedMethod2" declaration="procedure DerivedMethod2;" visibility="public" type="procedure">
+    </routine>
+    <constant name="DerivedConst" declaration="DerivedConst = 42;" visibility="public">
+      <description><detailed>Test sorting</detailed></description>
+    </constant>
+    <constant name="DerivedConst2" declaration="DerivedConst2 = 'blabla';" visibility="public">
+    </constant>
+    <variable name="A2" declaration="A2: Integer;" visibility="public">
+    </variable>
+    <variable name="B2" declaration="B2: Integer;" visibility="public">
+    </variable>
+    <variable name="DerivedField" declaration="DerivedField: Integer;" visibility="public">
+    </variable>
+    <variable name="DerivedField2" declaration="DerivedField2: String;" visibility="public">
+    </variable>
+    <variable name="DerivedField3" declaration="var DerivedField3: String;" visibility="public">
+    </variable>
+    <variable name="Y2" declaration="Y2: Integer;" visibility="public">
+    </variable>
+    <variable name="Z2" declaration="Z2: Integer;" visibility="public">
+    </variable>
+    <property name="DerivedProp" declaration="property DerivedProp: Integer read DerivedField write DerivedField;" visibility="public" indexdecl="" type="Integer" reader="DerivedField" writer="DerivedField" default_in_class="False" default_value="" nodefault="False"   stored="">
+    </property>
+    <property name="DerivedProp2" declaration="property DerivedProp2: String read DerivedField2 write DerivedField2;" visibility="public" indexdecl="" type="String" reader="DerivedField2" writer="DerivedField2" default_in_class="False" default_value="" nodefault="False"   stored="">
+    </property>
+    <type name="TDerivedEnum" declaration="TDerivedEnum = (...);" visibility="public">
+      <constant name="meOne" declaration="meOne" visibility="published">
+      </constant>
+      <constant name="meTwo" declaration="meTwo" visibility="published">
+      </constant>
+    </type>
+    <type name="TDerivedType" declaration="TDerivedType = Integer;" visibility="public">
+    </type>
+    <structure name="TDerivedNestedCio" visibility="public" name_with_generic="TDerivedNestedCio" type="class">
+      <ancestor name="TObject" declaration="TObject" />
+      <routine name="NestedMethod" declaration="procedure NestedMethod;" visibility="public" type="procedure">
+      </routine>
+    </structure>
+  </structure>
+  <structure name="TNewDerived" name_with_generic="TNewDerived" type="class">
+    <ancestor name="TDerived" declaration="TDerived" />
+    <routine name="NewDerivedMethod" declaration="procedure NewDerivedMethod; virtual;" visibility="public" type="procedure">
+    </routine>
+    <routine name="NewDerivedMethod2" declaration="procedure NewDerivedMethod2;" visibility="public" type="procedure">
+    </routine>
+    <constant name="NewDerivedConst" declaration="NewDerivedConst = 42;" visibility="public">
+      <description><detailed>Test sorting</detailed></description>
+    </constant>
+    <constant name="NewDerivedConst2" declaration="NewDerivedConst2 = 'blabla';" visibility="public">
+    </constant>
+    <variable name="A3" declaration="A3: Integer;" visibility="public">
+    </variable>
+    <variable name="B3" declaration="B3: Integer;" visibility="public">
+    </variable>
+    <variable name="NewDerivedField" declaration="NewDerivedField: Integer;" visibility="public">
+    </variable>
+    <variable name="NewDerivedField2" declaration="NewDerivedField2: String;" visibility="public">
+    </variable>
+    <variable name="NewDerivedField3" declaration="var NewDerivedField3: String;" visibility="public">
+    </variable>
+    <variable name="Y3" declaration="Y3: Integer;" visibility="public">
+    </variable>
+    <variable name="Z3" declaration="Z3: Integer;" visibility="public">
+    </variable>
+    <property name="NewDerivedProp" declaration="property NewDerivedProp: Integer read NewDerivedField write NewDerivedField;" visibility="public" indexdecl="" type="Integer" reader="NewDerivedField" writer="NewDerivedField" default_in_class="False" default_value="" nodefault="False"   stored="">
+    </property>
+    <property name="NewDerivedProp2" declaration="property NewDerivedProp2: String read NewDerivedField2 write NewDerivedField2;" visibility="public" indexdecl="" type="String" reader="NewDerivedField2" writer="NewDerivedField2" default_in_class="False" default_value="" nodefault="False"   stored="">
+    </property>
+    <type name="TNewDerivedEnum" declaration="TNewDerivedEnum = (...);" visibility="public">
+      <constant name="meOne" declaration="meOne" visibility="published">
+      </constant>
+      <constant name="meTwo" declaration="meTwo" visibility="published">
+      </constant>
+    </type>
+    <type name="TNewDerivedType" declaration="TNewDerivedType = Integer;" visibility="public">
+    </type>
+    <structure name="TNewDerivedNestedCio" visibility="public" name_with_generic="TNewDerivedNestedCio" type="class">
+      <ancestor name="TObject" declaration="TObject" />
+      <routine name="NestedMethod" declaration="procedure NestedMethod;" visibility="public" type="procedure">
+      </routine>
+    </structure>
+  </structure>
+</unit>
