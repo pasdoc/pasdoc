@@ -335,6 +335,7 @@ all_tests_for_current_format ()
   mk_test ok_inherited_members_unsorted_hidden --inherited-members=default-hide ok_inherited_members.pas
   mk_test ok_inherited_members_unsorted_protected_toggles --inherited-members=default-show --visible-members='protected?,public' ok_inherited_members.pas
   mk_test ok_inherited_members_sorted  --inherited-members=default-show "${SORT_ALL}" ok_inherited_members.pas
+  mk_test ok_inherited_members_hide_ancestor --inherited-members=default-show ok_inherited_members_hide_ancestor.pas
   mk_test ok_exports ok_exports.pas
 }
 

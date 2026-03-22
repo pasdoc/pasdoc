@@ -1,0 +1,66 @@
+<unit name="ok_inherited_members_hide_ancestor">
+  <description><abstract>Test --inherited-members=... behavior when some ancestor's members are hidden by descendants.</abstract></description>
+  <structure name="TBase" name_with_generic="TBase" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <routine name="MyMethod" declaration="procedure MyMethod; virtual;" visibility="public" type="procedure">
+      <description><abstract>Description of MyMethod from TBase</abstract></description>
+    </routine>
+    <routine name="BaseMethod" declaration="procedure BaseMethod; virtual;" visibility="public" type="procedure">
+      <description><abstract>Description of BaseMethod from TBase</abstract></description>
+    </routine>
+    <routine name="OverloadedMethod" declaration="procedure OverloadedMethod(const A: String); overload;" visibility="public" type="procedure">
+      <description><abstract>Description of OverloadedMethod from TBase that takes String</abstract></description>
+    </routine>
+    <constant name="MyConst" declaration="MyConst = 42;" visibility="public">
+      <description><abstract>Description of MyConst from TBase</abstract></description>
+    </constant>
+    <variable name="BaseField" declaration="BaseField: Integer;" visibility="public">
+      <description><abstract>Description of BaseField, MyField from TBase</abstract></description>
+    </variable>
+    <variable name="MyField" declaration="MyField: Integer;" visibility="public">
+      <description><abstract>Description of BaseField, MyField from TBase</abstract></description>
+    </variable>
+  </structure>
+  <structure name="TDerived" name_with_generic="TDerived" type="class">
+    <ancestor name="TBase" declaration="TBase" />
+    <routine name="MyMethod" declaration="procedure MyMethod; override;" visibility="public" type="procedure">
+      <description><abstract>Description of MyMethod from TDerived</abstract></description>
+    </routine>
+    <routine name="DerivedMethod" declaration="procedure DerivedMethod; virtual;" visibility="public" type="procedure">
+      <description><abstract>Description of DerivedMethod from TDerived</abstract></description>
+    </routine>
+    <routine name="OverloadedMethod" declaration="procedure OverloadedMethod(const A: Integer); overload;" visibility="public" type="procedure">
+      <description><abstract>Description of OverloadedMethod from TDerived that takes Integer</abstract></description>
+    </routine>
+    <constant name="MyConst" declaration="MyConst = 123;" visibility="public">
+      <description><abstract>Description of MyConst from TDerived</abstract></description>
+    </constant>
+    <variable name="DerivedField" declaration="DerivedField: String;" visibility="public">
+      <description><abstract>Description of DerivedField, MyField from TDerived</abstract></description>
+    </variable>
+    <variable name="MyField" declaration="MyField: String;" visibility="public">
+      <description><abstract>Description of DerivedField, MyField from TDerived</abstract></description>
+    </variable>
+  </structure>
+  <structure name="TNewDerived" name_with_generic="TNewDerived" type="class">
+    <ancestor name="TDerived" declaration="TDerived" />
+    <routine name="MyMethod" declaration="procedure MyMethod; override;" visibility="public" type="procedure">
+      <description><abstract>Description of MyMethod from TNewDerived</abstract></description>
+    </routine>
+    <routine name="NewDerivedMethod" declaration="procedure NewDerivedMethod; virtual;" visibility="public" type="procedure">
+      <description><abstract>Description of NewDerivedMethod from TNewDerived</abstract></description>
+    </routine>
+    <routine name="OverloadedMethod" declaration="procedure OverloadedMethod(const A: Boolean); overload;" visibility="public" type="procedure">
+      <description><abstract>Description of OverloadedMethod from TNewDerived that takes Boolean</abstract></description>
+    </routine>
+    <constant name="MyConst" declaration="MyConst = 456;" visibility="public">
+      <description><abstract>Description of MyConst from TNewDerived</abstract></description>
+    </constant>
+    <variable name="NewDerivedField" declaration="NewDerivedField: Cardinal;" visibility="public">
+      <description><abstract>Description of NewDerivedField, MyField from TNewDerived</abstract></description>
+    </variable>
+    <variable name="MyField" declaration="MyField: Cardinal;" visibility="public">
+      <description><abstract>Description of NewDerivedField, MyField from TNewDerived</abstract></description>
+    </variable>
+  </structure>
+</unit>

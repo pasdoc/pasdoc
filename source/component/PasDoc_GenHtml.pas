@@ -805,6 +805,30 @@ const
     end;
   end;
 
+  { Add items from DescendantList to AllList.
+    Makes sure to remove items from AllList that are obscured by items in
+    DescendantList. }
+  procedure AddDescendantList(const AllList, DescendantList: TPasItems);
+  var
+    DescendantItem: TPasItem;
+    I, AncestorIndex: Integer;
+  begin
+    for I := 0 to DescendantList.Count - 1 do
+    begin
+      DescendantItem := DescendantList.PasItemAt[I];
+
+      // remove from AllList all items with same signature as DescendantItem
+      repeat
+        AncestorIndex := AllList.FindListItemIndex(DescendantItem.Signature);
+        if AncestorIndex <> -1 then
+          AllList.Delete(AncestorIndex)
+        else
+          Break;
+      until false;
+    end;
+    AllList.AddRange(DescendantList);
+  end;
+
   { Add all members from CioToAdd and its ancestors to the lists of members. }
   procedure AddAllMembers(const CioToAdd: TPasCio;
     const AllConstants: TPasItems;
@@ -819,12 +843,12 @@ const
     if CioToAdd.FirstAncestor is TPasCio then
       AddAllMembers(TPasCio(CioToAdd.FirstAncestor),
         AllConstants, AllFields, AllMethods, AllProperties, AllTypes, AllCios);
-    AllConstants.AddRange(CioToAdd.Constants);
-    AllFields.AddRange(CioToAdd.Fields);
-    AllMethods.AddRange(CioToAdd.Methods);
-    AllProperties.AddRange(CioToAdd.Properties);
-    AllTypes.AddRange(CioToAdd.Types);
-    AllCios.AddRange(CioToAdd.Cios);
+    AddDescendantList(AllConstants, CioToAdd.Constants);
+    AddDescendantList(AllFields, CioToAdd.Fields);
+    AddDescendantList(AllMethods, CioToAdd.Methods);
+    AddDescendantList(AllProperties, CioToAdd.Properties);
+    AddDescendantList(AllTypes, CioToAdd.Types);
+    AddDescendantList(AllCios, CioToAdd.Cios);
   end;
 
   { Sort all lists of members. }

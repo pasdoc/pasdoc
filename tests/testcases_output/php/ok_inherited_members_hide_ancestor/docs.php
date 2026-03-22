@@ -1,0 +1,26 @@
+<?php
+global $pasdoc;
+$pasdoc = array(
+  'ok_inherited_members_hide_ancestor' => array('html_filename' => 'ok_inherited_members_hide_ancestor.html', 'type' => 'unit'),
+  'TBase' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TBase.html', 'type' => 'class'),
+  'TBase.MyMethod' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TBase.html#MyMethod', 'type' => 'procedure'),
+  'TBase.BaseMethod' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TBase.html#BaseMethod', 'type' => 'procedure'),
+  'TBase.OverloadedMethod' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TBase.html#OverloadedMethod-String-', 'type' => 'procedure'),
+  'TBase.MyConst' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TBase.html#MyConst', 'type' => 'constant'),
+  'TBase.BaseField' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TBase.html#BaseField', 'type' => 'variable'),
+  'TBase.MyField' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TBase.html#MyField', 'type' => 'variable'),
+  'TDerived' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TDerived.html', 'type' => 'class'),
+  'TDerived.MyMethod' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TDerived.html#MyMethod', 'type' => 'procedure'),
+  'TDerived.DerivedMethod' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TDerived.html#DerivedMethod', 'type' => 'procedure'),
+  'TDerived.OverloadedMethod' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TDerived.html#OverloadedMethod-Integer-', 'type' => 'procedure'),
+  'TDerived.MyConst' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TDerived.html#MyConst', 'type' => 'constant'),
+  'TDerived.DerivedField' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TDerived.html#DerivedField', 'type' => 'variable'),
+  'TDerived.MyField' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TDerived.html#MyField', 'type' => 'variable'),
+  'TNewDerived' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TNewDerived.html', 'type' => 'class'),
+  'TNewDerived.MyMethod' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TNewDerived.html#MyMethod', 'type' => 'procedure'),
+  'TNewDerived.NewDerivedMethod' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TNewDerived.html#NewDerivedMethod', 'type' => 'procedure'),
+  'TNewDerived.OverloadedMethod' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TNewDerived.html#OverloadedMethod-Boolean-', 'type' => 'procedure'),
+  'TNewDerived.MyConst' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TNewDerived.html#MyConst', 'type' => 'constant'),
+  'TNewDerived.NewDerivedField' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TNewDerived.html#NewDerivedField', 'type' => 'variable'),
+  'TNewDerived.MyField' => array('html_filename' => 'ok_inherited_members_hide_ancestor.TNewDerived.html#MyField', 'type' => 'variable'),
+);
