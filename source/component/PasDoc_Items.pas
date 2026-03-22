@@ -332,6 +332,10 @@ type
       In this class, this simply returns GetCurrentDir (with PathDelim added if needed). }
     function BasePath: string; virtual;
 
+    { Just like @link(Name) but optionally with added routine parameter types,
+      to be unique when overloading is used.
+      For example, for routines it may be like @code(MyMethod(String)) or
+      @code(MyMethod(Integer)). }
     function Signature: string; virtual;
   end;
 
@@ -1157,18 +1161,30 @@ type
     constructor Create(const AOwnsObject: Boolean); reintroduce; virtual;
     destructor Destroy; override;
 
-    { Find a given item name on a list.
+    { Find a given item on a list, comparing the @link(TBaseItem.Signature Signature).
       In the base class (TBaseItems), this simply searches the items
       (not recursively).
 
-      In some cases, it may look within the items (recursively),
+      In case of some descendants, this is obscured by FindListItem
+      definitions that may look within the items (recursively),
       when the identifiers inside the item are in same namespace as the items
       themselves. Example: it will look also inside enumerated types
       members, because (when "scoped enums" are off) the enumerated members
       are in the same namespace as the enumerated type name.
 
+      TODO: Note that this is not virtual, so using it with instance
+      declared as TBaseItems will always perform non-recursive search.
+      This should be cleaned up: it's probably actually good that
+      this is non-virtual method doing non-recursive search,
+      and descendants should just invent new names instead of obscuring this.
+
       Returns @nil if nothing can be found. }
     function FindListItem(const ASignature: string): TBaseItem;
+
+    { Find a given item on a list, comparing the @link(TBaseItem.Signature Signature),
+      returning the index. Returns -1 if nothing can be found.
+      This guarantees to work like @link(FindListItem) just returns an index. }
+    function FindListItemIndex(const ASignature: string): Integer;
 
     { Inserts all items of C into this collection.
       Disposes C and sets it to nil. }
@@ -1200,13 +1216,6 @@ type
 
     { Copies all Items from c to this object, not changing c at all. }
     procedure CopyItems(const c: TPasItems);
-
-    { Counts classes, interfaces and objects within this collection. }
-    procedure CountCIO(var c, i, o: Integer);
-
-    { Checks each element's Visibility field and removes all elements with a value
-      of viPrivate. }
-    procedure RemovePrivateItems;
 
     property PasItemAt[const AIndex: Integer]: TPasItem read GetPasItemAt
       write SetPasItemAt;
@@ -2253,6 +2262,17 @@ begin
     Result := nil;
 end;
 
+function TBaseItems.FindListItemIndex(const ASignature: string): Integer;
+begin
+  if ASignature = '' then
+    Exit(-1);
+
+  for Result := 0 to Count - 1 do
+    if Items[Result].Signature = ASignature then
+      Exit;
+  Result := -1;
+end;
+
 procedure TBaseItems.Add(const AObject: TBaseItem);
 begin
   inherited Add(AObject);
@@ -2323,44 +2343,9 @@ begin
     Add(TPasItem(c.GetPasItemAt(i)));
 end;
 
-procedure TPasItems.CountCIO(var c, i, o: Integer);
-var
-  j: Integer;
-begin
-  c := 0;
-  i := 0;
-  o := 0;
-
-  for j := 0 to Count - 1 do
-    case TPasCio(GetPasItemAt(j)).MyType of
-      CIO_CLASS, CIO_PACKEDCLASS, CIO_OBJCCLASS, CIO_PACKEDOBJCCLASS:
-        Inc(c);
-      CIO_INTERFACE:
-        Inc(i);
-      CIO_OBJECT, CIO_PACKEDOBJECT:
-        Inc(o);
-      else ;
-    end;
-end;
-
 function TPasItems.GetPasItemAt(const AIndex: Integer): TPasItem;
 begin
   Result := TPasItem(Items[AIndex]);
-end;
-
-procedure TPasItems.RemovePrivateItems;
-var
-  i: Integer;
-  Item: TPasItem;
-begin
-  i := 0;
-  while (i < Count) do begin
-    Item := PasItemAt[i];
-    if Assigned(Item) and (Item.Visibility = viPrivate) then
-      Delete(i)
-    else
-      Inc(i);
-  end;
 end;
 
 procedure TPasItems.SetPasItemAt(const AIndex: Integer; const Value:
