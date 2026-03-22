@@ -116,15 +116,14 @@ type
     lgCzech_ISO_8859_2
    );
 {$ENDIF}
-  { An enumeration type of all static output texts.
-    Warning: count and order changed!
-  }
+  { All translatable string. }
   TTranslationID = (
-  //no translation ID assigned, so far
     trNoTrans,
-  //the language name (English, ASCII), e.g. for file names.
+
+    // The language name (in English, ASCII).
     trLanguage,
-  //map
+
+    // Used for sidebar.
     trUnits,
     trClassHierarchy,
     trCio,
@@ -133,7 +132,8 @@ type
     trIdentifiers,
     trGvUses,
     trGvClasses,
-  //tables and members
+
+    // Used for tables and members.
     trClasses,
       trClass,
       trObjcClass,
@@ -169,7 +169,7 @@ type
       trException,
     trEnum,
 
-  //visibilities
+    // Visibility names.
     trVisibility,
       trPrivate,
       trStrictPrivate,
@@ -179,14 +179,15 @@ type
       trPublished,
       trAutomated,
       trImplicit,
-  //hints
+
+    // Hints.
     trDeprecated,
     trPlatformSpecific,
     trLibrarySpecific,
     trExperimental,
     trUnimplemented,
 
-  //headings
+    // Headings.
     trOverview,
     trIntroduction,
     trConclusion,
@@ -200,17 +201,19 @@ type
     trHeadlineUnits,
     trHeadlineVariables,
     trSummaryCio,
-  //column headings
+
+    // Column headings.
     trDeclaration,
-    trDescription, //<as column OR section heading!
-    trDescriptions, //<section heading for detailed descriptions
+    trDescription, //< Used as column or section heading.
+    trDescriptions, //< Used as section heading for detailed descriptions.
     trName,
     trValues,
-//tags with inbuilt heading
+
+    // Tags with inbuilt heading.
     trWarningTag,
     trNoteTag,
 
-  //empty tables
+    // Empty tables.
     trNone,
     trNoCIOs,
     trNoCIOsForHierarchy,
@@ -220,7 +223,7 @@ type
     trNoFunctions,
     trNoIdentifiers,
 
-  //misc
+    // Miscellaneous.
     trHelp,
     trLegend,
     trMarker,
@@ -242,16 +245,16 @@ type
     trDeclaredInAncestor,
     trNoDescription,
     trShowingDescriptionInheritedFrom,
-    //add more here
+
+    { Add new translatable strings here. }
 
     trDummy
   );
 
-//array holding the translated strings, or empty for default (English) text.
+  // Array holding the translated strings (or strKeep or strToDo markers) for a language.
   RTransTable = array[TTranslationID] of string;
   PTransTable = ^RTransTable;
 
-//language descriptor
   PLanguageRecord = ^TLanguageRecord;
   TLanguageRecord = record
   {$IFDEF STRING_UNICODE}
@@ -318,8 +321,8 @@ type
   Returns @true and sets LanguageId if found, otherwise returns @false. }
 function LanguageFromStr(S: string; out LanguageId: TLanguageID): boolean;
 
-//access LANGUAGE_ARRAY
-function LanguageDescriptor(id: TLanguageID): PLanguageRecord;
+{ Read-only language information. }
+function LanguageInformation(id: TLanguageID): PLanguageRecord;
 
 { Language code, using an official standardardized language names,
   suitable for Aspell or HTML. }
@@ -406,8 +409,9 @@ const
   aCzech_CP1250       : {$I lang\PasDoc_Languages_Czech_1250.inc}
 {$ENDIF}
 
-{$IFDEF STRING_UNICODE}
   LANGUAGE_ARRAY: array[TLanguageID] of TLanguageRecord = (
+
+    {$IFDEF STRING_UNICODE}
     (Table: @aBosnian; Name: 'Bosnian'; Syntax: 'ba'; AspellLanguage: 'bs'),
     (Table: @aBrazilian; Name: 'Brazilian'; Syntax: 'br'; AspellLanguage: 'pt'),
     (Table: @aBulgarian; Name: 'Bulgarian'; Syntax: 'bg'; AspellLanguage: ''),
@@ -429,9 +433,9 @@ const
     (Table: @aSwedish; Name: 'Swedish'; Syntax: 'se'; AspellLanguage: 'sv'),
     (Table: @aHungarian; Name: 'Hungarian'; Syntax: 'hu'; AspellLanguage: ''),
     (Table: @aCzech; Name: 'Czech'; Syntax: 'cz'; AspellLanguage: 'cs')
-  );
-{$ELSE}
-  LANGUAGE_ARRAY: array[TLanguageID] of TLanguageRecord = (
+
+    {$ELSE}
+
     (Table: @aBosnian; Name: 'Bosnian (Codepage 1250)'; Syntax: 'ba'; CharSet: 'windows-1250'; AspellLanguage: 'bs'),
     (Table: @aBrazilian_1252; Name: 'Brazilian (Codepage 1252)'; Syntax: 'br.1252'; CharSet: 'windows-1252'; AspellLanguage: 'pt'),
     (Table: @aBrazilian_utf8; Name: 'Brazilian (Codepage UTF-8)'; Syntax: 'br.utf8'; CharSet: 'utf-8'; AspellLanguage: 'pt'),
@@ -461,8 +465,9 @@ const
     (Table: @aHungarian_1250; Name: 'Hungarian (Codepage 1250)'; Syntax: 'hu.1250'; CharSet: 'windows-1250'; AspellLanguage: ''),
     (Table: @aCzech_CP1250; Name: 'Czech (Codepage 1250)'; Syntax: 'cz'; CharSet: 'windows-1250'; AspellLanguage: ''),
     (Table: @aCzech_ISO_8859_2; Name: 'Czech (Codepage ISO 8859-2)'; Syntax: 'cz.iso-8859-2'; CharSet: 'iso-8859-2'; AspellLanguage: 'cs')
+
+    {$ENDIF}
   );
-{$ENDIF}
 
 function TPasDocLanguages.GetTranslation(
   ATranslationID: TTranslationID): string;
@@ -508,7 +513,7 @@ begin
   Result := false;
 end;
 
-function LanguageDescriptor(id: TLanguageID): PLanguageRecord;
+function LanguageInformation(id: TLanguageID): PLanguageRecord;
 begin
   Result := @Language_array[id];
 end;

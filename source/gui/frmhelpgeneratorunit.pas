@@ -594,7 +594,7 @@ begin
     Ord(High(TLanguageID)) - Ord(Low(TLanguageID)) + 1;
   for LanguageIndex := Low(TLanguageID) to High(TLanguageID) do
   begin
-    comboLanguages.Items.Add(LanguageDescriptor(LanguageIndex)^.Name);
+    comboLanguages.Items.Add(LanguageInformation(LanguageIndex)^.Name);
   end;
 
   Constraints.MinWidth := Width;
@@ -1242,7 +1242,7 @@ begin
       is not recognized. }
 
     LanguageSyntax := Ini.ReadString('Main', 'Language',
-      LanguageDescriptor(DEFAULT_LANGUAGE)^.Syntax);
+      LanguageInformation(DEFAULT_LANGUAGE)^.Syntax);
     if not LanguageFromStr(LanguageSyntax, LanguageId) then
       LanguageId := DEFAULT_LANGUAGE;
     comboLanguages.ItemIndex := Ord(LanguageId);
@@ -1381,7 +1381,7 @@ begin
     Ini.WriteBool('Main', 'StoreRelativePaths', CheckStoreRelativePaths.Checked);
 
     Ini.WriteString('Main', 'Language',
-      LanguageDescriptor(TLanguageID(comboLanguages.ItemIndex))^.Syntax);
+      LanguageInformation(TLanguageID(comboLanguages.ItemIndex))^.Syntax);
     Ini.WriteString('Main', 'OutputDir', CorrectFileName(EditOutputDirectory.Directory));
     Ini.WriteInteger('Main', 'GenerateFormat', comboGenerateFormat.ItemIndex);
     Ini.WriteInteger('Main', 'ImplementationComments', ComboImplementationComments.ItemIndex);

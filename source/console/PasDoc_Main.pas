@@ -229,7 +229,7 @@ begin
   OptionLanguage.Explanation := 'Output language. Valid languages are: ' + LineEnding;
   for l := Low(l) to High(l) do
     OptionLanguage.Explanation := OptionLanguage.Explanation + '  ' +
-      LanguageDescriptor(l)^.Syntax + ': ' + LanguageDescriptor(l)^.Name + LineEnding;
+      LanguageInformation(l)^.Syntax + ': ' + LanguageInformation(l)^.Name + LineEnding;
   AddOption(OptionLanguage);
 
   OptionStarOnly := TBoolOption.Create(#0, 'staronly');
