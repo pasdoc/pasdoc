@@ -1322,6 +1322,7 @@ procedure TGenericHTMLDocGenerator.WriteItemTableRow(
   const CioToDistinguishInherited: TPasCio);
 var
   ItemCssClasses: string;
+  SavedItemCio: TPasCio;
 begin
   ItemCssClasses := 'visibility-' + VisToStr(Item.Visibility);
   if (CioToDistinguishInherited <> nil) and
@@ -1335,7 +1336,26 @@ begin
 
   if MakeAnchor then WriteAnchor(SignatureToHtmlId(Item.Signature));
 
+  { When CioToDistinguishInherited <> nil we temporarily "hack" Item.MyObject
+    and Item.FullLink,
+    so that links to Item always remain within this CIO page.
+    This means that e.g. we will not jump from one CIO page (where
+    we may have "protected" visible) to another CIO page (where it
+    would be hidden). }
+  if CioToDistinguishInherited <> nil then
+  begin
+    SavedItemCio := Item.MyObject;
+    Item.MyObject := CioToDistinguishInherited;
+    Item.FullLink := CreateLink(Item);
+  end;
+
   WriteCodeWithLinks(Item, Item.FullDeclaration, WriteItemLink);
+
+  if CioToDistinguishInherited <> nil then
+  begin
+    Item.MyObject := SavedItemCio;
+    Item.FullLink := CreateLink(Item);
+  end;
 
   WriteEndOfTableCell;
   WriteEndOfTableRow;
