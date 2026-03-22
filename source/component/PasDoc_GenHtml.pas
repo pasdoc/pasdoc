@@ -1548,14 +1548,14 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
           WriteEndOfParagraph;
         end
         else begin
-          WriteDirect('Showing descriptions inherited from ancestors.</p>');
+          WriteDirect('Showing descriptions inherited from:</p>');
           WriteDirect('<dl class="description">');
 
           for I := 0 to InheritedDescriptions.Count - 1 do
           begin
             AncestorItem := TObject(InheritedDescriptions[I].Data) as TPasItem;
 
-            WriteDirect('<dt>From ');
+            WriteDirect('<dt>');
             WriteDirect(MakeItemLink(
               AncestorItem,
               InheritedDescriptions[I].Name,
