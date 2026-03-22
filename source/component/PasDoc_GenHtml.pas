@@ -1436,8 +1436,6 @@ begin
     WriteStartOfTable(ItemCssClasses);
     WriteItemTableRow(Item, ShowVisibility, false, true, nil);
 
-    { Using colspan="0" below would be easier, but Konqueror and IE
-      can't handle it correctly. It seems that they treat it as colspan="1" ? }
     WriteDirectLine(Format('<tr><td colspan="%d">', [ColumnsCount]));
 
     if (CioToDistinguishInherited <> nil) and
