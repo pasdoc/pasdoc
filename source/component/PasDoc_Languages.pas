@@ -241,6 +241,7 @@ type
     trShowAdditionalMembers,
     trInherited,
     trDeclaredInAncestor,
+    trNoDescription,
     trDummy
   );
 

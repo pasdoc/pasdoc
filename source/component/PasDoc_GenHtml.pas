@@ -1532,7 +1532,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
     try
       if InheritedDescriptions.Count > 0 then
       begin
-        WriteDirect('<p class="inheritdescription">This item has no description. ');
+        WriteDirect('<p class="inheritdescription">' + FLanguage.Translation[trNoDescription] + ' ');
         if InheritedDescriptions.Count = 1 then
         begin
           AncestorItem := TObject(InheritedDescriptions[0].Data) as TPasItem;
@@ -1573,7 +1573,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
         end;
       end
       else begin
-        WriteDirect('<p class="nodescription">This item has no description.</p>');
+        WriteDirect('<p class="nodescription">' + FLanguage.Translation[trNoDescription] + '</p>');
       end;
     finally
       FreeAndNil(InheritedDescriptions);
