@@ -1233,7 +1233,7 @@ type
 
       @param(Unqualified
 
-        When @true, we sort first by @link(TPasItem.Name).
+        When @true, we sort first by @link(TBaseItem.Name).
 
         When @false, we sort first by @link(TPasItem.UnitRelativeQualifiedName),
         which includes unit and class names.)

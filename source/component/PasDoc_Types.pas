@@ -64,9 +64,9 @@ type
     Like this: ['Unit.Name.With.Dot', 'ClassName', 'MethodName'].
     We have special code to do this in TDocGenerator.FindGlobal .
 
-    The idea is that each string corresponds to some TPasItem.Name.
+    The idea is that each string corresponds to some @link(TBaseItem.Name).
 
-    Use such list for searching routines, for @link(TPasItem.FindItem) and friends.
+    Use such list for searching routines, for @link(TBaseItem.FindItem) and friends.
 
     This must @italic(always have at least one part).
 

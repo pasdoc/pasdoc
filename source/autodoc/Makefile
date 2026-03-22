@@ -49,7 +49,9 @@ PASDOC_OPTIONS=--include ../component \
   --introduction=introduction.txt \
   --show-source-position \
   --source-url-pattern "https://github.com/pasdoc/pasdoc/blob/master/{FILE}\#L{LINE}" \
-  --source-root ../../
+  --source-root ../../ \
+	--visible-members='public,published,automated,protected?' \
+	--inherited-members=default-hide
 
 GRAPHVIZ_COMMANDS=dot -Grankdir=LR -Tjpg -oGVClasses.jpg GVClasses.dot; \
                   dot -Grankdir=LR -Tjpg -oGVUses.jpg GVUses.dot
