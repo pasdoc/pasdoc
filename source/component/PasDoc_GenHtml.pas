@@ -1442,12 +1442,12 @@ begin
        (CioToDistinguishInherited <> Item.MyObject) and
        (Item.MyObject <> nil) then
     begin
-      WriteDirect('<p class="description-inherited">This item is declared in ancestor ');
-      WriteDirect(MakeItemLink(
-        Item.MyObject,
-        Item.MyObject.Name,
-        lcNormal));
-      WriteDirect('.</p>');
+      WriteDirect('<p class="description-inherited">' +
+        Format(FLanguage.Translation[trDeclaredInAncestor], [MakeItemLink(
+          Item.MyObject,
+          Item.MyObject.Name,
+          lcNormal)]) +
+        '</p>');
     end;
 
     WriteItemLongDescription(Item);

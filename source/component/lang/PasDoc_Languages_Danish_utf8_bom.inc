@@ -109,5 +109,6 @@
     {trSourcePosition} strToDo, //'Source: %s (line %d).',
     {trShowAdditionalMembers} strToDo, //'Show Additional Members',
     {trInherited} strToDo, //'Inherited',
+    {trDeclaredInAncestor} strToDo, //'This item is declared in ancestor %s.',
     ''  //dummy
   );

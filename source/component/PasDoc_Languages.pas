@@ -240,6 +240,7 @@ type
     trSourcePosition,
     trShowAdditionalMembers,
     trInherited,
+    trDeclaredInAncestor,
     trDummy
   );
 
