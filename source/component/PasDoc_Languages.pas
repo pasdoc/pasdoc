@@ -288,7 +288,6 @@ type
 
 const
   DEFAULT_LANGUAGE = lgEnglish;
-  lgDefault = lgEnglish;
 
 type
   { Language class to hold all translated strings }
@@ -314,23 +313,6 @@ type
     property Language: TLanguageID read FLanguage write SetLanguage
       default DEFAULT_LANGUAGE;
   end;
-
-//Some GUI helpers
-{}
-
-//Full language name
-function LanguageFromIndex(i: integer): string;
-function LanguageFromID(i: TLanguageID): string;
-
-//Language abbreviation
-function SyntaxFromIndex(i: integer): string;
-function SyntaxFromID(i: TLanguageID): string;
-
-//Search for language by short or long name
-function IDfromLanguage(const s: string): TLanguageID;
-
-//Manual translation of id into lang
-function Translation(id: TTranslationID; lang: TLanguageID): string;
 
 { Find a language with Syntax = S (case ignored).
   Returns @true and sets LanguageId if found, otherwise returns @false. }
@@ -526,57 +508,9 @@ begin
   Result := false;
 end;
 
-//------------- language helpers, for PasDoc_gui -----------------
-
-function LanguageFromIndex(i: integer): string;
-begin
-  Result := language_array[TLanguageID(i)].Name;
-end;
-
-function LanguageFromID(i: TLanguageID): string;
-begin
-  Result := language_array[i].Name;
-end;
-
-function SyntaxFromIndex(i: integer): string;
-var
-  l: TLanguageID absolute i;
-begin
-  Result := Language_array[l].Syntax;
-end;
-
-function SyntaxFromID(i: TLanguageID): string;
-begin
-  Result := Language_array[i].Syntax;
-end;
-
-function IDfromLanguage(const s: string): TLanguageID;
-var
-  i: TLanguageID;
-begin
-  for i := low(i) to high(i) do begin
-    if (LANGUAGE_ARRAY[i].Name = s)
-    or (LANGUAGE_ARRAY[i].Syntax = s) then begin
-      Result := i;
-      exit;
-    end;
-  end;
-  Result := DEFAULT_LANGUAGE;
-end;
-
 function LanguageDescriptor(id: TLanguageID): PLanguageRecord;
 begin
   Result := @Language_array[id];
-end;
-
-function  Translation(id: TTranslationID; lang: TLanguageID): string;
-var
-  tbl: PTransTable;
-begin
-  tbl := LANGUAGE_ARRAY[lang].Table;
-  if not assigned(tbl) then
-    tbl := @aEnglish;
-  Result := tbl^[id];
 end;
 
 function LanguageCode(const Language: TLanguageID): string;
