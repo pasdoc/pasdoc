@@ -82,6 +82,7 @@ type
     OptionCSS: TStringOption;
     OptionCSSBasedOnBootstrap: TStringOption;
     OptionAutoAbstract: TBoolOption;
+    OptionNoAutoAbstract: TBoolOption;
     OptionLinkLook: TStringOption;
     OptionInheritedMembers: TStringOption;
     OptionUseTipueSearch: TBoolOption;
@@ -324,8 +325,12 @@ begin
   AddOption(OptionCSSBasedOnBootstrap);
 
   OptionAutoAbstract := TBoolOption.Create(#0, 'auto-abstract');
-  OptionAutoAbstract.Explanation := 'If set, pasdoc will automatically make abstract description of every item from the first sentence of description of this item';
+  OptionAutoAbstract.Explanation := 'Deprecated, this behavior is now the default';
   AddOption(OptionAutoAbstract);
+
+  OptionNoAutoAbstract := TBoolOption.Create(#0, 'no-auto-abstract');
+  OptionNoAutoAbstract.Explanation := 'Disable automatic abstract determination from the first sentence of each description';
+  AddOption(OptionNoAutoAbstract);
 
   OptionUseTipueSearch := TBoolOption.Create(#0, 'use-tipue-search');
   OptionUseTipueSearch.Explanation := 'Use tipue search engine in HTML output';
@@ -644,7 +649,14 @@ begin
       OptionSpellCheckIgnoreWords.Value);
 
   PasDoc.CacheDir := OptionCacheDir.Value;
-  PasDoc.Generator.AutoAbstract := OptionAutoAbstract.TurnedOn;
+
+  if OptionAutoAbstract.TurnedOn and OptionNoAutoAbstract.TurnedOn then
+    raise EInvalidCommandLine.Create('Cannot use both --auto-abstract and --no-auto-abstract options together');
+  if OptionAutoAbstract.TurnedOn then
+    PasDoc.Generator.AutoAbstract := true;
+  if OptionNoAutoAbstract.TurnedOn then
+    PasDoc.Generator.AutoAbstract := false;
+
   PasDoc.Generator.LinkLook := StringToLinkLook(OptionLinkLook.Value);
   if OptionFullLink.TurnedOn then // support deprecated --full-link option for backward compatibility
     PasDoc.Generator.LinkLook := llFull;

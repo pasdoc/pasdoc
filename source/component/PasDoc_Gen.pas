@@ -907,6 +907,8 @@ type
       empty string. }
     function FormatTableOfContents(Sections: TStringPairVector): string; virtual;
   public
+    const
+      DefaultAutoAbstract = true;
 
     { Creates anchors and links for all items in all units. }
     procedure BuildLinks;
@@ -1022,9 +1024,10 @@ type
       read FSpellCheckIgnoreWords write SetSpellCheckIgnoreWords;
 
     { Automatically detect abstract (summary) descriptions without @@abstract tag.
-      See @--auto-abstract command-line option docs on https://pasdoc.github.io/AutoAbstractOption .
+      See @--auto-abstract command-line option docs on https://pasdoc.github.io/Abstract .
       This is used in @link(ExpandDescriptions). }
-    property AutoAbstract: boolean read FAutoAbstract write FAutoAbstract default false;
+    property AutoAbstract: boolean
+      read FAutoAbstract write FAutoAbstract default DefaultAutoAbstract;
 
     { How @link(SearchLink) behaves. This meaning is described in
       @url(https://pasdoc.github.io/LinkLookOption --link-look documentation). }
@@ -3010,6 +3013,7 @@ begin
   FExcludeGenerator := false;
   FIncludeCreationTime := false;
   FUseLowercaseKeywords := false;
+  FAutoAbstract := DefaultAutoAbstract;
   FLanguage := TPasDocLanguages.Create;
   FAbbreviations := TStringList.Create;
   FAbbreviations.Duplicates := dupIgnore;

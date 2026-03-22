@@ -15,7 +15,7 @@ We [appreciate your donations (Michalis, maintainer of PasDoc, also makes Castle
 Put comments before the identifiers in your Pascal source code. Like this:
 
 ```pascal
-{ My amazing unit. }
+{ My amazing unit. This does @bold(something amazing). }
 unit MyUnit;
 
 interface
@@ -26,7 +26,7 @@ type
   private
     FMyProperty: String;
   public
-    { My amazing method. }
+    { My amazing method. Sets @link(MyProperty) to 'foo'. }
     procedure MyMethod;
     { My amazing property. }
     property MyProperty: String read FMyProperty write FMyProperty;
@@ -41,7 +41,7 @@ Process this source code with PasDoc, and get documentation in one of the output
 
 ```shell
 mkdir -p output-dir/
-pasdoc myunit.pas --format=html --auto-abstract --output=output-dir
+pasdoc myunit.pas --format=html --output=output-dir
 ```
 
 You can also use the [GUI interface](https://pasdoc.github.io/PasDocGui).

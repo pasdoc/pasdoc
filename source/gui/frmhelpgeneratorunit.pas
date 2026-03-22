@@ -539,7 +539,7 @@ begin
   EditExternalDescriptions.FileName := '';
 
   CheckWriteUsesList.Checked := false;
-  CheckAutoAbstract.Checked := false;
+  CheckAutoAbstract.Checked := TDocGenerator.DefaultAutoAbstract;
   CheckAutoLink.Checked := false;
   CheckHandleMacros.Checked := true;
   CheckUseTipueSearch.Checked := false;
@@ -1300,7 +1300,7 @@ begin
     ReadFileNames('AdditionalFiles', MemoAdditionalFiles.Lines);
 
     CheckWriteUsesList.Checked := Ini.ReadBool('Main', 'WriteUsesList', false);
-    CheckAutoAbstract.Checked := Ini.ReadBool('Main', 'AutoAbstract', false);
+    CheckAutoAbstract.Checked := Ini.ReadBool('Main', 'AutoAbstract', TDocGenerator.DefaultAutoAbstract);
     CheckAutoLink.Checked := Ini.ReadBool('Main', 'AutoLink', false);
     CheckHandleMacros.Checked := Ini.ReadBool('Main', 'HandleMacros', true);
     CheckUseTipueSearch.Checked := Ini.ReadBool('Main', 'UseTipueSearch', false);
