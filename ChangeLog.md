@@ -2,6 +2,7 @@
 
 ## Upcoming Next Release
 
+* Make automatic abstract (previously activated by `--auto-abstract`) enabled by default, and add `--no-auto-abstract` to disable it. See https://pasdoc.github.io/Abstract and https://github.com/pasdoc/pasdoc/discussions/241 (Michalis)
 * Fix parsing `exports` section (just skip it for now) (Michalis)
 * Show inherited members of a class using --inherited-members (https://pasdoc.github.io/InheritedMembersOption, https://github.com/pasdoc/pasdoc/discussions/240) (Michalis)
 * Proper "Constants" section in outputs for CIOs with nested constants (Michalis)
@@ -275,7 +276,7 @@ done by Michalis Kamburelis.
 End-user visible changes:
 
 + New command-line options:
-    * [\--auto-abstract](https://pasdoc.github.io/AutoAbstractOption)
+    * [\--auto-abstract](https://pasdoc.github.io/Abstract)
     * [\--introduction and \--conclusion](https://pasdoc.github.io/IntroductionAndConclusion)
     * [\--latex-head](https://pasdoc.github.io/CommandLine)
     * [\--link-gv-uses and \--link-gv-classes](https://pasdoc.github.io/GraphVizSupport)
