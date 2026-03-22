@@ -1,18 +1,18 @@
 <unit name="ok_generic_routines">
   <routine name="DoSomething" declaration="function DoSomething&lt;T&gt;(const Caption: String; const Input: T): T;" type="function">
-    <description><detailed>Test documentation for function DoSomething implementation</detailed></description>
+    <description><abstract>Test documentation for function DoSomething implementation</abstract></description>
   </routine>
   <routine name="DoSomething2" declaration="procedure DoSomething2&lt;T&gt;(const Input: T);" type="procedure">
-    <description><detailed>Test documentation for procedure DoSomething2 implementation</detailed></description>
+    <description><abstract>Test documentation for procedure DoSomething2 implementation</abstract></description>
   </routine>
   <structure name="TTestClass" name_with_generic="TTestClass" type="class">
-    <description><detailed>TTestClass</detailed></description>
+    <description><abstract>TTestClass</abstract></description>
     <ancestor name="TObject" declaration="TObject" />
     <routine name="DoSomething" declaration="generic function DoSomething&lt;T&gt;(const Caption: String; const Input: T): T;" visibility="public" type="function">
-      <description><detailed>Test documentation for class function DoSomething implementation</detailed></description>
+      <description><abstract>Test documentation for class function DoSomething implementation</abstract></description>
     </routine>
     <routine name="DoSomething2" declaration="generic procedure DoSomething2&lt;T&gt;(const Input: T);" visibility="public" type="procedure">
-      <description><detailed>Test documentation for class procedure DoSomething2 implementation</detailed></description>
+      <description><abstract>Test documentation for class procedure DoSomething2 implementation</abstract></description>
     </routine>
   </structure>
 </unit>

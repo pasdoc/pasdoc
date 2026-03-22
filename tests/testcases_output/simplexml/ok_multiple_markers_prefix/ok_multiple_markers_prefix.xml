@@ -1,8 +1,8 @@
 <unit name="ok_multiple_markers_prefix">
   <variable name="Marker1" declaration="Marker1: Integer;">
-    <description><detailed>Some comment.</detailed></description>
+    <description><abstract>Some comment.</abstract></description>
   </variable>
   <variable name="Marker2" declaration="Marker2: Integer;">
-    <description><detailed>Another comment.</detailed></description>
+    <description><abstract>Another comment.</abstract></description>
   </variable>
 </unit>

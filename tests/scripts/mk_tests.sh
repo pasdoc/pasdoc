@@ -59,8 +59,12 @@ mk_test ()
   # of parsing all units and that it won't change output on files with empty or
   # fully private impl sections
   run_echo "$PASDOC_OUTPUT_FILENAME" \
-    "${PASDOC_BIN}" --format "$FORMAT" --exclude-generator \
-    --implementation-comments=join --output="$OUTPUT_PATH" "$@"
+    "${PASDOC_BIN}" \
+    --format "$FORMAT" \
+    --exclude-generator \
+    --implementation-comments=join \
+    --output="$OUTPUT_PATH" \
+    "$@"
 }
 
 # Run all the test for current $FORMAT.

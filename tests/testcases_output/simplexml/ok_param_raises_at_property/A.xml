@@ -1,7 +1,7 @@
 <unit name="A">
   <routine name="Foo" declaration="procedure Foo(A: Integer);" type="procedure">
     <param name="A">This is some parameter.</param>
-    <description><detailed> </detailed></description>
+    <description><abstract> </abstract></description>
   </routine>
   <structure name="TMyException" name_with_generic="TMyException" type="class">
     <ancestor name="TObject" declaration="TObject" />

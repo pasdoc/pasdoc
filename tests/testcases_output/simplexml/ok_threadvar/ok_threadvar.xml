@@ -1,5 +1,5 @@
 <unit name="ok_threadvar">
-  <description><detailed>Check parsing of threadvar sections</detailed></description>
+  <description><abstract>Check parsing of threadvar sections</abstract></description>
   <variable name="A" declaration="A: Byte;">
   </variable>
   <structure name="TClass" name_with_generic="TClass" type="class">

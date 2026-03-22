@@ -1,33 +1,33 @@
 <unit name="ok_value_member_tags">
   <type name="TMyEnum" declaration="TMyEnum = (...);">
-    <description><detailed> </detailed></description>
+    <description><abstract> </abstract></description>
     <constant name="meOne" declaration="meOne">
-      <description><detailed>Description of meOne follows.</detailed></description>
+      <description><abstract>Description of meOne follows.</abstract></description>
     </constant>
     <constant name="meTwo" declaration="meTwo">
     </constant>
     <constant name="meThree" declaration="meThree">
-      <description><detailed>Description of meThree, with some link: TMyClass.MyField.</detailed></description>
+      <description><abstract>Description of meThree, with some link: TMyClass.MyField.</abstract></description>
     </constant>
   </type>
   <structure name="TMyClass" name_with_generic="TMyClass" type="class">
-    <description><detailed>  </detailed></description>
+    <description><abstract>  </abstract></description>
     <ancestor name="TObject" declaration="TObject" />
     <routine name="MyMethod" declaration="function MyMethod(A: Integer): boolean;" visibility="public" type="function">
       <param name="A">Description of param A.</param>
       <result>Some boolean value.</result>
-      <description><detailed>Description of MyMethod here, using parenthesis.  </detailed></description>
+      <description><abstract>Description of MyMethod here, using parenthesis.</abstract><detailed>  </detailed></description>
     </routine>
     <variable name="MyField" declaration="MyField: Integer;" visibility="public">
-      <description><detailed>Description of MyField here.</detailed></description>
+      <description><abstract>Description of MyField here.</abstract></description>
     </variable>
     <property name="MyProperty" declaration="property MyProperty: Integer read MyField write MyField;" visibility="public" indexdecl="" type="Integer" reader="MyField" writer="MyField" default_in_class="False" default_value="" nodefault="False"   stored="">
-      <description><detailed>Description of MyProperty here, with some recursive tags inside: <code>Some code with a link to TMyRecord</code>.</detailed></description>
+      <description><abstract>Description of MyProperty here, with some recursive tags inside: <code>Some code with a link to TMyRecord</code>.</abstract></description>
     </property>
   </structure>
   <structure name="TMyRecord" name_with_generic="TMyRecord" type="record">
     <variable name="MyField" declaration="MyField: Integer;" visibility="public">
-      <description><detailed>Description of MyField in TMyRecord here.</detailed></description>
+      <description><abstract>Description of MyField in TMyRecord here.</abstract></description>
     </variable>
   </structure>
 </unit>

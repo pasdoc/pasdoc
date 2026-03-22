@@ -1,3 +1,3 @@
 <unit name="unit1">
-  <description><detailed>image.png This should show description <bold>main</bold> : This is description called <bold>main</bold>.  This should show description <bold>dir_1</bold> two times: This is description called <bold>dir_1</bold>.  This is description called <bold>dir_1</bold>.  This should show description <bold>dir_2</bold> : This is description called <bold>dir_2</bold>. </detailed></description>
+  <description><abstract>image.png This should show description <bold>main</bold> : This is description called <bold>main</bold>.  This should show description <bold>dir_1</bold> two times: This is description called <bold>dir_1</bold>.  This is description called <bold>dir_1</bold>.  This should show description <bold>dir_2</bold> : This is description called <bold>dir_2</bold>. </abstract></description>
 </unit>

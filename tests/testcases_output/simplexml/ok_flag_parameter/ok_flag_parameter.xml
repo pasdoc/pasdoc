@@ -8,7 +8,7 @@
     <param name="Xxx4 [out, always non-nil on exit]">Some output param.</param>
     <param name="Xxx4">thisShouldNotBeFlag[out] Some output param.</param>
     <param name="Xxx4">this should not be flag either[out] Some output param.</param>
-    <description><detailed>My proc.         This link should work Theme.Items[tiLoading]. This link should work too Blah blah (blah blah Items[Index]).</detailed></description>
+    <description><abstract>My proc.</abstract><detailed>         This link should work Theme.Items[tiLoading]. This link should work too Blah blah (blah blah Items[Index]).</detailed></description>
   </routine>
   <routine name="Bar" declaration="procedure Bar;" type="procedure">
   </routine>

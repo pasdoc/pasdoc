@@ -1,6 +1,6 @@
 <unit name="ok_line_break">
-  <description><detailed>Test @br tag.</detailed></description>
+  <description><abstract>Test @br tag.</abstract></description>
   <routine name="TestLineBreak" declaration="procedure TestLineBreak;" type="procedure">
-    <description><detailed>1st paragraph.  Second line of 1st paragraph. 2nd paragraph. Blah blah blah. 3rd paragraph.  Second line of 3rd paragraph.</detailed></description>
+    <description><abstract>1st paragraph.</abstract><detailed>  Second line of 1st paragraph. 2nd paragraph. Blah blah blah. 3rd paragraph.  Second line of 3rd paragraph.</detailed></description>
   </routine>
 </unit>

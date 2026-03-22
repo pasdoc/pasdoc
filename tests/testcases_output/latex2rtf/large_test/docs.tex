@@ -328,7 +328,7 @@ Everything in this unit is deprecated. Even this whole unit itself.
 
 \section{Overview}
 \begin{description}
-\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}] Deprecated class.
 \end{description}
 \begin{description}
 \item[\texttt{MyProc}]
@@ -538,7 +538,9 @@ This is related to bug submitted to pasdoc{-}main list [http://sourceforge.net/m
 \item[\texttt{Bar}]
 \item[\texttt{Cdecl}]
 \item[\texttt{Foo}]
-\item[\texttt{Foo1}]
+\item[\texttt{Foo1}]Some other test for THTMLDocGenerator.WriteCodeWithLinks, while I'm at it:
+
+Note that link to TMyClass should be correctly made.
 \item[\texttt{Register}]
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
@@ -665,15 +667,33 @@ See also \begin{ttfamily}TMyClass\end{ttfamily}(\ref{ok_expanding_descriptions.T
 \item[\texttt{\begin{ttfamily}EBar\end{ttfamily} Class}]
 \item[\texttt{\begin{ttfamily}EXyz\end{ttfamily} Class}]
 \item[\texttt{\begin{ttfamily}TMyClassAncestor\end{ttfamily} Class}]
-\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]These are some tags that are not allowed to have parameters: name \begin{ttfamily}TMyClass\end{ttfamily}, inherited \begin{ttfamily}TMyClassAncestor\end{ttfamily}(\ref{ok_expanding_descriptions.TMyClassAncestor}), nil \begin{ttfamily}Nil\end{ttfamily}, true \begin{ttfamily}True\end{ttfamily}, false \begin{ttfamily}False\end{ttfamily}, classname \begin{ttfamily}TMyClass\end{ttfamily}.
 \end{description}
 \begin{description}
-\item[\texttt{RecursiveTwoAt}]
+\item[\texttt{RecursiveTwoAt}]aa aaaaa aa aaa \begin{ttfamily}SHGetSpecialFolderPath(0, @Path, CSIDL{\_}APPDATA, true)\end{ttfamily} aaaa aaaaaa aaaaaa aaaaaaaaa aaaa
+
+At some point, this test caused the bug: final {$<$}/code{$>$} tag was inserted in converted form (processed with ConvertString) into html output.
 \item[\texttt{TestHtmlAndLatexTags}]
-\item[\texttt{TestLongCode}]
-\item[\texttt{TestPasMethodTags}]
-\item[\texttt{TestRecursiveTag}]
-\item[\texttt{TwoAt}]
+
+
+    This is some {\bf dummy} \LaTeX code, just to show that inside
+    @latex tag of pasdoc (note that I used single @ char in this sentence)
+    nothing is expanded by pasdoc.
+    No paragraphs are created by pasdoc. Although, in case of LaTeX output,
+    LaTeX rules for making paragraphs are the same as the pasdoc's rules
+    (one empty lines marks paragraph), so you will not notice.
+    This is brutal line-break: \\
+    I'm still in the same paragraph, after line-break.
+
+    I'm 2nd paragraph.
+    No tags work, e.g. @link(TestLongCode).
+  
+
+Note that text inside @html / @latex tags is absolutely not touched by pasdoc.
+\item[\texttt{TestLongCode}]Note that inside @longcode below I should be able to write singe @ char to get it in the output, no need to double it (like @@).
+\item[\texttt{TestPasMethodTags}]This is a test of tags expanded by TPasRoutine handlers.
+\item[\texttt{TestRecursiveTag}]@code and @returns (and some others) tags are recursive, you can freely put other tags inside.
+\item[\texttt{TwoAt}]Write two at chars, like this @@, to get one @ in output.
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
 \subsection*{EFoo Class}
@@ -1768,7 +1788,7 @@ Warning: this symbol is specific to some library.
 Test @br tag.
 \section{Overview}
 \begin{description}
-\item[\texttt{TestLineBreak}]
+\item[\texttt{TestLineBreak}]1st paragraph.
 \end{description}
 \section{Functions and Procedures}
 \subsection*{TestLineBreak}
@@ -1818,7 +1838,7 @@ Link to this unit : \begin{ttfamily}ok{\_}links\end{ttfamily}(\ref{ok_links}), t
 \item[\texttt{\begin{ttfamily}TSomeClass\end{ttfamily} Class}]
 \end{description}
 \begin{description}
-\item[\texttt{MyProc}]
+\item[\texttt{MyProc}]Link to self : \begin{ttfamily}MyProc\end{ttfamily}(\ref{ok_links-MyProc}), and a second one: \begin{ttfamily}ok{\_}links.MyProc\end{ttfamily}(\ref{ok_links-MyProc}), link to MyProc in other unit: \begin{ttfamily}ok{\_}links{\_}2.MyProc\end{ttfamily}(\ref{ok_links_2-MyProc}).
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
 \subsection*{TSomeClass Class}
@@ -2001,7 +2021,7 @@ procedure MyProc;\end{ttfamily}
 This is a link from unit's description to an identifier inside the same unit: some procedure \begin{ttfamily}Foo\end{ttfamily}(\ref{ok_link_class_unit_level-Foo}), some class \begin{ttfamily}TBar\end{ttfamily}(\ref{ok_link_class_unit_level.TBar}).
 \section{Overview}
 \begin{description}
-\item[\texttt{\begin{ttfamily}TBar\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TBar\end{ttfamily} Class}]These are links from class' description to an identifiers inside the same class.
 \end{description}
 \begin{description}
 \item[\texttt{Foo}]
@@ -2097,10 +2117,10 @@ procedure Xyz;\end{ttfamily}
 \chapter{Unit ok{\_}link{\_}explicite{\_}name}
 \section{Overview}
 \begin{description}
-\item[\texttt{\begin{ttfamily}TTestingClass\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TTestingClass\end{ttfamily} Class}]I'm a testing class, oh ! And \begin{ttfamily}don't forget to look at my method !\end{ttfamily}(\ref{ok_link_explicite_name.TTestingClass-MyMethod})
 \end{description}
 \begin{description}
-\item[\texttt{MyProc}]
+\item[\texttt{MyProc}]Some testing proc.
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
 \subsection*{TTestingClass Class}
@@ -2163,7 +2183,7 @@ Now, all identifiers in this unit should be visible in LaTeX documentation (and 
 \begin{description}
 \item[\texttt{\begin{ttfamily}TClass1\end{ttfamily} Class}]
 \item[\texttt{\begin{ttfamily}TMyRecord\end{ttfamily} Record}]
-\item[\texttt{\begin{ttfamily}TMyRecord2\end{ttfamily} Record}]
+\item[\texttt{\begin{ttfamily}TMyRecord2\end{ttfamily} Record}]This record has a description, but still LaTeX output will not list it in it's summary list (in the "Overview" section).
 \item[\texttt{\begin{ttfamily}TMyRecord3\end{ttfamily} Record}]
 \end{description}
 \begin{description}
@@ -2353,7 +2373,7 @@ This is the 3rd paragraph.
 pasdoc should create paragraphs when glueing single{-}line comments to a description, but it doesn't for now. Update: now it does.
 \section{Overview}
 \begin{description}
-\item[\texttt{Foo}]
+\item[\texttt{Foo}]This is the 1st paragraph.
 \end{description}
 \section{Functions and Procedures}
 \subsection*{Foo}
@@ -2414,7 +2434,7 @@ See \begin{ttfamily}SomeProc\end{ttfamily}(\ref{ok_tag_params_no_parens-SomeProc
 \item[\texttt{\begin{ttfamily}EFoo\end{ttfamily} Class}]
 \end{description}
 \begin{description}
-\item[\texttt{SomeProc}]
+\item[\texttt{SomeProc}]Note that this rule allows you to not specify () for *any* tag that has parameters.
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
 \subsection*{EFoo Class}
@@ -2486,7 +2506,7 @@ kambi
 \chapter{Unit ok{\_}value{\_}member{\_}tags}
 \section{Overview}
 \begin{description}
-\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]  
 \item[\texttt{\begin{ttfamily}TMyRecord\end{ttfamily} Record}]
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
@@ -2641,7 +2661,7 @@ The abstract tag for \begin{ttfamily}TAbstractTerminationClass\end{ttfamily}(\re
 Submitted in thread "Pasdoc tests" 2004{-}04{-}10 on pasdoc{-}main.
 \section{Overview}
 \begin{description}
-\item[\texttt{\begin{ttfamily}TAbstractTerminationClass\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TAbstractTerminationClass\end{ttfamily} Class}](This abstract tag lacks the closing parenthesis.
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
 \subsection*{TAbstractTerminationClass Class}
@@ -2681,7 +2701,7 @@ pasdoc should warn "You used @abstract twice in description of item ..." or some
 \chapter{Unit warning{\_}not{\_}existing{\_}tags}
 \section{Overview}
 \begin{description}
-\item[\texttt{TestWarnings}]
+\item[\texttt{TestWarnings}]pasdoc should complain (display warnings) about wrong tags : @firstwarning(blah blah), \begin{ttfamily}Wrong tag inside a @code: @secondwarning(ble ble)\end{ttfamily}.
 \end{description}
 \section{Functions and Procedures}
 \subsection*{TestWarnings}
@@ -2710,7 +2730,7 @@ pasdoc should complain (display warnings) about wrong tags : @firstwarning(blah 
 \chapter{Unit warning{\_}tags{\_}no{\_}parameters}
 \section{Overview}
 \begin{description}
-\item[\texttt{Foo}]
+\item[\texttt{Foo}]Some tags are not allowed to have parameters.
 \end{description}
 \section{Functions and Procedures}
 \subsection*{Foo}
@@ -2742,6 +2762,12 @@ pasdoc should print a warning when you try to give some parameters for such tags
 \section{Overview}
 \begin{description}
 \item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+
+ 
+
+
+
+This should cause 3 warnings: MyField1 has two descriptions, MyField2 has two descriptions, and NotExistsingMember does not exist.
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
 \subsection*{TMyClass Class}

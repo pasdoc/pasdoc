@@ -1,5 +1,5 @@
 <unit name="ok_directive_as_identifier">
-  <description><detailed>All calling-convention specifiers must *not* be made links in docs. But &quot;Register&quot; procedure name must be made a link. Yes, the difficulty is here that &quot;register&quot; is once a calling-convention specifier and once a procedure name. This is related to bug submitted to pasdoc-main list [http://sourceforge.net/mailarchive/message.php?msg_id=11397611].</detailed></description>
+  <description><abstract>All calling-convention specifiers must *not* be made links in docs.</abstract><detailed> But &quot;Register&quot; procedure name must be made a link. Yes, the difficulty is here that &quot;register&quot; is once a calling-convention specifier and once a procedure name. This is related to bug submitted to pasdoc-main list [http://sourceforge.net/mailarchive/message.php?msg_id=11397611].</detailed></description>
   <routine name="Bar" declaration="procedure Bar; cdecl;" type="procedure">
   </routine>
   <routine name="Cdecl" declaration="procedure Cdecl; register;" type="procedure">
@@ -7,7 +7,7 @@
   <routine name="Foo" declaration="procedure Foo; register;" type="procedure">
   </routine>
   <routine name="Foo1" declaration="procedure Foo1(const S: string = 'register'; MyClass: TMyClass);" type="procedure">
-    <description><detailed>Some other test for THTMLDocGenerator.WriteCodeWithLinks, while I'm at it: Note that link to TMyClass should be correctly made. 'register' should be displayed as a string, of course, and not linked.</detailed></description>
+    <description><abstract>Some other test for THTMLDocGenerator.WriteCodeWithLinks, while I'm at it: Note that link to TMyClass should be correctly made.</abstract><detailed> 'register' should be displayed as a string, of course, and not linked.</detailed></description>
   </routine>
   <routine name="Register" declaration="procedure Register; register;" type="procedure">
   </routine>

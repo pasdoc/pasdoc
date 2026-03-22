@@ -1,5 +1,5 @@
 <unit name="ok_unicode_identifiers_utf8">
-  <description><detailed>Delphi allows any Unicode character in an identifier, see https://stackoverflow.com/questions/62143736/what-unicode-characters-can-be-used-in-delphi-source-code https://docwiki.embarcadero.com/RADStudio/Athens/en/Identifiers Here we save file with UTF-8 encoding and some German characters.</detailed></description>
+  <description><abstract>Delphi allows any Unicode character in an identifier, see https://stackoverflow.com/questions/62143736/what-unicode-characters-can-be-used-in-delphi-source-code https://docwiki.embarcadero.com/RADStudio/Athens/en/Identifiers Here we save file with UTF-8 encoding and some German characters.</abstract></description>
   <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <variable name="pmEntLöchen" declaration="pmEntLöchen: TPopupMenu;" visibility="public">

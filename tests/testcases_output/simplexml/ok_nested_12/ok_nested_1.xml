@@ -1,5 +1,5 @@
 <unit name="ok_nested_1">
-  <description><detailed>Testcase of classes nested in classes. This is a reworked version of code from Castle Game Engine.</detailed></description>
+  <description><abstract>Testcase of classes nested in classes.</abstract><detailed> This is a reworked version of code from Castle Game Engine.</detailed></description>
   <structure name="TRepoSoundEngine" name_with_generic="TRepoSoundEngine" type="class">
     <ancestor name="TSoundEngine" declaration="TSoundEngine" />
     <routine name="SetRepositoryUrl" declaration="procedure SetRepositoryUrl(const Value: String);" visibility="private" type="procedure">
@@ -19,7 +19,7 @@
     <variable name="FSoundImportanceNames" declaration="var FSoundImportanceNames: TStringList;" visibility="private">
     </variable>
     <variable name="FSounds" declaration="FSounds: TSoundInfoList;" visibility="private">
-      <description><detailed>A list of sounds used by your program. Each sound has a unique name, used to identify sound in the XML file and for SoundFromName function. At the beginning, this list always contains exactly one sound, empty. This is a special TSoundInfoBuffer that has Sound=nil and Name=''. It means &quot;no sound&quot; in many cases.</detailed></description>
+      <description><abstract>A list of sounds used by your program.</abstract><detailed> Each sound has a unique name, used to identify sound in the XML file and for SoundFromName function. At the beginning, this list always contains exactly one sound, empty. This is a special TSoundInfoBuffer that has Sound=nil and Name=''. It means &quot;no sound&quot; in many cases.</detailed></description>
     </variable>
     <variable name="FSoundGroups" declaration="FSoundGroups: TSoundGroupList;" visibility="private">
     </variable>
@@ -32,41 +32,41 @@
     <type name="TLoopingChannelList" declaration="TLoopingChannelList =  TObjectList&lt;TLoopingChannel&gt;;" visibility="private">
     </type>
     <structure name="TSoundInfo" visibility="private" name_with_generic="TSoundInfo" type="class">
-      <description><detailed>Sound that can be played -- actual sound with buffer, or an alias to it.</detailed></description>
+      <description><abstract>Sound that can be played -- actual sound with buffer, or an alias to it.</abstract></description>
       <ancestor name="TObject" declaration="TObject" />
       <routine name="ReadElement" declaration="procedure ReadElement(const Element: TDOMElement; const AParentGroup: TSoundGroup; const BaseUrl: String; const ASoundEngine: TRepoSoundEngine); virtual;" visibility="public" type="procedure">
-        <description><detailed>Read a sound from XML element &lt;sound&gt; or &lt;alias&gt;.</detailed></description>
+        <description><abstract>Read a sound from XML element &lt;sound&gt; or &lt;alias&gt;.</abstract></description>
       </routine>
       <routine name="ResolveNames" declaration="procedure ResolveNames(const AllSounds: TSoundInfoList); virtual;" visibility="public" type="procedure">
-        <description><detailed>Do some finalization once all sounds are known, and their names are known.</detailed></description>
+        <description><abstract>Do some finalization once all sounds are known, and their names are known.</abstract></description>
       </routine>
       <routine name="FinalSound" declaration="function FinalSound(const RecursionDepth: Cardinal): TSoundInfoBuffer; virtual; abstract;" visibility="public" type="function">
-        <description><detailed>Get the final TSoundInfoBuffer, resolving aliases.</detailed></description>
+        <description><abstract>Get the final TSoundInfoBuffer, resolving aliases.</abstract></description>
       </routine>
       <variable name="FOwningSoundEngine" declaration="FOwningSoundEngine: TSoundEngine;" visibility="strictprivate">
-        <description><detailed>Although we only support one instance of TSoundEngine, in <code>SoundEngine</code>, but it seems more future-proof to store in TSoundInfo own reference to TSoundEngine. Automatically assigned in ReadElement.</detailed></description>
+        <description><abstract>Although we only support one instance of TSoundEngine, in <code>SoundEngine</code>, but it seems more future-proof to store in TSoundInfo own reference to TSoundEngine.</abstract><detailed> Automatically assigned in ReadElement.</detailed></description>
       </variable>
       <variable name="Name" declaration="Name: String;" visibility="public">
-        <description><detailed>Unique sound name (including parent group names). Empty for the special sound stNone = nil.</detailed></description>
+        <description><abstract>Unique sound name (including parent group names).</abstract><detailed> Empty for the special sound stNone = nil.</detailed></description>
       </variable>
       <variable name="ShortName" declaration="ShortName: String;" visibility="public">
-        <description><detailed>Like Name, but without parent group names. Unique within the ParentGroup (not necessarily unique among all sounds).</detailed></description>
+        <description><abstract>Like Name, but without parent group names.</abstract><detailed> Unique within the ParentGroup (not necessarily unique among all sounds).</detailed></description>
       </variable>
       <variable name="ParentGroup" declaration="ParentGroup: TSoundGroup;" visibility="public">
-        <description><detailed>A group (one among FSoundGroups, or <code>Nil</code> if not in any group).</detailed></description>
+        <description><abstract>A group (one among FSoundGroups, or <code>Nil</code> if not in any group).</abstract></description>
       </variable>
       <property name="OwningSoundEngine" declaration="property OwningSoundEngine: TSoundEngine read FOwningSoundEngine;" visibility="strictprotected" indexdecl="" type="TSoundEngine" reader="FOwningSoundEngine" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
       </property>
     </structure>
     <structure name="TSoundInfoList" visibility="private" name_with_generic="TSoundInfoList" type="class">
-      <description><detailed>List of TSoundInfo.</detailed></description>
+      <description><abstract>List of TSoundInfo.</abstract></description>
       <ancestor name="TObjectList" declaration="TObjectList&lt;TSoundInfo&gt;" />
       <routine name="IndexOfName" declaration="function IndexOfName(const SoundName: String): Integer;" visibility="public" type="function">
-        <description><detailed>Index of sound with given TSoundInfo.Name, or -1 if not found.</detailed></description>
+        <description><abstract>Index of sound with given TSoundInfo.Name, or -1 if not found.</abstract></description>
       </routine>
     </structure>
     <structure name="TSoundInfoAlias" visibility="private" name_with_generic="TSoundInfoAlias" type="class">
-      <description><detailed>Sound that can be played, as an alias to a number of other TSoundInfo instances (an alias may lead to another alias, that's OK, as long as eventually it resolves into actual sound name).</detailed></description>
+      <description><abstract>Sound that can be played, as an alias to a number of other TSoundInfo instances (an alias may lead to another alias, that's OK, as long as eventually it resolves into actual sound name).</abstract></description>
       <ancestor name="TSoundInfo" declaration="TSoundInfo" />
       <routine name="Create" declaration="constructor Create;" visibility="public" type="constructor">
       </routine>
@@ -82,7 +82,7 @@
       </variable>
     </structure>
     <structure name="TSoundInfoBuffer" visibility="private" name_with_generic="TSoundInfoBuffer" type="class">
-      <description><detailed>Sound that can be played, with a buffer.</detailed></description>
+      <description><abstract>Sound that can be played, with a buffer.</abstract></description>
       <ancestor name="TSoundInfo" declaration="TSoundInfo" />
       <routine name="ReadElement" declaration="procedure ReadElement(const Element: TDOMElement; const AParentGroup: TSoundGroup; const BaseUrl: String; const ASoundEngine: TRepoSoundEngine); override;" visibility="public" type="procedure">
       </routine>
@@ -96,19 +96,19 @@
     <structure name="TSoundGroup" visibility="private" name_with_generic="TSoundGroup" type="class">
       <ancestor name="TSoundInfoList" declaration="TSoundInfoList" />
       <variable name="Name" declaration="Name: string;" visibility="public">
-        <description><detailed>Group name (including parent group names).</detailed></description>
+        <description><abstract>Group name (including parent group names).</abstract></description>
       </variable>
       <variable name="Url" declaration="Url: String;" visibility="public">
-        <description><detailed>Group URL. Absolute (including parent group URL parts). Always ends with slash.</detailed></description>
+        <description><abstract>Group URL.</abstract><detailed> Absolute (including parent group URL parts). Always ends with slash.</detailed></description>
       </variable>
       <variable name="ParentGroup" declaration="ParentGroup: TSoundGroup;" visibility="public">
-        <description><detailed>A parent group (one among FSoundGroups, or <code>Nil</code> if not in any group).</detailed></description>
+        <description><abstract>A parent group (one among FSoundGroups, or <code>Nil</code> if not in any group).</abstract></description>
       </variable>
     </structure>
     <structure name="TSoundGroupList" visibility="private" name_with_generic="TSoundGroupList" type="class">
       <ancestor name="TObjectList" declaration="TObjectList&lt;TSoundGroup&gt;" />
       <routine name="IndexOfName" declaration="function IndexOfName(const GroupName: String): Integer;" visibility="public" type="function">
-        <description><detailed>Index of group with given TSoundGroup.Name, or -1 if not found.</detailed></description>
+        <description><abstract>Index of group with given TSoundGroup.Name, or -1 if not found.</abstract></description>
       </routine>
     </structure>
   </structure>

@@ -7,21 +7,21 @@
   <constant name="C4" declaration="C4 = ^Z;">
   </constant>
   <constant name="SUB" declaration="SUB = ^Z;">
-    <description><detailed>SUBstitute</detailed></description>
+    <description><abstract>SUBstitute</abstract></description>
   </constant>
   <constant name="ESC" declaration="ESC = ^[;">
-    <description><detailed>ESCape</detailed></description>
+    <description><abstract>ESCape</abstract></description>
   </constant>
   <constant name="FS" declaration="FS  = ^\;">
-    <description><detailed>File Separator</detailed></description>
+    <description><abstract>File Separator</abstract></description>
   </constant>
   <constant name="GS" declaration="GS  = ^];">
-    <description><detailed>Group Separator</detailed></description>
+    <description><abstract>Group Separator</abstract></description>
   </constant>
   <constant name="RS" declaration="RS  = ^^;">
-    <description><detailed>Record Separator</detailed></description>
+    <description><abstract>Record Separator</abstract></description>
   </constant>
   <constant name="US" declaration="US  = ^_;">
-    <description><detailed>Unit Separator</detailed></description>
+    <description><abstract>Unit Separator</abstract></description>
   </constant>
 </unit>

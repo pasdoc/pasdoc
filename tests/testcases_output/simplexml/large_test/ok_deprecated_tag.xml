@@ -7,18 +7,18 @@
   <variable name="MyVar" declaration="MyVar: Integer;" deprecated="true">
   </variable>
   <type name="TMyType" declaration="TMyType = Integer;" deprecated="true">
-    <description><detailed> Normal type deprecated.</detailed></description>
+    <description><abstract> Normal type deprecated.</abstract></description>
   </type>
   <structure name="TMyClass" deprecated="true" name_with_generic="TMyClass" type="class">
-    <description><detailed> Deprecated class.</detailed></description>
+    <description><abstract> Deprecated class.</abstract></description>
     <ancestor name="TObject" declaration="TObject" />
     <routine name="MyMethodLibrary" declaration="procedure MyMethodLibrary;" visibility="public" deprecated="true" type="procedure">
     </routine>
     <variable name="MyField" declaration="MyField: Integer;" visibility="public" deprecated="true">
-      <description><detailed>Deprecated field. </detailed></description>
+      <description><abstract>Deprecated field.</abstract><detailed> </detailed></description>
     </variable>
     <property name="MyProperty" declaration="property MyProperty: Integer read MyField write MyField;" visibility="public" deprecated="true" indexdecl="" type="Integer" reader="MyField" writer="MyField" default_in_class="False" default_value="" nodefault="False"   stored="">
-      <description><detailed>    Property is deprecated (you can specify @deprecated as many times as you want, because it's harmless).</detailed></description>
+      <description><abstract>    Property is deprecated (you can specify @deprecated as many times as you want, because it's harmless).</abstract></description>
     </property>
   </structure>
 </unit>

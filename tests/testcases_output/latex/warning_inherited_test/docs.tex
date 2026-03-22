@@ -85,12 +85,12 @@
 \index{warning{\_}inherited{\_}test}
 \section{Overview}
 \begin{description}
-\item[\texttt{\begin{ttfamily}TMyClass0\end{ttfamily} Class}]
-\item[\texttt{\begin{ttfamily}TMyClass1\end{ttfamily} Class}]
-\item[\texttt{\begin{ttfamily}TMyClass2\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyClass0\end{ttfamily} Class}]This is a class without ancestor name specified.
+\item[\texttt{\begin{ttfamily}TMyClass1\end{ttfamily} Class}]This is a class with specified ancestor name, but ancestor (TStringList) is not parsed by PasDoc.
+\item[\texttt{\begin{ttfamily}TMyClass2\end{ttfamily} Class}]This is a class with specified ancestor name, and ancestor (TMyClass1) is parsed by PasDoc.
 \end{description}
 \begin{description}
-\item[\texttt{Test}]
+\item[\texttt{Test}]Inherited is \begin{ttfamily}Test\end{ttfamily}.
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
 \ifpdf

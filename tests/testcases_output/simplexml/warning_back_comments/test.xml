@@ -1,19 +1,19 @@
 <unit name="test">
   <variable name="v1" declaration="v1: integer;">
-    <description><detailed>this is v2, v3</detailed></description>
+    <description><abstract>this is v2, v3</abstract></description>
   </variable>
   <variable name="v2" declaration="v2: integer;">
-    <description><detailed>this is v2, v3</detailed></description>
+    <description><abstract>this is v2, v3</abstract></description>
   </variable>
   <variable name="v3" declaration="v3: integer;">
-    <description><detailed>this is v2, v3</detailed></description>
+    <description><abstract>this is v2, v3</abstract></description>
   </variable>
   <type name="MyEnum" declaration="MyEnum = (...);">
     <constant name="me1" declaration="me1">
-      <description><detailed>this is me1</detailed></description>
+      <description><abstract>this is me1</abstract></description>
     </constant>
     <constant name="me2" declaration="me2">
-      <description><detailed>this is me2</detailed></description>
+      <description><abstract>this is me2</abstract></description>
     </constant>
   </type>
 </unit>

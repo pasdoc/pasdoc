@@ -3,12 +3,12 @@
     <param name="arg1">Argument 1</param>
     <param name="arg2">Argument 2</param>
     <result><code>True</code> or <code>False</code></result>
-    <description><detailed>Test function.   </detailed></description>
+    <description><abstract>Test function.</abstract><detailed>   </detailed></description>
   </routine>
   <routine name="testfnc" declaration="function testfnc(arg1: Integer; arg2: String): Boolean;" type="function">
     <param name="arg1">Argument 1</param>
     <param name="arg2">Argument 2</param>
     <result><code>True</code> or <code>False</code></result>
-    <description><detailed>Test function.   </detailed></description>
+    <description><abstract>Test function.</abstract><detailed>   </detailed></description>
   </routine>
 </unit>

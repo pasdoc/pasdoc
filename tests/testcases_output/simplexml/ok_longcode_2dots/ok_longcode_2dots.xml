@@ -1,5 +1,5 @@
 <unit name="ok_longcode_2dots">
-  <description><detailed>Testcase for https://github.com/pasdoc/pasdoc/issues/228 . 
+  <description><abstract>Testcase for https://github.com/pasdoc/pasdoc/issues/228 .</abstract><detailed> 
 procedure TMyScanner.GetSymbol;
 begin
   case Self.Character of

@@ -2,10 +2,10 @@
   <structure name="TStrictVisibility" name_with_generic="TStrictVisibility" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <variable name="StrictPrivateInteger" declaration="StrictPrivateInteger: integer;" visibility="strictprivate">
-      <description><detailed>the visibility of <code>StrictPrivateInteger</code> is &quot;strict private.&quot;</detailed></description>
+      <description><abstract>the visibility of <code>StrictPrivateInteger</code> is &quot;strict private.&quot;</abstract></description>
     </variable>
     <variable name="StrictProtectedInteger" declaration="StrictProtectedInteger: integer;" visibility="strictprotected">
-      <description><detailed>the visibility of <code>StrictProtectedInteger</code> is &quot;strict protected.&quot;</detailed></description>
+      <description><abstract>the visibility of <code>StrictProtectedInteger</code> is &quot;strict protected.&quot;</abstract></description>
     </variable>
   </structure>
 </unit>

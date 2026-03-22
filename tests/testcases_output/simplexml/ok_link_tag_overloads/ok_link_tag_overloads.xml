@@ -4,7 +4,7 @@
   <routine name="TopLevelFunc" declaration="function TopLevelFunc(MyInt: Integer): Integer; overload;" type="function">
   </routine>
   <structure name="TLinkHolder" name_with_generic="TLinkHolder" type="class">
-    <description><detailed>
+    <description><abstract>
 
 <unorderedlist>
 <item>TOverloadedMethods.Foo</item>
@@ -18,17 +18,17 @@
 <item>top level func, accepts int</item>
 </unorderedlist>
 
-</detailed></description>
+</abstract></description>
     <ancestor name="TObject" declaration="TObject" />
   </structure>
   <structure name="TOverloadedBase" name_with_generic="TOverloadedBase" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <routine name="Bar" declaration="procedure Bar(MyInt: Integer; MyBool: Boolean); virtual;" visibility="public" type="procedure">
-      <description><detailed><code>TOverloadedBase</code>.<code>Bar</code></detailed></description>
+      <description><abstract><code>TOverloadedBase</code>.<code>Bar</code></abstract></description>
     </routine>
   </structure>
   <structure name="TOverloadedMethods" name_with_generic="TOverloadedMethods" type="class">
-    <description><detailed>TLinkHolder</detailed></description>
+    <description><abstract>TLinkHolder</abstract></description>
     <ancestor name="TOverloadedBase" declaration="TOverloadedBase" />
     <routine name="Foo" declaration="procedure Foo(MyInt: IntEGEr); overload;" visibility="public" type="procedure">
     </routine>
@@ -43,7 +43,7 @@
     <routine name="Foo" declaration="procedure Foo(const MyStr, MyOtherStr: STRING); overload;" visibility="public" type="procedure">
     </routine>
     <routine name="Bar" declaration="procedure Bar(MyInt: IntEGEr); overload;" visibility="public" type="procedure">
-      <description><detailed><code>Bar</code></detailed></description>
+      <description><abstract><code>Bar</code></abstract></description>
     </routine>
     <routine name="Bar" declaration="procedure Bar(MyInt: Integer; MyBool: Boolean); overload; override;" visibility="public" type="procedure">
     </routine>

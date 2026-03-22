@@ -1,5 +1,5 @@
 <unit name="ok_sorting">
-  <description><detailed>Test unit to test various --sort settings.</detailed></description>
+  <description><abstract>Test unit to test various --sort settings.</abstract></description>
   <routine name="ZZZProc" declaration="procedure ZZZProc;" type="procedure">
   </routine>
   <routine name="AAAProc" declaration="procedure AAAProc;" type="procedure">

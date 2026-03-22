@@ -1,41 +1,41 @@
 <unit name="ok_inherited_descriptions">
   <structure name="TClassA" name_with_generic="TClassA" type="class">
-    <description><detailed>This description is only on TClassA, TClassB, TClassC, and TClassD.</detailed></description>
+    <description><abstract>This description is only on TClassA, TClassB, TClassC, and TClassD.</abstract></description>
     <ancestor name="TObject" declaration="TObject" />
     <routine name="Proc" declaration="procedure Proc; virtual;" visibility="public" type="procedure">
-      <description><detailed>This description is only on TClassA.Proc.</detailed></description>
+      <description><abstract>This description is only on TClassA.Proc.</abstract></description>
     </routine>
     <property name="Prop" declaration="property Prop: string read FValue;" visibility="public" indexdecl="" type="string" reader="FValue" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
-      <description><detailed>This description is only on TClassA.Prop.</detailed></description>
+      <description><abstract>This description is only on TClassA.Prop.</abstract></description>
     </property>
   </structure>
   <structure name="IInterfaceB" name_with_generic="IInterfaceB" type="interface">
-    <description><detailed>This description is only on IInterfaceB.</detailed></description>
+    <description><abstract>This description is only on IInterfaceB.</abstract></description>
     <ancestor name="IInterface" declaration="IInterface" />
     <routine name="Proc" declaration="procedure Proc; override;" visibility="public" type="procedure">
-      <description><detailed>This description is only on IInterfaceB.Proc.</detailed></description>
+      <description><abstract>This description is only on IInterfaceB.Proc.</abstract></description>
     </routine>
     <property name="Prop" declaration="property Prop read FValue;" visibility="public" indexdecl="" type="" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
-      <description><detailed>This description is only on IInterfaceB.Prop.</detailed></description>
+      <description><abstract>This description is only on IInterfaceB.Prop.</abstract></description>
     </property>
   </structure>
   <structure name="TClassB" name_with_generic="TClassB" type="class">
     <ancestor name="TClassA" declaration="TClassA" />
     <ancestor name="IInterfaceB" declaration="IInterfaceB" />
     <routine name="Proc" declaration="procedure Proc; override;" visibility="public" type="procedure">
-      <description><detailed>This description is only on TClassB.Proc, TClassC.Proc and TClassD.Proc.</detailed></description>
+      <description><abstract>This description is only on TClassB.Proc, TClassC.Proc and TClassD.Proc.</abstract></description>
     </routine>
     <property name="Prop" declaration="property Prop read FValue;" visibility="public" indexdecl="" type="" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
-      <description><detailed>This description is only on TClassB.Prop, TClassC.Proc and TClassD.Proc.</detailed></description>
+      <description><abstract>This description is only on TClassB.Prop, TClassC.Proc and TClassD.Proc.</abstract></description>
     </property>
   </structure>
   <structure name="IInterfaceC" name_with_generic="IInterfaceC" type="interface">
     <ancestor name="IInterface" declaration="IInterface" />
     <routine name="Proc" declaration="procedure Proc; override;" visibility="public" type="procedure">
-      <description><detailed>This description is only on TClassC.Proc and TClassD.Proc.</detailed></description>
+      <description><abstract>This description is only on TClassC.Proc and TClassD.Proc.</abstract></description>
     </routine>
     <property name="Prop" declaration="property Prop read FValue;" visibility="public" indexdecl="" type="" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
-      <description><detailed>This description is only on TClassC.Prop and <code>TClassD.Prop</code>.</detailed></description>
+      <description><abstract>This description is only on TClassC.Prop and <code>TClassD.Prop</code>.</abstract></description>
     </property>
   </structure>
   <structure name="TClassC" name_with_generic="TClassC" type="class">
@@ -44,14 +44,14 @@
     <routine name="Proc" declaration="procedure Proc; override;" visibility="public" type="procedure">
     </routine>
     <routine name="NotInheritedProc" declaration="procedure NotInheritedProc;" visibility="public" type="procedure">
-      <description><detailed>This description is only on TClassC.NotInheritedProc.</detailed></description>
+      <description><abstract>This description is only on TClassC.NotInheritedProc.</abstract></description>
     </routine>
     <variable name="FOtherValue" declaration="FOtherValue: string;" visibility="protected">
     </variable>
     <property name="Prop" declaration="property Prop read FValue;" visibility="public" indexdecl="" type="" reader="" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
     <property name="NotInheritedProp" declaration="property NotInheritedProp: string read FOtherValue;" visibility="public" indexdecl="" type="string" reader="FOtherValue" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
-      <description><detailed>This description is only on TClassC.NotInheritedProp.</detailed></description>
+      <description><abstract>This description is only on TClassC.NotInheritedProp.</abstract></description>
     </property>
   </structure>
   <structure name="TClassD" name_with_generic="TClassD" type="class">

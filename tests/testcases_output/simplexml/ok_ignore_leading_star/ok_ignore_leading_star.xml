@@ -1,5 +1,5 @@
 <unit name="ok_ignore_leading_star">
   <constant name="A" declaration="A = 1;">
-    <description><detailed>--ignore-leading=* works with --staronly</detailed></description>
+    <description><abstract>--ignore-leading=* works with --staronly</abstract></description>
   </constant>
 </unit>

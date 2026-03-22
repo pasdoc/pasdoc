@@ -1,5 +1,5 @@
 <unit name="ok_links_2">
-  <description><detailed>Helper unit for test in ok_links.</detailed></description>
+  <description><abstract>Helper unit for test in ok_links.</abstract></description>
   <routine name="MyOtherProc" declaration="procedure MyOtherProc;" type="procedure">
   </routine>
   <routine name="MyProc" declaration="procedure MyProc;" type="procedure">

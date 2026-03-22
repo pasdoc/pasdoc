@@ -1,29 +1,29 @@
 <unit name="ok_multiple_vars">
   <variable name="A" declaration="A: Integer;">
-    <description><detailed>Docs for A and B</detailed></description>
+    <description><abstract>Docs for A and B</abstract></description>
   </variable>
   <variable name="B" declaration="B: Integer;">
-    <description><detailed>Docs for A and B</detailed></description>
+    <description><abstract>Docs for A and B</abstract></description>
   </variable>
   <variable name="C" declaration="C: function(A: Integer): boolean;">
-    <description><detailed>Docs for C and D</detailed></description>
+    <description><abstract>Docs for C and D</abstract></description>
   </variable>
   <variable name="D" declaration="D: function(A: Integer): boolean;">
-    <description><detailed>Docs for C and D</detailed></description>
+    <description><abstract>Docs for C and D</abstract></description>
   </variable>
   <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <variable name="A" declaration="A: Integer;" visibility="public">
-      <description><detailed>Docs for A and B</detailed></description>
+      <description><abstract>Docs for A and B</abstract></description>
     </variable>
     <variable name="B" declaration="B: Integer;" visibility="public">
-      <description><detailed>Docs for A and B</detailed></description>
+      <description><abstract>Docs for A and B</abstract></description>
     </variable>
     <variable name="C" declaration="C: function(A: Integer): boolean;" visibility="public">
-      <description><detailed>Docs for C and D</detailed></description>
+      <description><abstract>Docs for C and D</abstract></description>
     </variable>
     <variable name="D" declaration="D: function(A: Integer): boolean;" visibility="public">
-      <description><detailed>Docs for C and D</detailed></description>
+      <description><abstract>Docs for C and D</abstract></description>
     </variable>
   </structure>
 </unit>

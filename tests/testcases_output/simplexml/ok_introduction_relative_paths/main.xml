@@ -1,9 +1,9 @@
 <unit name="main">
   <type name="SomeType" declaration="SomeType = integer;">
-    <description><detailed>SomeType description.</detailed></description>
+    <description><abstract>SomeType description.</abstract></description>
   </type>
   <structure name="SomeClass" name_with_generic="SomeClass" type="class">
-    <description><detailed>SomeClass description. program test;
+    <description><abstract>SomeClass description.</abstract><detailed> program test;
 
 begin
   // file with external code
@@ -11,7 +11,7 @@ end.
 </detailed></description>
     <ancestor name="TObject" declaration="TObject" />
     <variable name="Field" declaration="Field: integer;" visibility="public">
-      <description><detailed>Field description.</detailed></description>
+      <description><abstract>Field description.</abstract></description>
     </variable>
   </structure>
 </unit>

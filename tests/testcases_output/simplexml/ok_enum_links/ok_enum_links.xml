@@ -1,29 +1,29 @@
 <unit name="ok_enum_links">
   <routine name="Foo" declaration="procedure Foo;" type="procedure">
-    <description><detailed>Test of links. TMyEnum, me1, me2, me3. TMyScopedEnum, TMyScopedEnum.mse1, TMyScopedEnum.mse2, TMyScopedEnum.mse3. TMyScopedEnum, TODO: these should NOT work (scoped enum members namespace is tighter), but for now they are linked too: mse1, mse2, mse3.</detailed></description>
+    <description><abstract>Test of links.</abstract><detailed> TMyEnum, me1, me2, me3. TMyScopedEnum, TMyScopedEnum.mse1, TMyScopedEnum.mse2, TMyScopedEnum.mse3. TMyScopedEnum, TODO: these should NOT work (scoped enum members namespace is tighter), but for now they are linked too: mse1, mse2, mse3.</detailed></description>
   </routine>
   <type name="TMyEnum" declaration="TMyEnum = (...);">
-    <description><detailed>My enumerated type description.</detailed></description>
+    <description><abstract>My enumerated type description.</abstract></description>
     <constant name="me1" declaration="me1">
-      <description><detailed>My enumerated value 1 description.</detailed></description>
+      <description><abstract>My enumerated value 1 description.</abstract></description>
     </constant>
     <constant name="me2" declaration="me2">
-      <description><detailed>My enumerated value 2 description.</detailed></description>
+      <description><abstract>My enumerated value 2 description.</abstract></description>
     </constant>
     <constant name="me3" declaration="me3">
-      <description><detailed>My enumerated value 3 description.</detailed></description>
+      <description><abstract>My enumerated value 3 description.</abstract></description>
     </constant>
   </type>
   <type name="TMyScopedEnum" declaration="TMyScopedEnum = (...);">
-    <description><detailed>My enumerated type description.</detailed></description>
+    <description><abstract>My enumerated type description.</abstract></description>
     <constant name="mse1" declaration="mse1">
-      <description><detailed>My enumerated value 1 description.</detailed></description>
+      <description><abstract>My enumerated value 1 description.</abstract></description>
     </constant>
     <constant name="mse2" declaration="mse2">
-      <description><detailed>My enumerated value 2 description.</detailed></description>
+      <description><abstract>My enumerated value 2 description.</abstract></description>
     </constant>
     <constant name="mse3" declaration="mse3">
-      <description><detailed>My enumerated value 3 description.</detailed></description>
+      <description><abstract>My enumerated value 3 description.</abstract></description>
     </constant>
   </type>
 </unit>

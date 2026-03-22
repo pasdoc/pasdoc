@@ -15,27 +15,27 @@
   </structure>
   <structure name="TRec3" name_with_generic="TRec3" type="record">
     <variable name="A" declaration="A: Integer;" visibility="public">
-      <description><detailed>Descr of A</detailed></description>
+      <description><abstract>Descr of A</abstract></description>
     </variable>
     <variable name="B" declaration="B: ShortString;" visibility="public">
-      <description><detailed>Descr of B</detailed></description>
+      <description><abstract>Descr of B</abstract></description>
     </variable>
     <variable name="C" declaration="C: Integer" visibility="public">
-      <description><detailed>Description of C</detailed></description>
+      <description><abstract>Description of C</abstract></description>
     </variable>
     <variable name="D" declaration="D: Integer;" visibility="public">
-      <description><detailed>Descr of D, E, F</detailed></description>
+      <description><abstract>Descr of D, E, F</abstract></description>
     </variable>
     <variable name="E" declaration="E: Integer;" visibility="public">
-      <description><detailed>Descr of D, E, F</detailed></description>
+      <description><abstract>Descr of D, E, F</abstract></description>
     </variable>
     <variable name="F" declaration="F: Integer;" visibility="public">
-      <description><detailed>Descr of D, E, F</detailed></description>
+      <description><abstract>Descr of D, E, F</abstract></description>
     </variable>
     <variable name="G" declaration="G: ShortString;" visibility="public">
     </variable>
     <variable name="H" declaration="H: Integer" visibility="public">
-      <description><detailed>Descr of H</detailed></description>
+      <description><abstract>Descr of H</abstract></description>
     </variable>
   </structure>
   <structure name="TRec4" name_with_generic="TRec4" type="record">

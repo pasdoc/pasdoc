@@ -4,7 +4,7 @@
     <property name="MyProperty" declaration="property MyProperty[S: string]: Integer read GetMyProperty;" visibility="public" indexdecl="[S:string]" type="Integer" reader="GetMyProperty" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
     <property name="SelLength" declaration="property SelLength: Integer read GetSelLength write SetSelLength;" visibility="public" indexdecl="" type="Integer" reader="GetSelLength" writer="SetSelLength" default_in_class="False" default_value="" nodefault="False"   stored="">
-      <description><detailed>From https://github.com/pasdoc/pasdoc/issues/174</detailed></description>
+      <description><abstract>From https://github.com/pasdoc/pasdoc/issues/174</abstract></description>
     </property>
     <property name="SelText" declaration="property SelText: string read GetSelText;" visibility="public" indexdecl="" type="string" reader="GetSelText" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>

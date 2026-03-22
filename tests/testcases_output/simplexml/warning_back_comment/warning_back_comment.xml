@@ -1,20 +1,20 @@
 <unit name="warning_back_comment">
-  <description><detailed>Descr of unit warning_back_comment</detailed></description>
+  <description><abstract>Descr of unit warning_back_comment</abstract></description>
   <variable name="V1" declaration="V1: Integer;">
-    <description><detailed>descr of V1 and V2</detailed></description>
+    <description><abstract>descr of V1 and V2</abstract></description>
   </variable>
   <variable name="V2" declaration="V2: Integer;">
-    <description><detailed>descr of V1 and V2</detailed></description>
+    <description><abstract>descr of V1 and V2</abstract></description>
   </variable>
   <variable name="V4" declaration="V4: string;">
-    <description><detailed>descr of V4 after a keyword</detailed></description>
+    <description><abstract>descr of V4 after a keyword</abstract></description>
   </variable>
   <type name="T" declaration="T = byte;">
   </type>
   <type name="TMyEnum" declaration="TMyEnum = (...);">
-    <description><detailed>Descr of TMyEnum</detailed></description>
+    <description><abstract>Descr of TMyEnum</abstract></description>
     <constant name="meOne" declaration="meOne">
-      <description><detailed>Descr of meOne</detailed></description>
+      <description><abstract>Descr of meOne</abstract></description>
     </constant>
   </type>
 </unit>

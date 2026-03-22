@@ -1,5 +1,5 @@
 <unit name="ok_objc">
-  <description><detailed>Objective-C/Objective-Pascal FPC syntax tests. See https://github.com/pasdoc/pasdoc/issues/220 https://wiki.freepascal.org/FPC_PasCocoa</detailed></description>
+  <description><abstract>Objective-C/Objective-Pascal FPC syntax tests.</abstract><detailed> See https://github.com/pasdoc/pasdoc/issues/220 https://wiki.freepascal.org/FPC_PasCocoa</detailed></description>
   <structure name="TSomeCocoaClassObject" name_with_generic="TSomeCocoaClassObject" type="objcclass">
     <ancestor name="NSObject" declaration="NSObject" />
     <routine name="SomeFunction" declaration="procedure SomeFunction(someparameter: SomeType); message 'SomeFunction:';" visibility="public" type="procedure">
@@ -15,7 +15,7 @@
   <structure name="NSView" name_with_generic="NSView" type="objcclass">
     <ancestor name="NSResponder" declaration="NSResponder" />
     <routine name="initWithFrame" declaration="function initWithFrame(rect : NSRect): id; message 'initWithFrame:';" visibility="public" type="function">
-      <description><detailed>private field</detailed></description>
+      <description><abstract>private field</abstract></description>
     </routine>
     <routine name="addSubview" declaration="procedure addSubview(aview: NSView); message 'addSubview:';" visibility="public" type="procedure">
     </routine>

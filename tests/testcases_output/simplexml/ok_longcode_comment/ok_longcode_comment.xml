@@ -1,7 +1,7 @@
 <unit name="ok_longcode_comment">
-  <description><detailed>
+  <description><abstract>
 { Some multiline
   comment } 
 { Some multiline
-  comment, again } Should be empty (without error):  Should be empty (without error): </detailed></description>
+  comment, again } Should be empty (without error):  Should be empty (without error): </abstract></description>
 </unit>

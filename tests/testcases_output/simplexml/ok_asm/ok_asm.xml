@@ -1,5 +1,5 @@
 <unit name="ok_asm">
-  <description><detailed>Test parsing asm block with &quot; inside. See https://github.com/pasdoc/pasdoc/issues/69</detailed></description>
+  <description><abstract>Test parsing asm block with &quot; inside.</abstract><detailed> See https://github.com/pasdoc/pasdoc/issues/69</detailed></description>
   <routine name="Foo" declaration="procedure Foo;" type="procedure">
   </routine>
 </unit>

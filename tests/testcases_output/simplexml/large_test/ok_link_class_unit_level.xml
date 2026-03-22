@@ -1,11 +1,11 @@
 <unit name="ok_link_class_unit_level">
-  <description><detailed>This is a link from unit's description to an identifier inside the same unit: some procedure Foo, some class TBar.</detailed></description>
+  <description><abstract>This is a link from unit's description to an identifier inside the same unit: some procedure Foo, some class TBar.</abstract></description>
   <routine name="Foo" declaration="procedure Foo;" type="procedure">
   </routine>
   <routine name="Xyz" declaration="procedure Xyz;" type="procedure">
   </routine>
   <structure name="TBar" name_with_generic="TBar" type="class">
-    <description><detailed>These are links from class' description to an identifiers inside the same class. Note that @links here first check *inside* the class, then outside (i.e. in the whole unit). That's why link to Foo below is a link to a method Foo inside this class, not to a global procedure Foo. Links inside the class: Foo, Sthg. Links outside of the class: ok_link_class_unit_level.Foo, Xyz. Note that I has to qualify Foo with unit's name and write &quot;ok_link_class_unit_level.Foo&quot; to get a link to procedure in the unit. Just like I would do in a Pascal code.</detailed></description>
+    <description><abstract>These are links from class' description to an identifiers inside the same class.</abstract><detailed> Note that @links here first check *inside* the class, then outside (i.e. in the whole unit). That's why link to Foo below is a link to a method Foo inside this class, not to a global procedure Foo. Links inside the class: Foo, Sthg. Links outside of the class: ok_link_class_unit_level.Foo, Xyz. Note that I has to qualify Foo with unit's name and write &quot;ok_link_class_unit_level.Foo&quot; to get a link to procedure in the unit. Just like I would do in a Pascal code.</detailed></description>
     <ancestor name="TObject" declaration="TObject" />
     <routine name="Foo" declaration="procedure Foo;" visibility="public" type="procedure">
     </routine>

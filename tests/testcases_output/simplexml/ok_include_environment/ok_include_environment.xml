@@ -10,31 +10,31 @@
 
 </detailed></description>
   <constant name="MacDATE" declaration="MacDATE = {$I %DATE%};">
-    <description><detailed>Inserts the current date.</detailed></description>
+    <description><abstract>Inserts the current date.</abstract></description>
   </constant>
   <constant name="MacFPCTARGET" declaration="MacFPCTARGET = {$I %FPCTARGET%};">
-    <description><detailed>Inserts the target CPU name. (deprecated, use FPCTARGETCPU)</detailed></description>
+    <description><abstract>Inserts the target CPU name.</abstract><detailed> (deprecated, use FPCTARGETCPU)</detailed></description>
   </constant>
   <constant name="MacFPCTARGETCPU" declaration="MacFPCTARGETCPU = {$I %FPCTARGETCPU%};">
-    <description><detailed>Inserts the target CPU name.</detailed></description>
+    <description><abstract>Inserts the target CPU name.</abstract></description>
   </constant>
   <constant name="MacFPCTARGETOS" declaration="MacFPCTARGETOS = {$I %FPCTARGETOS%};">
-    <description><detailed>Inserts the target OS name.</detailed></description>
+    <description><abstract>Inserts the target OS name.</abstract></description>
   </constant>
   <constant name="MacFPCVERSION" declaration="MacFPCVERSION = {$I %FPCVERSION%};">
-    <description><detailed>Current compiler version number.</detailed></description>
+    <description><abstract>Current compiler version number.</abstract></description>
   </constant>
   <constant name="MacFILE" declaration="MacFILE = {$I %FILE%};">
-    <description><detailed>Filename in which the directive is found.</detailed></description>
+    <description><abstract>Filename in which the directive is found.</abstract></description>
   </constant>
   <constant name="MacLINE" declaration="MacLINE = {$I %LINE%};">
-    <description><detailed>Linenumer on which the directive is found.</detailed></description>
+    <description><abstract>Linenumer on which the directive is found.</abstract></description>
   </constant>
   <constant name="MacTIME" declaration="MacTIME = {$I %TIME%};">
-    <description><detailed>Current time.</detailed></description>
+    <description><abstract>Current time.</abstract></description>
   </constant>
   <constant name="MacUSEREnv" declaration="MacUSEREnv = {$I %USER%};">
-    <description><detailed>If xxx inside %xxx% is none of the above, then it is assumed to be the name of an environment variable. Its value will be fetched.</detailed></description>
+    <description><abstract>If xxx inside %xxx% is none of the above, then it is assumed to be the name of an environment variable.</abstract><detailed> Its value will be fetched.</detailed></description>
   </constant>
   <constant name="MacPathEnv" declaration="MacPathEnv = {$I %PATH%};">
   </constant>

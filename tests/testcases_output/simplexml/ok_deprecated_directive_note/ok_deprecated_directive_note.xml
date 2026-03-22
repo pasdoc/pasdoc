@@ -5,7 +5,7 @@
   <routine name="MyProc2" declaration="procedure MyProc2; deprecated;" deprecated="true" type="procedure">
   </routine>
   <routine name="MyProc3" declaration="procedure MyProc3; deprecated #72 #$65 'llo';" deprecated_note="Hello" deprecated="true" type="procedure">
-    <description><detailed>Deprecated note should say 'Hello'. Handled Ok, we convert and sum string tokens correctly.</detailed></description>
+    <description><abstract>Deprecated note should say 'Hello'.</abstract><detailed> Handled Ok, we convert and sum string tokens correctly.</detailed></description>
   </routine>
   <constant name="TestConstDeprecated1" declaration="TestConstDeprecated1 = 1 deprecated 'Deprecation note for constant';" deprecated_note="Deprecation note for constant" deprecated="true">
   </constant>

@@ -65,10 +65,22 @@
 \item[\texttt{\begin{ttfamily}TOriginalType2\end{ttfamily} Record}]TOriginalType2 abstract description.
 \item[\texttt{\begin{ttfamily}TOriginalType3\end{ttfamily} Record}]TOriginalType3 abstract description.
 \item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
-\item[\texttt{\begin{ttfamily}TMyContainer\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TMyContainer\end{ttfamily} Class}]This class manages a \begin{ttfamily}Controls\end{ttfamily}(\ref{ok_type_aliases.TMyContainer-Controls}) list.
 \end{description}
 \begin{description}
-\item[\texttt{Test}]
+\item[\texttt{Test}]Also linking using @tags to arbitrary qualified type identifiers should work:
+
+\begin{itemize}
+\item \begin{ttfamily}TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType\end{ttfamily}(\ref{ok_type_aliases.TMyClass-TMyNestedClass-TAnotherNestedClass-TOriginalType})
+\item \begin{ttfamily}ok{\_}type{\_}aliases.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType\end{ttfamily}(\ref{ok_type_aliases.TMyClass-TMyNestedClass-TAnotherNestedClass-TOriginalType})
+\item \begin{ttfamily}TMyClass.TMyNestedClass.TAnotherNestedClass\end{ttfamily}(\ref{ok_type_aliases.TMyClass-TMyNestedClass-TAnotherNestedClass})
+\item \begin{ttfamily}ok{\_}type{\_}aliases.TMyClass.TMyNestedClass.TAnotherNestedClass\end{ttfamily}(\ref{ok_type_aliases.TMyClass-TMyNestedClass-TAnotherNestedClass})
+\item \begin{ttfamily}TMyClass.TMyNestedClass\end{ttfamily}(\ref{ok_type_aliases.TMyClass-TMyNestedClass})
+\item \begin{ttfamily}ok{\_}type{\_}aliases.TMyClass.TMyNestedClass\end{ttfamily}(\ref{ok_type_aliases.TMyClass-TMyNestedClass})
+\item \begin{ttfamily}TMyClass\end{ttfamily}(\ref{ok_type_aliases.TMyClass})
+\item \begin{ttfamily}ok{\_}type{\_}aliases.TMyClass\end{ttfamily}(\ref{ok_type_aliases.TMyClass})
+\item \begin{ttfamily}ok{\_}type{\_}aliases\end{ttfamily}(\ref{ok_type_aliases})
+\end{itemize}
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
 \subsection*{TOriginalType Record}

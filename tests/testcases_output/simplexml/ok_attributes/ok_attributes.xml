@@ -1,18 +1,18 @@
 <unit name="ok_attributes">
   <structure name="NonEmptyString" name_with_generic="NonEmptyString" type="class">
-    <description><detailed>Delphi attributes test from http://www.malcolmgroves.com/blog/?p=530 Attribute class, without Attribute suffix, PasDoc should link to it</detailed></description>
+    <description><abstract>Delphi attributes test from http://www.malcolmgroves.com/blog/?p=530 Attribute class, without Attribute suffix, PasDoc should link to it</abstract></description>
     <ancestor name="TCustomAttribute" declaration="TCustomAttribute" />
     <routine name="Create" declaration="constructor Create(const AMessage: String);" visibility="public" type="constructor">
     </routine>
   </structure>
   <structure name="MinimumIntegerAttribute" name_with_generic="MinimumIntegerAttribute" type="class">
-    <description><detailed>Attribute class, with Attribute suffix, PasDoc should link to it too</detailed></description>
+    <description><abstract>Attribute class, with Attribute suffix, PasDoc should link to it too</abstract></description>
     <ancestor name="TCustomAttribute" declaration="TCustomAttribute" />
     <routine name="Create" declaration="constructor Create(const MinInt: Integer; const AMessage: String);" visibility="public" type="constructor">
     </routine>
   </structure>
   <structure name="MaximumIntegerAttribute" name_with_generic="MaximumIntegerAttribute" type="class">
-    <description><detailed>Attribute class, with Attribute suffix, PasDoc should link to it too</detailed></description>
+    <description><abstract>Attribute class, with Attribute suffix, PasDoc should link to it too</abstract></description>
     <ancestor name="TCustomAttribute" declaration="TCustomAttribute" />
     <routine name="Create" declaration="constructor Create(const MaxInt: Integer; const AMessage: String);" visibility="public" type="constructor">
     </routine>
@@ -25,11 +25,11 @@
     </property>
   </structure>
   <structure name="IUIContainer" name_with_generic="IUIContainer" type="interface">
-    <description><detailed>Test that GUIDs are handled gracefully</detailed></description>
+    <description><abstract>Test that GUIDs are handled gracefully</abstract></description>
     <ancestor name="IInterface" declaration="IInterface" />
   </structure>
   <structure name="TMyClass1" name_with_generic="TMyClass1" type="class">
-    <description><detailed>Tests from https://github.com/pasdoc/pasdoc/issues/179</detailed></description>
+    <description><abstract>Tests from https://github.com/pasdoc/pasdoc/issues/179</abstract></description>
     <ancestor name="TObject" declaration="TObject" />
     <variable name="FLockCount" declaration="FLockCount: Integer;" visibility="public">
     </variable>

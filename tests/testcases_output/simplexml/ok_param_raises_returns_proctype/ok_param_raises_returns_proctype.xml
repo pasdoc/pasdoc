@@ -1,9 +1,9 @@
 <unit name="ok_param_raises_returns_proctype">
   <type name="TMyProcedure" declaration="TMyProcedure = procedure(A: integer);">
-    <description><detailed> </detailed></description>
+    <description><abstract> </abstract></description>
   </type>
   <type name="TMyMethod" declaration="TMyMethod = function(A: integer): boolean of object;">
-    <description><detailed>  </detailed></description>
+    <description><abstract>  </abstract></description>
   </type>
   <structure name="EFoo" name_with_generic="EFoo" type="class">
     <ancestor name="Exception" declaration="Exception" />

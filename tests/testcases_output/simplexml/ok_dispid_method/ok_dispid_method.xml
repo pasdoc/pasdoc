@@ -1,5 +1,5 @@
 <unit name="ok_dispid_method">
-  <description><detailed>Testcase for bug &quot;[ 1403317 ] Error parsing automatically generated unit&quot;</detailed></description>
+  <description><abstract>Testcase for bug &quot;[ 1403317 ] Error parsing automatically generated unit&quot;</abstract></description>
   <structure name="INetFwOpenPortsDisp" name_with_generic="INetFwOpenPortsDisp" type="dispinterface">
     <ancestor name="IDispInterface" declaration="IDispInterface" />
     <routine name="Add" declaration="procedure Add(const Port: INetFwOpenPort); dispid 2; " visibility="public" type="procedure">

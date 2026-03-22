@@ -1,5 +1,5 @@
 <unit name="ok_vorbisfile">
-  <description><detailed>API of vorbisfile library. Usually libvorbisfile.so under Unixes or vorbisfile.dll under Windows. This is just a quick translation of /usr/include/vorbis/vorbisfile.h header.</detailed></description>
+  <description><abstract>API of vorbisfile library.</abstract><detailed> Usually libvorbisfile.so under Unixes or vorbisfile.dll under Windows. This is just a quick translation of /usr/include/vorbis/vorbisfile.h header.</detailed></description>
   <constant name="NOTOPEN" declaration="NOTOPEN   = 0;">
   </constant>
   <constant name="PARTOPEN" declaration="PARTOPEN  = 1;">
@@ -42,7 +42,7 @@
     <variable name="datasource" declaration="datasource: Pointer;" visibility="public">
     </variable>
     <variable name="seekable" declaration="seekable: Cint;" visibility="public">
-      <description><detailed>* Pointer to a FILE *, etc. *</detailed></description>
+      <description><abstract>* Pointer to a FILE *, etc.</abstract><detailed> *</detailed></description>
     </variable>
     <variable name="offset" declaration="offset: Int64;" visibility="public">
     </variable>
@@ -61,12 +61,12 @@
     <variable name="pcmlengths" declaration="pcmlengths: PInt64;" visibility="public">
     </variable>
     <variable name="vi" declaration="vi: Pvorbis_info;" visibility="public">
-      <description><detailed>* overloaded to maintain binary compatability; x2 size, stores both beginning and end values *</detailed></description>
+      <description><abstract>* overloaded to maintain binary compatability; x2 size, stores both beginning and end values *</abstract></description>
     </variable>
     <variable name="vc" declaration="vc: Pvorbis_comment;" visibility="public">
     </variable>
     <variable name="pcm_offset" declaration="pcm_offset: Int64;" visibility="public">
-      <description><detailed>* Decoding working state local storage *</detailed></description>
+      <description><abstract>* Decoding working state local storage *</abstract></description>
     </variable>
     <variable name="ready_state" declaration="ready_state: CInt;" visibility="public">
     </variable>
@@ -81,13 +81,13 @@
     <variable name="os" declaration="os: Togg_stream_state;" visibility="public">
     </variable>
     <variable name="vd" declaration="vd: Tvorbis_dsp_state;" visibility="public">
-      <description><detailed>* take physical pages, weld into a logical stream of packets *</detailed></description>
+      <description><abstract>* take physical pages, weld into a logical stream of packets *</abstract></description>
     </variable>
     <variable name="vb" declaration="vb: Tvorbis_block;" visibility="public">
-      <description><detailed>* central working state for the packet-&gt;PCM decoder *</detailed></description>
+      <description><abstract>* central working state for the packet-&gt;PCM decoder *</abstract></description>
     </variable>
     <variable name="callbacks" declaration="callbacks: Tov_callbacks;" visibility="public">
-      <description><detailed>* local working space for packet-&gt;PCM decode *</detailed></description>
+      <description><abstract>* local working space for packet-&gt;PCM decode *</abstract></description>
     </variable>
   </structure>
 </unit>

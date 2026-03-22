@@ -3,22 +3,22 @@
     <description><abstract><code>TMeasurementPointItem</code> is used to specify the real-world coordinates of a pixel in a bitmap.</abstract></description>
     <ancestor name="TCollectionItem" declaration="TCollectionItem" />
     <routine name="SetX" declaration="procedure SetX(const Value: double);" visibility="private" type="procedure">
-      <description><detailed>See X.</detailed></description>
+      <description><abstract>See X.</abstract></description>
     </routine>
     <routine name="SetY" declaration="procedure SetY(const Value: double);" visibility="private" type="procedure">
-      <description><detailed>See Y.</detailed></description>
+      <description><abstract>See Y.</abstract></description>
     </routine>
     <variable name="FX" declaration="FX: double;" visibility="private">
-      <description><detailed><code>FX</code>: double; See X.</detailed></description>
+      <description><abstract><code>FX</code>: double; See X.</abstract></description>
     </variable>
     <variable name="FY" declaration="FY: double;" visibility="private">
-      <description><detailed><code>FY</code>: double; See Y.</detailed></description>
+      <description><abstract><code>FY</code>: double; See Y.</abstract></description>
     </variable>
     <property name="X" declaration="property X: double read FX write SetX;" visibility="published" indexdecl="" type="double" reader="FX" writer="SetX" default_in_class="False" default_value="" nodefault="False"   stored="">
-      <description><detailed><code>X</code> is the X real-world coordinate.</detailed></description>
+      <description><abstract><code>X</code> is the X real-world coordinate.</abstract></description>
     </property>
     <property name="Y" declaration="property Y: double read FY write SetY;" visibility="published" indexdecl="" type="double" reader="FY" writer="SetY" default_in_class="False" default_value="" nodefault="False"   stored="">
-      <description><detailed><code>Y</code> is the Y real-world coordinate.</detailed></description>
+      <description><abstract><code>Y</code> is the Y real-world coordinate.</abstract></description>
     </property>
   </structure>
 </unit>

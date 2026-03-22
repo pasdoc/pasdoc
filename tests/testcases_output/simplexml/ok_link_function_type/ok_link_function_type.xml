@@ -1,6 +1,6 @@
 <unit name="ok_link_function_type">
   <routine name="Test" declaration="procedure Test(F: TMyFunction; R: TMyRecord);" type="procedure">
-    <description><detailed>Give TMyFunction and TMyRecord to test it.</detailed></description>
+    <description><abstract>Give TMyFunction and TMyRecord to test it.</abstract></description>
   </routine>
   <type name="TMyFunction" declaration="TMyFunction = function(A: Integer): Integer;">
   </type>

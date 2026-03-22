@@ -1,5 +1,5 @@
 <unit name="ok_prefix_identifier">
-  <description><detailed>Test parsing identifiers declared as &amp;xxx, where &quot;xxx&quot; may be a reserved word. See 
+  <description><abstract>Test parsing identifiers declared as &amp;xxx, where &quot;xxx&quot; may be a reserved word.</abstract><detailed> See 
 
 <unorderedlist>
 <item>https://github.com/pasdoc/pasdoc/issues/28</item>

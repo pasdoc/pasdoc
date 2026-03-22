@@ -85,13 +85,56 @@
 \index{ok{\_}longcode{\_}indentation}
 \section{Overview}
 \begin{description}
-\item[\texttt{Foo1}]
-\item[\texttt{Foo2}]
-\item[\texttt{Foo3}]
-\item[\texttt{Foo4}]
-\item[\texttt{Foo5}]
-\item[\texttt{Foo6}]
-\item[\texttt{Foo7}]
+\item[\texttt{Foo1}]Should cut nothing:
+
+\texttt{one\\\nopagebreak[3]
+~~two\\\nopagebreak[3]
+~~~~three\\
+}
+\item[\texttt{Foo2}]Should cut 4 spaces:
+
+\texttt{\\\nopagebreak[3]
+one\\\nopagebreak[3]
+two\\\nopagebreak[3]
+three\\
+}
+\item[\texttt{Foo3}]Should cut 2 spaces:
+
+\texttt{\\\nopagebreak[3]
+~~one\\\nopagebreak[3]
+two\\\nopagebreak[3]
+~~three\\
+}
+\item[\texttt{Foo4}]Should cut nothing (there's a tab here):
+
+\texttt{\\\nopagebreak[3]
+~~~~one\\\nopagebreak[3]
+	two\\\nopagebreak[3]
+~~~~three\\
+}
+\item[\texttt{Foo5}]Should cut tab + 2 spaces:
+
+\texttt{\\\nopagebreak[3]
+one\\\nopagebreak[3]
+~~two\\\nopagebreak[3]
+three\\
+}
+\item[\texttt{Foo6}]Should cut 4 spaces (there's trailing whitespace in 1st lines here, that should be ignored):
+
+\texttt{\\\nopagebreak[3]
+~~~~~~~~~~~~~~~~~\\\nopagebreak[3]
+~~~~~~~~~~~~~~~~~~\\\nopagebreak[3]
+one\\
+}
+\item[\texttt{Foo7}]Should cut 4 spaces (empty line doesn't shorten IndentationPrefix):
+
+\texttt{\\\nopagebreak[3]
+}\textbf{if}\texttt{~something~}\textbf{then}\texttt{\\\nopagebreak[3]
+}\textbf{begin}\texttt{\\\nopagebreak[3]
+~~\textit{//~empty~line~below}\\\nopagebreak[3]
+\\\nopagebreak[3]
+}\textbf{end}\texttt{;\\
+}
 \end{description}
 \section{Functions and Procedures}
 \ifpdf

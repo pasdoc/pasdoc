@@ -1,49 +1,49 @@
 <unit name="ok_parse_impl">
-  <description><detailed>Parse implementation section. Must be tested with --implementation-comments=join --define PASDOC</detailed></description>
+  <description><abstract>Parse implementation section.</abstract><detailed> Must be tested with --implementation-comments=join --define PASDOC</detailed></description>
   <routine name="Foo" declaration="procedure Foo;" type="procedure">
-    <description><detailed>This is Foo (intf) This is Foo (impl)</detailed></description>
+    <description><abstract>This is Foo (intf) This is Foo (impl)</abstract></description>
   </routine>
   <routine name="Bar" declaration="procedure Bar;" type="procedure">
-    <description><detailed>This is Bar (impl)</detailed></description>
+    <description><abstract>This is Bar (impl)</abstract></description>
   </routine>
   <routine name="Laz" declaration="procedure Laz;" type="procedure">
-    <description><detailed>This is Laz And it must not be doubled</detailed></description>
+    <description><abstract>This is Laz And it must not be doubled</abstract></description>
   </routine>
   <routine name="Dex" declaration="procedure Dex;" type="procedure">
-    <description><detailed>This is Dex described inside method body</detailed></description>
+    <description><abstract>This is Dex described inside method body</abstract></description>
   </routine>
   <routine name="NoDescr" declaration="procedure NoDescr;" type="procedure">
   </routine>
   <routine name="Overloaded" declaration="procedure Overloaded; overload;" type="procedure">
-    <description><detailed>This is overloaded proc #1</detailed></description>
+    <description><abstract>This is overloaded proc #1</abstract></description>
   </routine>
   <routine name="Overloaded" declaration="procedure Overloaded(a: Byte); overload;" type="procedure">
-    <description><detailed>This is overloaded proc #2</detailed></description>
+    <description><abstract>This is overloaded proc #2</abstract></description>
   </routine>
   <routine name=":=" declaration="Operator := (C : TMyType) z : TMyType;" type="operator">
-    <description><detailed>This is assignment operator</detailed></description>
+    <description><abstract>This is assignment operator</abstract></description>
   </routine>
   <structure name="TClass" name_with_generic="TClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <routine name="Create" declaration="constructor Create; overload;" visibility="public" type="constructor">
-      <description><detailed>Creates instance of TClass</detailed></description>
+      <description><abstract>Creates instance of TClass</abstract></description>
     </routine>
     <routine name="Create" declaration="class function Create(const S: string): TClass; overload; static; inline;" visibility="public" type="function">
-      <description><detailed>Static factory</detailed></description>
+      <description><abstract>Static factory</abstract></description>
     </routine>
     <routine name="Destroy" declaration="destructor Destroy;" visibility="public" type="destructor">
-      <description><detailed>Destroys instance of TClass</detailed></description>
+      <description><abstract>Destroys instance of TClass</abstract></description>
     </routine>
     <routine name="Method" declaration="procedure Method;" visibility="public" type="procedure">
-      <description><detailed>Does something</detailed></description>
+      <description><abstract>Does something</abstract></description>
     </routine>
     <routine name="Implicit" declaration="class operator Implicit(const S: string): TClass;" visibility="public" type="operator">
-      <description><detailed>Assignment operator</detailed></description>
+      <description><abstract>Assignment operator</abstract></description>
     </routine>
     <structure name="TInnerClass" visibility="public" name_with_generic="TInnerClass" type="class">
       <ancestor name="TObject" declaration="TObject" />
       <routine name="Method" declaration="procedure Method;" visibility="public" type="procedure">
-        <description><detailed>Method of an inner class</detailed></description>
+        <description><abstract>Method of an inner class</abstract></description>
       </routine>
     </structure>
   </structure>

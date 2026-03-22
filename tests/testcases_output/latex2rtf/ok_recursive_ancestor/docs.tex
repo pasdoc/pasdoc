@@ -62,9 +62,9 @@
 \section{Overview}
 \begin{description}
 \item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
-\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
-\item[\texttt{\begin{ttfamily}TMyInterface\end{ttfamily} Interface}]
-\item[\texttt{\begin{ttfamily}TMyInterface\end{ttfamily} Interface}]
+\item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]Valid Pascal, FPC compiles this (just fix first TMyClass, e.g.
+\item[\texttt{\begin{ttfamily}TMyInterface\end{ttfamily} Interface}]Invalid Pascal, such relation is not allowed, FPC correctly reports: Error: Forward declaration of class "TMyInterface" must be resolved here to use the class as ancestor
+\item[\texttt{\begin{ttfamily}TMyInterface\end{ttfamily} Interface}]Valid Pascal, FPC compiles this (just fix first TMyInterface, e.g.
 \end{description}
 \section{Classes, Interfaces, Objects and Records}
 \subsection*{TMyClass Class}

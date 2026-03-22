@@ -1,33 +1,33 @@
 <unit name="ok_abstract_sealed">
-  <description><detailed>description of <code>ok_abstract_sealed</code></detailed></description>
+  <description><abstract>description of <code>ok_abstract_sealed</code></abstract></description>
   <structure name="TOrdinaryClass" name_with_generic="TOrdinaryClass" type="class">
-    <description><detailed>description of <code>TOrdinaryClass</code></detailed></description>
+    <description><abstract>description of <code>TOrdinaryClass</code></abstract></description>
     <ancestor name="TObject" declaration="TObject" />
     <routine name="AProcedure" declaration="procedure AProcedure;" visibility="public" type="procedure">
-      <description><detailed>description of <code>AProcedure</code></detailed></description>
+      <description><abstract>description of <code>AProcedure</code></abstract></description>
     </routine>
     <variable name="AVariable" declaration="var AVariable: integer;" visibility="public">
-      <description><detailed>description of <code>AVariable</code></detailed></description>
+      <description><abstract>description of <code>AVariable</code></abstract></description>
     </variable>
   </structure>
   <structure name="TAbstractClass" name_with_generic="TAbstractClass" type="class">
-    <description><detailed>description of <code>TAbstractClass</code></detailed></description>
+    <description><abstract>description of <code>TAbstractClass</code></abstract></description>
     <ancestor name="TObject" declaration="TObject" />
     <routine name="AProcedure" declaration="procedure AProcedure;" visibility="public" type="procedure">
-      <description><detailed>description of <code>AProcedure</code></detailed></description>
+      <description><abstract>description of <code>AProcedure</code></abstract></description>
     </routine>
     <variable name="AVariable" declaration="var AVariable: integer;" visibility="public">
-      <description><detailed>description of <code>AVariable</code></detailed></description>
+      <description><abstract>description of <code>AVariable</code></abstract></description>
     </variable>
   </structure>
   <structure name="TSealedClass" name_with_generic="TSealedClass" type="class">
-    <description><detailed>description of <code>TSealedClass</code></detailed></description>
+    <description><abstract>description of <code>TSealedClass</code></abstract></description>
     <ancestor name="TObject" declaration="TObject" />
     <routine name="AProcedure" declaration="procedure AProcedure;" visibility="public" type="procedure">
-      <description><detailed>description of <code>AProcedure</code></detailed></description>
+      <description><abstract>description of <code>AProcedure</code></abstract></description>
     </routine>
     <variable name="AVariable" declaration="var AVariable: integer;" visibility="public">
-      <description><detailed>description of <code>AVariable</code></detailed></description>
+      <description><abstract>description of <code>AVariable</code></abstract></description>
     </variable>
   </structure>
 </unit>

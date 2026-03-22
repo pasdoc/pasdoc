@@ -1,4 +1,4 @@
 <unit name="ok_longcode_dash">
-  <description><detailed>See thread &quot;Patch for Latex Longcode&quot; on pasdoc-main mailing list on 2005-06-09. 
+  <description><abstract>See thread &quot;Patch for Latex Longcode&quot; on pasdoc-main mailing list on 2005-06-09.</abstract><detailed> 
 P2DRealPoint = ^T2DRealPoint;</detailed></description>
 </unit>

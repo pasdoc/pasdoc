@@ -1,6 +1,6 @@
 <unit name="ok_type_aliases">
   <routine name="Test" declaration="procedure Test;" type="procedure">
-    <description><detailed>Also linking using @tags to arbitrary qualified type identifiers should work: 
+    <description><abstract>Also linking using @tags to arbitrary qualified type identifiers should work: 
 
 <unorderedlist>
 <item>TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType</item>
@@ -14,7 +14,7 @@
 <item>ok_type_aliases</item>
 </unorderedlist>
 
-</detailed></description>
+</abstract></description>
   </routine>
   <type name="TWeakAliasType" declaration="TWeakAliasType = TOriginalType;">
     <description><abstract>TOriginalType abstract description</abstract></description>
@@ -41,10 +41,10 @@
     <description><abstract>TOriginalType abstract description, inside nested class(es).</abstract><detailed> More and more description.</detailed></description>
   </type>
   <type name="TMyContainerAlias" declaration="TMyContainerAlias = TMyContainer;">
-    <description><detailed>This class manages a Controls list.</detailed></description>
+    <description><abstract>This class manages a Controls list.</abstract></description>
   </type>
   <type name="TMyContainerStrongAlias" declaration="TMyContainerStrongAlias = type TMyContainer;">
-    <description><detailed>This class manages a Controls list.</detailed></description>
+    <description><abstract>This class manages a Controls list.</abstract></description>
   </type>
   <structure name="TOriginalType" name_with_generic="TOriginalType" type="record">
     <description><abstract>TOriginalType abstract description</abstract></description>
@@ -84,7 +84,7 @@
     </structure>
   </structure>
   <structure name="TMyContainer" name_with_generic="TMyContainer" type="class">
-    <description><detailed>This class manages a Controls list.</detailed></description>
+    <description><abstract>This class manages a Controls list.</abstract></description>
     <ancestor name="TObject" declaration="TObject" />
     <property name="Controls" declaration="property Controls: TControls read GetControls;" visibility="public" indexdecl="" type="TControls" reader="GetControls" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>

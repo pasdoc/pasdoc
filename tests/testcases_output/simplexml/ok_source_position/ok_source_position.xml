@@ -1,40 +1,40 @@
 <unit name="ok_source_position" source-line="2" source-relative-file-name="ok_source_position.pas" source-url="">
   <description><abstract>Test of --show-source-position and --source-url-pattern features.</abstract></description>
   <routine name="MyProc" declaration="procedure MyProc;" source-line="16" source-relative-file-name="ok_source_position.pas" source-url="" type="procedure">
-    <description><detailed>A simple procedure.</detailed></description>
+    <description><abstract>A simple procedure.</abstract></description>
   </routine>
   <constant name="MyConst" declaration="MyConst = 42;" source-line="7" source-relative-file-name="ok_source_position.pas" source-url="">
-    <description><detailed>A simple constant.</detailed></description>
+    <description><abstract>A simple constant.</abstract></description>
   </constant>
   <variable name="MyVar" declaration="MyVar: Integer;" source-line="13" source-relative-file-name="ok_source_position.pas" source-url="">
-    <description><detailed>A simple variable.</detailed></description>
+    <description><abstract>A simple variable.</abstract></description>
   </variable>
   <type name="TMyType" declaration="TMyType = Integer;" source-line="10" source-relative-file-name="ok_source_position.pas" source-url="">
-    <description><detailed>A simple type.</detailed></description>
+    <description><abstract>A simple type.</abstract></description>
   </type>
   <type name="TEnum" declaration="TEnum = (...);" source-line="30" source-relative-file-name="ok_source_position.pas" source-url="">
-    <description><detailed>An enumerated type.</detailed></description>
+    <description><abstract>An enumerated type.</abstract></description>
     <constant name="eOne" declaration="eOne">
-      <description><detailed>The first value.</detailed></description>
+      <description><abstract>The first value.</abstract></description>
     </constant>
     <constant name="eTwo" declaration="eTwo">
-      <description><detailed>The second value.</detailed></description>
+      <description><abstract>The second value.</abstract></description>
     </constant>
     <constant name="eThree" declaration="eThree">
-      <description><detailed>The third value.</detailed></description>
+      <description><abstract>The third value.</abstract></description>
     </constant>
   </type>
   <structure name="TMyClass" source-line="20" source-relative-file-name="ok_source_position.pas" source-url="" name_with_generic="TMyClass" type="class">
-    <description><detailed>A simple class.</detailed></description>
+    <description><abstract>A simple class.</abstract></description>
     <ancestor name="TObject" declaration="TObject" />
     <routine name="MyMethod" declaration="procedure MyMethod;" visibility="public" source-line="24" source-relative-file-name="ok_source_position.pas" source-url="" type="procedure">
-      <description><detailed>A method.</detailed></description>
+      <description><abstract>A method.</abstract></description>
     </routine>
     <variable name="MyField" declaration="MyField: Integer;" visibility="public" source-line="22" source-relative-file-name="ok_source_position.pas" source-url="">
-      <description><detailed>A field.</detailed></description>
+      <description><abstract>A field.</abstract></description>
     </variable>
     <property name="MyProp" declaration="property MyProp: Integer read MyField;" visibility="public" source-line="26" source-relative-file-name="ok_source_position.pas" source-url="" indexdecl="" type="Integer" reader="MyField" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
-      <description><detailed>A property.</detailed></description>
+      <description><abstract>A property.</abstract></description>
     </property>
   </structure>
 </unit>

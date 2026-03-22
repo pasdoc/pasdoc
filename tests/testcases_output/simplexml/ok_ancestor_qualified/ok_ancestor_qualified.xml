@@ -1,5 +1,5 @@
 <unit name="ok_ancestor_qualified">
-  <description><detailed>Test of using ancestor name qualified with unit name.</detailed></description>
+  <description><abstract>Test of using ancestor name qualified with unit name.</abstract></description>
   <structure name="TCastleObjectStack" name_with_generic="TCastleObjectStack" type="class">
     <ancestor name="Contnrs.TObjectStack" declaration="Contnrs.TObjectStack" />
     <property name="Capacity" declaration="property Capacity: TListSize read GetCapacity write SetCapacity;" visibility="public" indexdecl="" type="TListSize" reader="GetCapacity" writer="SetCapacity" default_in_class="False" default_value="" nodefault="False"   stored="">

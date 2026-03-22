@@ -1,5 +1,5 @@
 <unit name="ok_ancestors_links">
-  <description><detailed>Test that we show ancestors correctly, even when using type aliases.</detailed></description>
+  <description><abstract>Test that we show ancestors correctly, even when using type aliases.</abstract></description>
   <type name="TMyClassAlias" declaration="TMyClassAlias = TMyClass;">
   </type>
   <type name="TStringListAlias" declaration="TStringListAlias = TStringList;">

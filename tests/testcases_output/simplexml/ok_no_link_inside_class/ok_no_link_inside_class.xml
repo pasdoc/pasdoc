@@ -1,6 +1,6 @@
 <unit name="ok_no_link_inside_class">
   <routine name="MyGlobalProcedure" declaration="procedure MyGlobalProcedure;" type="procedure">
-    <description><detailed>This should NOT be linked: <code>MyMethod</code>. This should be linked: TMyClass.MyMethod. This should be linked: MyOtherGlobalProcedure.</detailed></description>
+    <description><abstract>This should NOT be linked: <code>MyMethod</code>.</abstract><detailed> This should be linked: TMyClass.MyMethod. This should be linked: MyOtherGlobalProcedure.</detailed></description>
   </routine>
   <routine name="MyOtherGlobalProcedure" declaration="procedure MyOtherGlobalProcedure;" type="procedure">
   </routine>
@@ -9,7 +9,7 @@
     <routine name="MyMethod" declaration="procedure MyMethod;" visibility="public" type="procedure">
     </routine>
     <routine name="MyOtherMethod" declaration="procedure MyOtherMethod;" visibility="public" type="procedure">
-      <description><detailed>This should be linked: MyMethod. This should be linked: TMyClass.MyMethod. This should be linked: MyGlobalProcedure.</detailed></description>
+      <description><abstract>This should be linked: MyMethod.</abstract><detailed> This should be linked: TMyClass.MyMethod. This should be linked: MyGlobalProcedure.</detailed></description>
     </routine>
   </structure>
 </unit>

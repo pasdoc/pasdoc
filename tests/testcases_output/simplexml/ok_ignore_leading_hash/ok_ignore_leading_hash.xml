@@ -1,8 +1,8 @@
 <unit name="ok_ignore_leading_hash">
   <constant name="A" declaration="A = 1;">
-    <description><detailed>--ignore-leading=#</detailed></description>
+    <description><abstract>--ignore-leading=#</abstract></description>
   </constant>
   <constant name="B" declaration="B = 1;">
-    <description><detailed>--ignore-leading=# (should produce the same result)</detailed></description>
+    <description><abstract>--ignore-leading=# (should produce the same result)</abstract></description>
   </constant>
 </unit>

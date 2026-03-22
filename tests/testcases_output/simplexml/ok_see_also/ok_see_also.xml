@@ -1,5 +1,5 @@
 <unit name="ok_see_also">
-  <description><detailed>This is a testing unit for @seealso tag.  </detailed></description>
+  <description><abstract>This is a testing unit for @seealso tag.</abstract><detailed>  </detailed></description>
   <routine name="Foo" declaration="procedure Foo;" type="procedure">
     <description><abstract>Abstract of Foo.</abstract><detailed> Further description of Foo. </detailed></description>
   </routine>

@@ -4,6 +4,6 @@
   <routine name="EdgeConsoleLog" declaration="function EdgeConsoleLog(const sender: ICoreWebView2; const args: ICoreWebView2DevToolsProtocolEventReceivedEventArgs): HResult;" type="function">
   </routine>
   <variable name="t0" declaration="t0: Byte;">
-    <description><detailed>intf var</detailed></description>
+    <description><abstract>intf var</abstract></description>
   </variable>
 </unit>

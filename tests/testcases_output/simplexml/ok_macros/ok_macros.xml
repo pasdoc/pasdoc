@@ -1,10 +1,10 @@
 <unit name="ok_macros">
   <description><abstract>Test of FPC macros handling.</abstract><detailed> Parts based on [http://sourceforge.net/tracker/index.php?func=detail&amp;aid=861356&amp;group_id=4213&amp;atid=354213]</detailed></description>
   <routine name="MyProc1" declaration="procedure MyProc1( a:Integer);" type="procedure">
-    <description><detailed>Below is an example of a very bad and confusing (but valid) macro usage. Just to test pasdoc.</detailed></description>
+    <description><abstract>Below is an example of a very bad and confusing (but valid) macro usage.</abstract><detailed> Just to test pasdoc.</detailed></description>
   </routine>
   <routine name="MyProc2" declaration="procedure MyProc2( b: Integer);" type="procedure">
-    <description><detailed>This is very stupid way to declare a procedure</detailed></description>
+    <description><abstract>This is very stupid way to declare a procedure</abstract></description>
   </routine>
   <routine name="Foo" declaration="function Foo(c: string): Integer;" type="function">
   </routine>
@@ -17,10 +17,10 @@
   <constant name="ThisShouldBeTrue" declaration="ThisShouldBeTrue = true;">
   </constant>
   <constant name="FourConst" declaration="FourConst =  (1 + 1) * (1 + 1);">
-    <description><detailed>Test of recursive macro expansion.</detailed></description>
+    <description><abstract>Test of recursive macro expansion.</abstract></description>
   </constant>
   <constant name="OneAndNotNothing" declaration="OneAndNotNothing = 1  + 1;">
-    <description><detailed>Test that symbol that is not a macro is something different than a macro that expands to nothing.</detailed></description>
+    <description><abstract>Test that symbol that is not a macro is something different than a macro that expands to nothing.</abstract></description>
   </constant>
   <constant name="OnlyOne" declaration="OnlyOne = 1 ;">
   </constant>

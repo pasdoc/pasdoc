@@ -1,5 +1,5 @@
 <unit name="ok_deprecated_default">
-  <description><detailed>Test parsing property with deprecated directive and default specifier. See https://github.com/pasdoc/pasdoc/issues/138</detailed></description>
+  <description><abstract>Test parsing property with deprecated directive and default specifier.</abstract><detailed> See https://github.com/pasdoc/pasdoc/issues/138</detailed></description>
   <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />
     <routine name="GetItems" declaration="function GetItems(const Index: Integer): Byte;" visibility="public" type="function">

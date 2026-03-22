@@ -1,9 +1,9 @@
 <unit name="ok_generic">
-  <description><detailed>Tests of generics, both FPC and Delphi style.</detailed></description>
+  <description><abstract>Tests of generics, both FPC and Delphi style.</abstract></description>
   <type name="TGeometryAttribsList2" declaration="TGeometryAttribsList2 = specialize TMyList&lt;TALBuffersCache&gt;;">
   </type>
   <structure name="TMyList" name_with_generic="generic TMyList&lt;T&gt;" type="class">
-    <description><detailed>FPC generics tests -------------------------------------------------------</detailed></description>
+    <description><abstract>FPC generics tests -------------------------------------------------------</abstract></description>
     <ancestor name="TFPSList" declaration="TFPSList" />
     <routine name="Blah" declaration="function Blah: PT;" visibility="public" type="function">
     </routine>
@@ -18,13 +18,13 @@
     </variable>
   </structure>
   <structure name="TGeometryAttribsList" name_with_generic="TGeometryAttribsList" type="class">
-    <description><detailed>You can also specialize and make a descendant at the same time.</detailed></description>
+    <description><abstract>You can also specialize and make a descendant at the same time.</abstract></description>
     <ancestor name="TMyList" declaration="specialize TMyList&lt;TGeometryAttrib&gt;" />
     <routine name="Find" declaration="function Find(const Name: string): TGeometryAttrib;" visibility="public" type="function">
     </routine>
   </structure>
   <structure name="TMyObject" name_with_generic="TMyObject" type="class">
-    <description><detailed>A simple Test-Object</detailed></description>
+    <description><abstract>A simple Test-Object</abstract></description>
     <ancestor name="TObject" declaration="TObject" />
   </structure>
   <structure name="TMyGenericList" name_with_generic="TMyGenericList" type="class">
@@ -36,11 +36,11 @@
     </routine>
   </structure>
   <structure name="TAnotherGenericType" name_with_generic="TAnotherGenericType" type="class">
-    <description><detailed>Sample for a generic with more than one type. TPair is a Key-Value-Relation</detailed></description>
+    <description><abstract>Sample for a generic with more than one type.</abstract><detailed> TPair is a Key-Value-Relation</detailed></description>
     <ancestor name="TDictionary" declaration="TDictionary&lt;TObject,TObject&gt;" />
   </structure>
   <structure name="TArray" name_with_generic="TArray" type="class">
-    <description><detailed>All standard Generics:</detailed></description>
+    <description><abstract>All standard Generics:</abstract></description>
     <ancestor name="TObject" declaration="TObject" />
   </structure>
   <structure name="TEnumerator" name_with_generic="TEnumerator&lt;T&gt;" type="class">

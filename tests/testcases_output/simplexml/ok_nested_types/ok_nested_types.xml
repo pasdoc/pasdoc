@@ -1,27 +1,27 @@
 <unit name="ok_nested_types">
   <description><abstract>Test case for Delphi nested types</abstract><detailed>  </detailed></description>
   <constant name="GlobalConst" declaration="GlobalConst = 123456;">
-    <description><detailed>Description of <code>GlobalConst</code></detailed></description>
+    <description><abstract>Description of <code>GlobalConst</code></abstract></description>
   </constant>
   <structure name="TOuterClass" name_with_generic="TOuterClass" type="class">
     <description><abstract><code>TOuterClass</code> contains nested classes, records, types and constants.</abstract></description>
     <ancestor name="TObject" declaration="TObject" />
     <routine name="OuterPublicProc" declaration="procedure OuterPublicProc;" visibility="public" type="procedure">
-      <description><detailed>Description of <code>OuterPublicProc</code></detailed></description>
+      <description><abstract>Description of <code>OuterPublicProc</code></abstract></description>
     </routine>
     <constant name="OuterConst1" declaration="OuterConst1 = 'Blah1';" visibility="public">
-      <description><detailed>Description of <code>OuterConst1</code></detailed></description>
+      <description><abstract>Description of <code>OuterConst1</code></abstract></description>
     </constant>
     <constant name="OuterConst2" declaration="OuterConst2 = 'Blah2';" visibility="public">
-      <description><detailed>Description of <code>OuterConst2</code></detailed></description>
+      <description><abstract>Description of <code>OuterConst2</code></abstract></description>
     </constant>
     <structure name="TInnerImplicitRecord" visibility="public" name_with_generic="TInnerImplicitRecord" type="record">
-      <description><detailed><code>TInnerImplicitRecord</code> is a nested record</detailed></description>
+      <description><abstract><code>TInnerImplicitRecord</code> is a nested record</abstract></description>
       <routine name="InnerPublicRecProc" declaration="procedure InnerPublicRecProc;" visibility="public" type="procedure">
-        <description><detailed>Description of <code>InnerPublicRecProc</code></detailed></description>
+        <description><abstract>Description of <code>InnerPublicRecProc</code></abstract></description>
       </routine>
       <variable name="FInnerPublicRecField" declaration="FInnerPublicRecField: Integer;" visibility="public">
-        <description><detailed>Description of <code>FInnerPublicRecField</code></detailed></description>
+        <description><abstract>Description of <code>FInnerPublicRecField</code></abstract></description>
       </variable>
     </structure>
   </structure>

@@ -9,14 +9,14 @@
     <description><abstract><code>SwapDoubleBytes</code> copies TDoubleEndianCnvRec.Bytes in reverse order from Source^ to Dest^.</abstract><detailed> <code>SwapDoubleBytes</code> is used in ConvertDouble.</detailed></description>
   </routine>
   <type name="BytePos" declaration="BytePos = (...);">
-    <description><detailed>enumeration used in variant record</detailed></description>
+    <description><abstract>enumeration used in variant record</abstract></description>
     <constant name="EndVal" declaration="EndVal">
     </constant>
     <constant name="ByteVal" declaration="ByteVal">
     </constant>
   </type>
   <type name="PDoubleEndianCnvRec" declaration="PDoubleEndianCnvRec = ^TDoubleEndianCnvRec;">
-    <description><detailed><code>PDoubleEndianCnvRec</code> is a pointer to a TDoubleEndianCnvRec.</detailed></description>
+    <description><abstract><code>PDoubleEndianCnvRec</code> is a pointer to a TDoubleEndianCnvRec.</abstract></description>
   </type>
   <structure name="TDoubleEndianCnvRec" name_with_generic="TDoubleEndianCnvRec" type="packed record">
     <description><abstract><code>TDoubleEndianCnvRec</code> is used in ConvertDouble to convert a double to or from the BigEndian format.</abstract><detailed> 
@@ -26,10 +26,10 @@ TDoubleEndianCnvRec = packed record
     ByteVal: (Bytes: array[0..SizeOf(double) - 1] of byte);
 end;</detailed></description>
     <variable name="Bytes" declaration="Bytes: array[0..SizeOf(double) - 1] of byte" visibility="public">
-      <description><detailed>Overlapping bytes of the double</detailed></description>
+      <description><abstract>Overlapping bytes of the double</abstract></description>
     </variable>
     <variable name="EndianVal" declaration="EndianVal: double" visibility="public">
-      <description><detailed>The value we are trying to convert</detailed></description>
+      <description><abstract>The value we are trying to convert</abstract></description>
     </variable>
   </structure>
 </unit>

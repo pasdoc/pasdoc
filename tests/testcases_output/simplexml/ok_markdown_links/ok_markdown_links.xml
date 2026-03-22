@@ -7,6 +7,6 @@
 
 </detailed></description>
   <routine name="MyProc" declaration="procedure MyProc;" type="procedure">
-    <description><detailed>Link to Self, and a Second one. Link without explicit title [ok_markdown_links]. Not links to \[Self](#MyProc), and a \[Second one](#ok_markdown_links.MyProc). Not a link without explicit title \[ok_markdown_links].</detailed></description>
+    <description><abstract>Link to Self, and a Second one.</abstract><detailed> Link without explicit title [ok_markdown_links]. Not links to \[Self](#MyProc), and a \[Second one](#ok_markdown_links.MyProc). Not a link without explicit title \[ok_markdown_links].</detailed></description>
   </routine>
 </unit>
