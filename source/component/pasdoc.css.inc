@@ -256,7 +256,7 @@
 '  color: var(--pasdoc-muted);' + LineEnding +
 '  display: none;' + LineEnding +
 '}' + LineEnding +
-'p.inheritdescription { color: var(--pasdoc-muted); font-style: italic; }' + LineEnding +
+'p.inheritdescription, p.description-inherited { color: var(--pasdoc-muted); font-style: italic; }' + LineEnding +
 'dl.description dt { color: var(--pasdoc-muted); }' + LineEnding +
 'dl.parameters dt { color: var(--pasdoc-accent); font-weight: 500; }' + LineEnding +
 '' + LineEnding +

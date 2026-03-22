@@ -1439,6 +1439,19 @@ begin
     { Using colspan="0" below would be easier, but Konqueror and IE
       can't handle it correctly. It seems that they treat it as colspan="1" ? }
     WriteDirectLine(Format('<tr><td colspan="%d">', [ColumnsCount]));
+
+    if (CioToDistinguishInherited <> nil) and
+       (CioToDistinguishInherited <> Item.MyObject) and
+       (Item.MyObject <> nil) then
+    begin
+      WriteDirect('<p class="description-inherited">This item is declared in ancestor ');
+      WriteDirect(MakeItemLink(
+        Item.MyObject,
+        Item.MyObject.Name,
+        lcNormal));
+      WriteDirect('.</p>');
+    end;
+
     WriteItemLongDescription(Item);
     WriteDirectLine('</td></tr>');
 
