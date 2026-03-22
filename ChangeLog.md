@@ -2,6 +2,7 @@
 
 ## Upcoming Next Release
 
+* Show inherited members of a class using --inherited-members (https://pasdoc.github.io/InheritedMembersOption, https://github.com/pasdoc/pasdoc/discussions/240) (Michalis)
 * Proper "Constants" section in outputs for CIOs with nested constants (Michalis)
 * More complete "Hierarchy" at CIO pages by following also type aliases (Michalis)
 * SimpleXML improvements: Add `declaration="` to `<property...>`. Remove `visibility="..."` from non-members (where the meaning is undefined) (Michalis)
