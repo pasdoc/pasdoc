@@ -235,13 +235,15 @@ type
     trSearch,
     trSeeAlso,
     trNested,
-  //add more here
     trAttributes,
     trSourcePosition,
     trShowAdditionalMembers,
     trInherited,
     trDeclaredInAncestor,
     trNoDescription,
+    trShowingDescriptionInheritedFrom,
+    //add more here
+
     trDummy
   );
 

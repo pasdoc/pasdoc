@@ -1536,7 +1536,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
         if InheritedDescriptions.Count = 1 then
         begin
           AncestorItem := TObject(InheritedDescriptions[0].Data) as TPasItem;
-          WriteDirect('Showing description inherited from ');
+          WriteDirect(FLanguage.Translation[trShowingDescriptionInheritedFrom] + ' ');
           WriteDirect(MakeItemLink(
             AncestorItem,
             InheritedDescriptions[0].Name,
@@ -1548,7 +1548,7 @@ procedure TGenericHTMLDocGenerator.WriteItemLongDescription(
           WriteEndOfParagraph;
         end
         else begin
-          WriteDirect('Showing descriptions inherited from:</p>');
+          WriteDirect(FLanguage.Translation[trShowingDescriptionInheritedFrom] + ':</p>');
           WriteDirect('<dl class="description">');
 
           for I := 0 to InheritedDescriptions.Count - 1 do

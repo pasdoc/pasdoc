@@ -111,5 +111,6 @@ RTransTable = (
     {trInherited} 'Inherited',
     {trDeclaredInAncestor} 'This item is declared in ancestor %s.',
     {trNoDescription} 'This item has no description.',
+    {trShowingDescriptionInheritedFrom} 'Showing description inherited from',
     ''  //dummy
   );
