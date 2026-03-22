@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Bar">
+<param name="Local" value="ok_exports.html#Bar-TStr64-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Foo">
+<param name="Local" value="ok_exports.html#Foo">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Foo2">
+<param name="Local" value="ok_exports.html#Foo2">
+</object>
+</ul>
+</body></html>

@@ -423,13 +423,22 @@ type
     procedure ParseRecordCase(const R: TPasCio; const SubCase: boolean);
     procedure ParseConstant(out Constant: TPasConstant);
 
-    { This parses type, var or const section that doesn't belong to a CIO
-      (unit intf section, unit impl section, inside a standalone routine).
-      This assumes that next token is a keyword starting the section.
-      Method stops when it encounters a keyword that is not part of
-      type/variable/constant declaration.
+    { Parses sections of items inside a unit interface, unit implementation,
+      or inside a standalone routine (not in a CIO).
+
+      This handles
+      @unorderedList(
+        @item(const (and resourcestring) section)
+        @item(var (and threadvar) section)
+        @item(type section)
+      )
+
+      At start, assumes that next token is a keyword starting the section.
+      This stops when it encounters a keyword that is not part of
+      given sections.
+
       U is optional unit object. If it's assigned, parsed items will be added
-      to corresponding list. If it's @nil, items will be just parsed and
+      to the corresponding list. If it's @nil, items will be just parsed and
       immediately disposed. }
     procedure ParseTVCSection(U: TPasUnit);
 
@@ -1713,6 +1722,19 @@ begin
                 begin
                   Scanner.UnGetToken(t);
                   ParseTVCSection(U);
+                end;
+              KEY_EXPORTS:
+                begin
+                  // Skip until semicolon
+                  repeat
+                    T := GetNextToken;
+                    try
+                      if T.IsSymbol(SYM_SEMICOLON) then
+                        Break;
+                    finally
+                      FreeAndNil(T);
+                    end;
+                  until False;
                 end;
               KEY_FUNCTION, KEY_PROCEDURE:
                 begin

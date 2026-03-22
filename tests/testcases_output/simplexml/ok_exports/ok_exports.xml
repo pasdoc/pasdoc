@@ -1,0 +1,12 @@
+<unit name="ok_exports">
+  <description><detailed>Test parsing <code>exports</code> section.</detailed></description>
+  <routine name="Foo" declaration="procedure Foo;" type="procedure">
+    <description><detailed>Description of Foo.</detailed></description>
+  </routine>
+  <routine name="Bar" declaration="procedure Bar(const S: TStr64);" type="procedure">
+    <description><detailed>Description of Bar.</detailed></description>
+  </routine>
+  <routine name="Foo2" declaration="procedure Foo2;" type="procedure">
+    <description><detailed>Description of Foo2.</detailed></description>
+  </routine>
+</unit>
