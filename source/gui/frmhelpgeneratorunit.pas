@@ -72,6 +72,7 @@ type
     // will be included in generated output.
     CheckListVisibleMembers: TCheckListBox;
     CheckWriteUsesList: TCheckBox;
+    ComboInheritedMembers: TComboBox;
     // @name determines what sort of files will be created
     comboGenerateFormat: TComboBox;
     ComboImplementationComments: TComboBox;
@@ -92,6 +93,7 @@ type
     CssFileNameFileNameEdit1: TFileNameEdit;
     edTitle: TEdit;
     HtmlHelpDocGenerator: THTMLHelpDocGenerator;
+    LabelInheritedMembers: TLabel;
     Label8: TLabel;
     Label9: TLabel;
     LabelAdditionalFiles: TLabel;
@@ -204,6 +206,7 @@ type
     rgCommentMarkers: TRadioGroup;
     procedure ButtonURLClick(Sender: TObject);
     procedure ComboImplementationCommentsChange(Sender: TObject);
+    procedure ComboInheritedMembersChange(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure MenuContextHelpClick(Sender: TObject);
@@ -381,6 +384,11 @@ begin
   Changed := true;
 end;
 
+procedure TfrmHelpGenerator.ComboInheritedMembersChange(Sender: TObject);
+begin
+  Changed := true;
+end;
+
 procedure TfrmHelpGenerator.FormDestroy(Sender: TObject);
 begin
   DefaultDirectives.Free;
@@ -518,6 +526,9 @@ begin
 
   ComboImplementationComments.ItemIndex := Ord(imtNone);
   ComboImplementationCommentsChange(nil);
+
+  ComboInheritedMembers.ItemIndex := Ord(imNever);
+  ComboInheritedMembersChange(nil);
 
   edTitle.Text := '';
   edProjectName.Text := '';
@@ -958,6 +969,8 @@ begin
       begin
         TGenericHTMLDocGenerator(PasDoc1.Generator).SpellCheckIgnoreWords.Assign(memoSpellCheckingIgnore.Lines);
       end;
+      TGenericHTMLDocGenerator(PasDoc1.Generator).InheritedMembers :=
+        TInheritedMembers(ComboInheritedMembers.ItemIndex);
     end;
 
     // Create the output directory if it does not exist.
@@ -1253,6 +1266,9 @@ begin
     ComboImplementationComments.ItemIndex := Ini.ReadInteger('Main', 'ImplementationComments', Ord(imtNone));
     ComboImplementationCommentsChange(nil);
 
+    ComboInheritedMembers.ItemIndex := Ini.ReadInteger('Main', 'InheritedMembers', Ord(imNever));
+    ComboInheritedMembersChange(nil);
+
     edProjectName.Text := Ini.ReadString('Main', 'ProjectName', '');
     seVerbosity.Value := Ini.ReadInteger('Main', 'Verbosity', 0);
 
@@ -1382,6 +1398,7 @@ begin
     Ini.WriteString('Main', 'OutputDir', CorrectFileName(EditOutputDirectory.Directory));
     Ini.WriteInteger('Main', 'GenerateFormat', comboGenerateFormat.ItemIndex);
     Ini.WriteInteger('Main', 'ImplementationComments', ComboImplementationComments.ItemIndex);
+    Ini.WriteInteger('Main', 'InheritedMembers', ComboInheritedMembers.ItemIndex);
     Ini.WriteString('Main', 'ProjectName', edProjectName.Text);
     Ini.WriteInteger('Main', 'Verbosity', seVerbosity.Value);
 

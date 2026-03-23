@@ -100,12 +100,12 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 7
         Height = 27
         Hint = 'First sentence of each description'#10'will be treated as the abstract of that description'#10'(unless you override it by using the @abstract tag).'
-        Top = 542
+        Top = 610
         Width = 686
         HelpType = htKeyword
         HelpKeyword = 'Abstract'
         Caption = 'Automatically deduce @abstract description from the 1st sentence of description'
-        TabOrder = 0
+        TabOrder = 11
         OnChange = SomethingChanged
       end
       object CheckUseTipueSearch: TCheckBox
@@ -114,12 +114,12 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 7
         Height = 27
         Hint = 'Check this to get working "Search" button in your HTML documentation.'
-        Top = 461
+        Top = 529
         Width = 349
         HelpType = htKeyword
         HelpKeyword = 'UseTipueSearchOption'
         Caption = 'Use tipue search engine in HTML output'
-        TabOrder = 1
+        TabOrder = 8
         OnChange = SomethingChanged
       end
       object edTitle: TEdit
@@ -132,7 +132,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 657
         HelpType = htKeyword
         HelpKeyword = 'DocumentationTitle'
-        TabOrder = 2
+        TabOrder = 0
         OnChange = SomethingChanged
       end
       object comboGenerateFormat: TComboBox
@@ -153,7 +153,7 @@ object frmHelpGenerator: TfrmHelpGenerator
           'PHP'
         )
         Style = csDropDownList
-        TabOrder = 3
+        TabOrder = 1
         OnChange = comboGenerateFormatChange
       end
       object edProjectName: TEdit
@@ -166,7 +166,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 657
         HelpType = htKeyword
         HelpKeyword = 'NameOption'
-        TabOrder = 4
+        TabOrder = 3
         OnChange = SomethingChanged
       end
       object comboLanguages: TComboBox
@@ -175,13 +175,12 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 7
         Height = 39
         Top = 317
-        Width = 657
+        Width = 600
         HelpType = htKeyword
         HelpKeyword = 'OutputLanguage'
-        Anchors = [akTop, akLeft, akRight]
         ItemHeight = 0
         Style = csDropDownList
-        TabOrder = 5
+        TabOrder = 4
         OnChange = comboLanguagesChange
       end
       object CheckHandleMacros: TCheckBox
@@ -189,14 +188,14 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Side = asrBottom
         Left = 7
         Height = 27
-        Top = 488
+        Top = 556
         Width = 377
         HelpType = htKeyword
         HelpKeyword = 'NoMacroOption'
         Caption = 'Recognize FPC macros syntax when parsing'
         Checked = True
         State = cbChecked
-        TabOrder = 6
+        TabOrder = 9
         OnChange = SomethingChanged
       end
       object CheckStoreRelativePaths: TCheckBox
@@ -204,28 +203,28 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Side = asrBottom
         Left = 7
         Height = 27
-        Top = 515
+        Top = 583
         Width = 335
         HelpType = htKeyword
         HelpKeyword = 'PasDocGui/StoreRelativePaths'
         Caption = 'Store only relative paths in project file'
         Checked = True
         State = cbChecked
-        TabOrder = 7
+        TabOrder = 10
         OnChange = SomethingChanged
       end
       object CheckWriteUsesList: TCheckBox
-        AnchorSideTop.Control = ComboImplementationComments
+        AnchorSideTop.Control = ComboInheritedMembers
         AnchorSideTop.Side = asrBottom
-        Left = 7
+        Left = 6
         Height = 27
-        Top = 434
+        Top = 502
         Width = 182
         HelpType = htKeyword
         HelpKeyword = 'WriteUsesList'
         BorderSpacing.Top = 10
         Caption = 'Show units uses list'
-        TabOrder = 8
+        TabOrder = 7
         OnChange = SomethingChanged
       end
       object EditOutputDirectory: TDirectoryEdit
@@ -242,7 +241,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         ButtonWidth = 30
         NumGlyphs = 1
         MaxLength = 0
-        TabOrder = 9
+        TabOrder = 2
         OnChange = SomethingChanged
       end
       object CheckMarkdown: TCheckBox
@@ -251,12 +250,12 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 7
         Height = 27
         Hint = 'Check this to support Markdown'
-        Top = 569
+        Top = 637
         Width = 277
         HelpType = htKeyword
         HelpKeyword = 'MarkdownOption'
         Caption = 'Markdown syntax in comments'
-        TabOrder = 10
+        TabOrder = 12
         OnChange = SomethingChanged
       end
       object CheckAutoBackComments: TCheckBox
@@ -265,12 +264,12 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 6
         Height = 27
         Hint = 'Check this to to automatically assign a // comment to the preceding identifier on the same line, as thought it were a //< comment'
-        Top = 596
+        Top = 664
         Width = 518
         HelpType = htKeyword
         HelpKeyword = 'AutoBackComments'
         Caption = 'Automatically interpret // comments as //< "back comments"'
-        TabOrder = 11
+        TabOrder = 13
         OnChange = SomethingChanged
       end
       object LabelImplementationComments: TLabel
@@ -294,9 +293,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 7
         Height = 35
         Top = 389
-        Width = 856
+        Width = 600
         HelpType = htKeyword
-        Anchors = [akTop, akLeft, akRight]
         ItemHeight = 0
         ItemIndex = 0
         Items.Strings = (
@@ -306,9 +304,40 @@ object frmHelpGenerator: TfrmHelpGenerator
           'Read both interface and implementation comments and join them'
         )
         Style = csDropDownList
-        TabOrder = 12
+        TabOrder = 5
         Text = 'Only use interface comments'
         OnChange = ComboImplementationCommentsChange
+      end
+      object LabelInheritedMembers: TLabel
+        AnchorSideLeft.Control = ComboImplementationComments
+        AnchorSideTop.Control = ComboImplementationComments
+        AnchorSideTop.Side = asrBottom
+        Left = 7
+        Height = 23
+        Top = 434
+        Width = 156
+        BorderSpacing.Top = 10
+        Caption = 'Inherited Members'
+      end
+      object ComboInheritedMembers: TComboBox
+        AnchorSideLeft.Control = LabelInheritedMembers
+        AnchorSideTop.Control = LabelInheritedMembers
+        AnchorSideTop.Side = asrBottom
+        Left = 7
+        Height = 35
+        Top = 457
+        Width = 600
+        ItemHeight = 0
+        ItemIndex = 0
+        Items.Strings = (
+          'Never (do not even generate)'
+          'Show by default'
+          'Hide by default'
+        )
+        Style = csDropDownList
+        TabOrder = 6
+        Text = 'Never (do not even generate)'
+        OnChange = ComboInheritedMembersChange
       end
     end
     object pageSourceFiles: TPage
@@ -580,7 +609,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         NumGlyphs = 1
         Anchors = [akTop, akLeft, akRight]
         MaxLength = 0
-        TabOrder = 0
+        TabOrder = 3
         OnChange = SomethingChanged
       end
       object EditIntroductionFileName: TFileNameEdit
@@ -601,7 +630,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         NumGlyphs = 1
         Anchors = [akTop, akLeft, akRight]
         MaxLength = 0
-        TabOrder = 1
+        TabOrder = 2
         OnChange = SomethingChanged
       end
       object EditCssFileName: TFileNameEdit
@@ -622,7 +651,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         NumGlyphs = 1
         Anchors = [akTop, akLeft, akRight]
         MaxLength = 0
-        TabOrder = 2
+        TabOrder = 0
         OnChange = SomethingChanged
       end
       object LabelHtmlHead: TLabel
@@ -655,7 +684,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         NumGlyphs = 1
         Anchors = [akTop, akLeft, akRight]
         MaxLength = 0
-        TabOrder = 3
+        TabOrder = 4
         OnChange = SomethingChanged
       end
       object LabelHtmlBodyBegin: TLabel
@@ -687,7 +716,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         NumGlyphs = 1
         Anchors = [akTop, akLeft, akRight]
         MaxLength = 0
-        TabOrder = 4
+        TabOrder = 5
         OnChange = SomethingChanged
       end
       object LabelHtmlBodyEnd: TLabel
@@ -719,7 +748,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         NumGlyphs = 1
         Anchors = [akTop, akLeft, akRight]
         MaxLength = 0
-        TabOrder = 5
+        TabOrder = 6
         OnChange = SomethingChanged
       end
       object LabelExternalDescriptions: TLabel
@@ -754,7 +783,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         NumGlyphs = 1
         Anchors = [akTop, akLeft, akRight]
         MaxLength = 0
-        TabOrder = 6
+        TabOrder = 7
         OnChange = SomethingChanged
       end
       object MemoAdditionalFiles: TMemo
@@ -768,7 +797,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         HelpType = htKeyword
         Anchors = [akTop, akLeft, akRight, akBottom]
         ScrollBars = ssAutoBoth
-        TabOrder = 7
+        TabOrder = 8
         WordWrap = False
         OnChange = SomethingChanged
       end
@@ -797,7 +826,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         BorderSpacing.Left = 9
         BorderSpacing.InnerBorder = 3
         Caption = 'Browse'
-        TabOrder = 8
+        TabOrder = 9
         OnClick = BtnBrowseAdditionalFilesClick
       end
       object CheckBoxBootstrap: TCheckBox
@@ -810,7 +839,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Width = 223
         BorderSpacing.Top = 8
         Caption = 'CSS Based on Bootstrap'
-        TabOrder = 9
+        TabOrder = 1
       end
     end
     object pageLatexOptions: TPage
@@ -1951,33 +1980,33 @@ object frmHelpGenerator: TfrmHelpGenerator
     Filter = 'Delphi source files *.pas|*.pas|Free Pascal source files *.pp|*.pp|All Pascal source files *.pas, *.pp|*.pas;*.pp|All Files *.*|*.*'
     FilterIndex = 3
     Options = [ofHideReadOnly, ofAllowMultiSelect, ofFileMustExist, ofEnableSizing]
-    Left = 213
-    Top = 501
+    Left = 320
+    Top = 688
   end
   object SaveDialog1: TSaveDialog
     DefaultExt = '.pds'
     Filter = 'PasDoc GUI Settings (*.pds)|*.pds'
     FilterIndex = 0
-    Left = 405
-    Top = 501
+    Left = 640
+    Top = 688
   end
   object OpenDialog2: TOpenDialog
     DefaultExt = '.pds'
     Filter = 'PasDoc GUI Settings (*.pds)|*.pds'
     FilterIndex = 0
-    Left = 343
-    Top = 501
+    Left = 552
+    Top = 688
   end
   object OpenDialog3: TOpenDialog
     Filter = 'All Files *.*|*.*'
     FilterIndex = 0
     Options = [ofHideReadOnly, ofAllowMultiSelect, ofFileMustExist, ofEnableSizing]
-    Left = 704
-    Top = 501
+    Left = 752
+    Top = 688
   end
   object MainMenu1: TMainMenu
-    Left = 281
-    Top = 501
+    Left = 456
+    Top = 688
     object MenuFile: TMenuItem
       Caption = '&File'
       object MenuNew: TMenuItem
@@ -2036,8 +2065,8 @@ object frmHelpGenerator: TfrmHelpGenerator
     Top = 272
   end
   object SimpleXMLDocGenerator: TSimpleXMLDocGenerator
-    Left = 968
-    Top = 352
+    Left = 960
+    Top = 344
   end
   object PHPDocGenerator: TPHPDocGenerator
     Left = 968

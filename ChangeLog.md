@@ -2,6 +2,10 @@
 
 ## Upcoming Next Release
 
+* PasDoc GUI expose options to (Michalis):
+    * Change output format to SimpleXML or PHP (in addition to existing ones, like HTML and LaTeX)
+    * Configure if CSS is based on Bootstrap or not
+    * Configure "Inherited members"
 * Make automatic abstract (previously activated by `--auto-abstract`) enabled by default, and add `--no-auto-abstract` to disable it. See https://pasdoc.github.io/Abstract and https://github.com/pasdoc/pasdoc/discussions/241 (Michalis)
 * Fix parsing `exports` section (just skip it for now) (Michalis)
 * Show inherited members of a class using --inherited-members (https://pasdoc.github.io/InheritedMembersOption, https://github.com/pasdoc/pasdoc/discussions/240) (Michalis)
