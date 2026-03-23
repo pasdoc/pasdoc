@@ -36,14 +36,31 @@ OutputDir=html_by_pasdoc_gui/
 IntroductionFileName=introduction.txt
 ClassMembers_6=1
 ClassMembers_7=1
+ImplementationComments=0
+ProjectName=
+CssFileName=
+ConclusionFileName=
+HtmlHead=
+HtmlBodyBegin=
+HtmlBodyEnd=
+ExternalDescriptions=
+Markdown=0
+AutoBackComments=0
+OpenHTML=1
 
 [Defines]
-Count=0
+Count=3
+Item_0=FPC
+Item_1=VER3
+Item_2=PASDOC
 
 [Header]
 Count=0
 
 [Footer]
+Count=0
+
+[AutoLinkExclude]
 Count=0
 
 [IncludeDirectories]
@@ -55,6 +72,9 @@ Count=3
 Item_0=../component/*.pas
 Item_1=../component/tipue/*.pas
 Item_2=../console/*.pas
+
+[AdditionalFiles]
+Count=0
 
 [HyphenatedWords]
 Count=0
