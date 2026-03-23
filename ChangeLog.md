@@ -1,25 +1,85 @@
 # List of changes
 
-## Upcoming Next Release
+<!-- ## Upcoming Next Release -->
 
-* PasDoc GUI expose options to (Michalis):
-    * Change output format to SimpleXML or PHP (in addition to existing ones, like HTML and LaTeX)
-    * Configure if CSS is based on Bootstrap or not
-    * Configure "Inherited members"
-* Make automatic abstract (previously activated by `--auto-abstract`) enabled by default, and add `--no-auto-abstract` to disable it. See https://pasdoc.github.io/Abstract and https://github.com/pasdoc/pasdoc/discussions/241 (Michalis)
-* Fix parsing `exports` section (just skip it for now) (Michalis)
-* Show inherited members of a class using --inherited-members (https://pasdoc.github.io/InheritedMembersOption, https://github.com/pasdoc/pasdoc/discussions/240) (Michalis)
-* Proper "Constants" section in outputs for CIOs with nested constants (Michalis)
-* More complete "Hierarchy" at CIO pages by following also type aliases (Michalis)
-* SimpleXML improvements: Add `declaration="` to `<property...>`. Remove `visibility="..."` from non-members (where the meaning is undefined) (Michalis)
+## Version 1.0.0 (2026-03-23)
+
+We are proud to announce the release of PasDoc 1.0.0!
+
+It's been 5 years since the previous release, and we spent this time steadily working on improving PasDoc. We've accumulated many improvements, some big, some addressing long-standing plans (like modernized HTML output look), so we feel this release deserves a big grand `1.0.0` version number. Enjoy!
+
+Download the latest release from [our website](https://pasdoc.github.io/).
+
+If you have any feedback [use our discussion forum](https://github.com/pasdoc/pasdoc/discussions/) and [please report any bugs](https://github.com/pasdoc/pasdoc/issues).
+
+### Most notable new features
+
+- [Show source code position/link](https://pasdoc.github.io/SourcePosition).
+- [Modern look based on Bootstrap and more mobile-friendly](https://github.com/pasdoc/pasdoc/discussions/230).
+- [Toggleable visibility of members](https://pasdoc.github.io/VisibleMembers).
+- [Show inherited members](https://pasdoc.github.io/InheritedMembersOption).
+- [Automatic abstract is now default](https://pasdoc.github.io/Abstract).
+- Show ancestor description for a method or class, when it misses its own description.
+- Ability to `@link` to specific overloaded routines.
+- Much more complete expression evaluation for `$if` / `$elseif`.
+
+### All new features and bugfixes
+
+* Make automatic abstract (previously activated by `--auto-abstract`) enabled by default, and add `--no-auto-abstract` to disable it. See [abstract description docs](https://pasdoc.github.io/Abstract) and [discussion thread](https://github.com/pasdoc/pasdoc/discussions/241) (Michalis)
+* [Show inherited members of a class using --inherited-members](https://pasdoc.github.io/InheritedMembersOption), see also [discussion thread](https://github.com/pasdoc/pasdoc/discussions/240) (Michalis)
 * Support for linking to arbitrary qualified type identifiers, like `TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType` and `MyUnit.TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType` (Michalis)
 * If the type alias doesn't have a special description, we show the description from the type it aliases. Also parsing _strong_ type aliases (with the `type` keyword) implemented. (Johann Elsass aka circular17, Michalis)
-* Fix default visibility members (as documented, we hide `private`, `strict private` and `implicit`, and show the rest, see https://pasdoc.github.io/VisibleMembers ) (Michalis)
-* You can include some visibility members in a state "hidden by default" in the HTML output, and let user click on a checkbox (implemented using JS) to show them. Indicate the "included but hidden by default" visibility levels by `?` suffix in `--visible-members` option, like `--visible-members=public,protected?`. See https://pasdoc.github.io/VisibleMembers and https://github.com/pasdoc/pasdoc/discussions/238 (Michalis)
-* Fix @exclude on nested types (Michalis)
-* Accept identifiers with Unicode characters (not only ASCII letters) in them, both in UTF-8 and other (like Windows 1252) encodings, following Delphi. See also [announcement](https://github.com/pasdoc/pasdoc/discussions/235) (Michalis)
+* You can include some visibility members in a state "hidden by default" in the HTML output, and let user click on a checkbox (implemented using JS) to show them. Indicate the "included but hidden by default" visibility levels by `?` suffix in `--visible-members` option, like `--visible-members=public,protected?`. See [--visible-members docs](https://pasdoc.github.io/VisibleMembers) and [discussion thread](https://github.com/pasdoc/pasdoc/discussions/238) (Michalis)
+* Accept identifiers with Unicode characters (not only ASCII letters) in them, both in UTF-8 and other (like Windows 1252) encodings, following Delphi. See also [discussion thread](https://github.com/pasdoc/pasdoc/discussions/235) (Michalis)
+* [New PHP output, generates a map to find/enumerate Pascal identifiers present in HTML output](https://pasdoc.github.io/PhpOutput) (Michalis)
 * GraphViz classes graph shows implemented interfaces as dashed lines (Michalis)
-* SimpleXML output contains now deprecated / platform / etc. information, and proper unit name (Michalis)
+* [Completely new default look: using the latest Bootstrap for modern base style, mobile-friendly, nicer visibility pills, new --css-based-on-bootstrap, show only available sections, backward compatible CSS preserved](https://github.com/pasdoc/pasdoc/discussions/230) (Michalis)
+* [New feature to show source code file/line + link in docs: `--show-source-position`, `--source-url-pattern`, `--source-root`](https://pasdoc.github.io/SourcePosition), see also [discussion thread](https://github.com/pasdoc/pasdoc/discussions/229) (Michalis)
+* Added release (and CI build) on _macOS/Aarch64_ (Michalis)
+* Show ancestor description for a method or class, when it misses its own description. Scans ancestor class and interfaces and generates nice HTML output with ancestor descriptions. (Elliot Hillary)
+* Overloaded methods are now accounted for better (Elliot Hillary):
+    - When using @link, you can link to a particular overload like `@link(MyRoutine(Integer, String))` or `@link(MyRoutine(Single))` instead of just `@link(MyRoutine)`.
+    - When generating HTML anchors, we add parameter types, so that each overloaded routine has a different anchor. This makes internal links (from @link, from internal tables) in the generated HTML output correct.
+* Much more complete expression evaluation for `$if` / `$elseif` (functions, subexpressions, negation, comparison, addition, multiplication) (Johann Elsass aka circular17)
+* Ability to define macros on the command-line like `-D FPC_FULLVERSION:=30202` that will be used for both regular Pascal code and in $if / $elseif evaluation (Johann Elsass aka circular17)
+* Proper "Constants" section in outputs for CIOs with nested constants (Michalis)
+* More complete "Hierarchy" at CIO pages by following also type aliases (Michalis)
+
+* Improved [SimpleXML output](https://pasdoc.github.io/SimpleXmlOutput) (Michalis):
+    - Properly separate "name" from "declaration" for `<variable>`, `<constant>`, `<type>`
+    - Separate `<label>` inside `<item>` for definition lists
+    - `<function>` -> more general `<routine>`
+    - Nested structures (CIOs) and simple types inside other CIOs are now output
+    - Contains now deprecated / platform / etc. information, and proper unit name
+    - Add `declaration="` to `<property...>`
+    - Remove `visibility="..."` from non-members (where the meaning is undefined)
+
+* PasDoc GUI exposes options to:
+    * Change output format to SimpleXML or PHP (in addition to existing ones, like HTML and LaTeX)
+    * Configure if CSS is based on Bootstrap or not
+    * Configure "Inherited members" (Michalis)
+    * Use Markdown and "automatic back comments" (Ayeseeem)
+
+* Manpages for `pasdoc`, `pascal_pre_proc`, `file_to_pascal_data` and `file_to_pascal_string` (Suve)
+
+* Parsing fixes:
+    * Parsing and properly documenting type helpers (Johann Elsass aka circular17)
+    * Parsing unit implementation with `begin` instead of `initialization` (Michalis)
+    * Parsing unit implementation inline variable (Fr0sT-Brutal)
+    * Fixed skipping UTF-8 BOM for various text files other than Pascal source (introduction, conclusion, CSS, HTML header/footer, include file) (Michalis)
+    * Parsing [`objcclass` and `objcclass external`](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_objc.pas) (Michalis)
+    * Parsing "unimplemented" directive (Michalis)
+    * Parsing `exports` section (just skip it for now) (Michalis)
+
+* Other fixes:
+    * Fixed using introduction `@shortTitle` (Michalis)
+    * Fixed resolving relative paths from introduction/conclusion (Michalis)
+    * Fixes and improvements to Markdown support - add analog to @link tag `[Descr](#Item)` (Fr0sT-Brutal)
+    * Fixed [spellchecking using Aspell](https://pasdoc.github.io/SpellChecking), in previous version we didn't pass language arguments to `aspell` correctly
+    * Fixed output when ancestor is not CIO (class, record or interface) for PasDoc (Michalis)
+    * Fixed default visibility members (as documented, we hide `private`, `strict private` and `implicit`, and show the rest, see https://pasdoc.github.io/VisibleMembers ) (Michalis)
+    * Fixed `@exclude` on nested types (Michalis)
+
 * Code cleanups, fixes to pass every auto-test with every compiler, CI improvements (Michalis)
     * Removed custom `TStreamReader` / `TStreamWriter` implementation, just rely on Delphi provided ones. This codepath is used only with `STRING_UNICODE` (only Delphi), so it's not a problem FPC 3.2.2 doesn't have TStreamReader.
     * Use generic containers from `Generics.Collections`, they rock with both FPC and Delphi, and make code both simpler (no need for some custom container code) and safer (no need to typecasts, types checked at compile-time). See https://github.com/pasdoc/pasdoc/discussions/231
@@ -29,34 +89,6 @@
     * Dropped compatibility with some ancient compiler versions. We require now compilers with `Generics.Collections` support, which means FPC >= 3.2.0 and Delphi >= 2009.
     * Nested classes parsing cleaned up (types nested in classes unified with global types, which solves a few accidental differences)
     * Dropped the undocumented and (as far as we know) unused possibility to _modify the default set_ (instead of replacing it) of `--visible-members` and `--sort`. Previous PasDoc versions supported set elements with `-` and `+` suffixes, and if all items had such suffix, then we merely modified the default set. This was undocumented, also somewhat confusing to use (it only made sense if all elements had -/+ suffix, or none of them), and making code complicated.
-* Fixed when ancestor is not CIO (class, record or interface) for PasDoc (Michalis)
-* Parsing "unimplemented" directive (Michalis)
-* [Completely new default look: using the latest Bootstrap for modern base style, mobile-friendly, nicer visibility pills, new --css-based-on-bootstrap, show only available sections, backward compatible CSS preserved](https://github.com/pasdoc/pasdoc/discussions/230) (Michalis)
-* [New feature to show source code file/line + link in docs: `--show-source-position`, `--source-url-pattern`, `--source-root`](https://pasdoc.github.io/SourcePosition), see also [discussion thread](https://github.com/pasdoc/pasdoc/discussions/229) (Michalis)
-* Added release (and CI build) on _macOS/Aarch64_ (Michalis)
-* Support for [`objcclass` and `objcclass external`](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_objc.pas) (Michalis)
-* Fixed using introduction `@shortTitle` (Michalis)
-* Fixed skipping UTF-8 BOM for various text files other than Pascal source (introduction, conclusion, CSS, HTML header/footer, include file) (Michalis)
-* Fixed resolving relative paths from introduction/conclusion (Michalis)
-* Fixed parsing unit implementation with `begin` instead of `initialization` (Michalis)
-* Fixed parsing unit implementation inline variable (Fr0sT-Brutal)
-* Improved [SimpleXML output](https://pasdoc.github.io/SimpleXmlOutput) (Michalis):
-    - properly separate "name" from "declaration" for `<variable>`, `<constant>`, `<type>`
-    - separate `<label>` inside `<item>` for definition lists
-    - `<function>` -> more general `<routine>`
-    - nested structures (CIOs) and simple types inside other CIOs are now output
-* [New PHP output, generates a map to find/enumerate Pascal identifiers present in HTML output](https://pasdoc.github.io/PhpOutput) (Michalis)
-* Manpages for `pasdoc`, `pascal_pre_proc`, `file_to_pascal_data` and `file_to_pascal_string` (Suve)
-* Show ancestor description for a routine or class, when it missed its own description. Scans ancestor class and interfaces and generates nice HTML output with ancestor descriptions. (Elliot Hillary)
-* Expose in pasdoc GUI options to request Markdown and "automatic back comments" (Ayeseeem)
-* Fixes and improvements to Markdown support - add analog to @link tag `[Descr](#Item)` (Fr0sT-Brutal)
-* Fixed [spellchecking using Aspell](https://pasdoc.github.io/SpellChecking), in previous version we didn't pass language arguments to `aspell` correctly
-* Overloaded methods are now accounted for better (Elliot Hillary):
-    - When using @link, you can link to a particular overload like `@link(MyRoutine(Integer, String))` or `@link(MyRoutine(Single))` instead of just `@link(MyRoutine)`.
-    - When generating HTML anchors, we add parameter types, so that each overloaded routine has a different anchor. This makes internal links (from @link, from internal tables) in the generated HTML output correct.
-* Type helpers are now parsed and documented (Johann Elsass aka circular17)
-* Much more complete expression evaluation for `$if` / `$elseif` (functions, subexpressions, negation, comparison, addition, multiplication) (Johann Elsass aka circular17)
-* Ability to define macros on command-line like `-D FPC_FULLVERSION:=30202` that will be used for both regular Pascal code and in $if / $elseif evaluation (Johann Elsass aka circular17)
 
 ## Version 0.16.0 (2021-02-07)
 
