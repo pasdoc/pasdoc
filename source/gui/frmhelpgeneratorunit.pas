@@ -476,9 +476,7 @@ begin
     for Index := 0 to NotebookMain.PageCount -1 do
     begin
       page := NotebookMain.Page[Index];
-      if page.Tag = 1 then begin
-        lbNavigation.Items.AddObject(page.Hint, page);
-      end;
+      lbNavigation.Items.AddObject(page.Hint, page);
     end;
     lbNavigation.ItemIndex := 0; { otherwise it may stay -1 after program loads }
   finally
@@ -681,12 +679,6 @@ begin
   MenuOpen.ShortCut := ShortCut(VK_O, [ssCtrl]);
   MenuSave.ShortCut := ShortCut(VK_S, [ssCtrl]);
   MenuGenerateRun.ShortCut := ShortCut(VK_F9, []);
-
-  // A Tag of 1 means the page should be visible.
-  for Index := NotebookMain.PageCount -1 downto 0 do
-  begin
-    NotebookMain.Page[Index].Tag := 1;
-  end;
 
   comboGenerateFormatChange(nil);
 
@@ -1539,8 +1531,6 @@ procedure TfrmHelpGenerator.comboGenerateFormatChange(Sender: TObject);
 
 begin
   CheckUseTipueSearch.Enabled := comboGenerateFormat.ItemIndex = 0;
-  PageHeadFoot.Tag := Ord(comboGenerateFormat.ItemIndex in [0,1]);
-  PageLatexOptions.Tag := Ord(comboGenerateFormat.ItemIndex in [2,3]);
 
   edProjectName.Enabled := comboGenerateFormat.ItemIndex <> 0;
   SetColorFromEnabled(edProjectName);
