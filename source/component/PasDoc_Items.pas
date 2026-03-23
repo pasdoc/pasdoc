@@ -88,10 +88,10 @@ const
    'implicit'
   );
 
-  AllVisibilities: TVisibilities = [Low(TVisibility) .. High(TVisibility)];
+  AllVisibilities = [Low(TVisibility) .. High(TVisibility)];
 
   { Default visibility, as documented on https://pasdoc.github.io/VisibleMembers }
-  DefaultVisibilities: TVisibilities = [Low(TVisibility) .. High(TVisibility)] -
+  DefaultVisibilities = [Low(TVisibility) .. High(TVisibility)] -
     [viPrivate, viStrictPrivate, viImplicit];
 
 type

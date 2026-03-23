@@ -45,12 +45,21 @@ uses
   PasDoc_Base,
   PasDoc_GenHtml,
   PasDoc_GenLatex,
-  PasDoc_GenHtmlHelp;
+  PasDoc_GenHtmlHelp,
+  PasDoc_GenSimpleXML,
+  PasDoc_GenPHP;
 
 procedure Register;
 begin
-  RegisterComponents('PasDoc', [TPasDoc, THTMLDocGenerator, TTexDocGenerator,
-    THTMLHelpDocGenerator]);
+  RegisterComponents('PasDoc', [
+    TPasDoc,
+    // generators for particular formats
+    THTMLDocGenerator,
+    TTexDocGenerator,
+    THTMLHelpDocGenerator,
+    TSimpleXMLDocGenerator,
+    TPHPDocGenerator
+  ]);
 end;
 
 end.

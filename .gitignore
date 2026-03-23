@@ -15,6 +15,7 @@ source/gui/pasdoc_gui
 *.or
 *.lrs
 source/packages/lazarus/pasdoc_package.pas
+backup/
 
 # Emacs backup
 *~

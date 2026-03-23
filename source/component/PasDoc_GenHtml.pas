@@ -223,6 +223,8 @@ type
     procedure WriteDates(const HL: integer; const Created, LastMod: string);
 
     function FormatAnAnchor(const AName, Caption: string): string;
+
+    function StoredCss: Boolean;
   protected
     { Return common HTML content that goes inside <head>. }
     function MakeHead: string;
@@ -351,7 +353,7 @@ type
     property HtmlHead: string read FHtmlHead write FHtmlHead;
 
     { Contents of the main CSS file (pasdoc.css). }
-    property CSS: string read FCSS write FCSS;
+    property CSS: string read FCSS write FCSS stored StoredCss;
 
     { If true, add Bootstrap CSS and JS. Definitions in @link(CSS) will be
       evaluated after Bootstrap's ones. }
@@ -2989,6 +2991,11 @@ begin
       LineEnding;
   end;
   Result := Result + '</ol>' + LineEnding;
+end;
+
+function TGenericHTMLDocGenerator.StoredCss: Boolean;
+begin
+  Result := Css <> DefaultPasdocCss;
 end;
 
 { THTMLDocGenerator ---------------------------------------------------------- }

@@ -1,6 +1,6 @@
 {
   Copyright 2004-2008 Richard B. Winston, U.S. Geological Survey (USGS)
-  Copyright 2005-2018 Michalis Kamburelis
+  Copyright 2005-2026 Michalis Kamburelis
 
   This file is part of pasdoc_gui.
 
@@ -38,7 +38,7 @@ uses
   ComCtrls, ExtCtrls, CheckLst, PasDoc_Languages, Menus,
   Buttons, Spin, PasDoc_GenLatex, PasDoc_Serialize,
   IniFiles, PasDoc_GenHtmlHelp, EditBtn, PasDoc_Utils, LCLType, SynEdit,
-  PasDoc_Items;
+  PasDoc_Items, PasDoc_GenSimpleXML, PasDoc_GenPHP;
 
 type
   EInvalidSpellingLanguage = class(Exception);
@@ -157,6 +157,7 @@ type
     PanelSourceFilesTop: TPanel;
     PanelFooterHidden: TPanel;
     PanelHeaderHidden: TPanel;
+    PHPDocGenerator: TPHPDocGenerator;
     pnlEditCommentInstructions: TPanel;
     PanelGenerateTop: TPanel;
     PanelSpellCheckingTop1: TPanel;
@@ -179,6 +180,7 @@ type
     MenuExit: TMenuItem;
     MenuNew: TMenuItem;
     seVerbosity: TSpinEdit;
+    SimpleXMLDocGenerator: TSimpleXMLDocGenerator;
     Splitter1: TSplitter;
     seComment: TSynEdit;
     Splitter2: TSplitter;
@@ -915,26 +917,25 @@ begin
              TexDocGenerator.LatexHead.Add('}');
            end;
 
-          case comboLatexGraphicsPackage.ItemIndex of
-            0: // none
-              begin
-                // do nothing
-              end;
-            1: // PDF
-              begin
-                TexDocGenerator.LatexHead.Add('\usepackage[pdftex]{graphicx}');
-              end;
-            2: // DVI
-              begin
-                TexDocGenerator.LatexHead.Add('\usepackage[dvips]{graphicx}');
-              end;
-          else Assert(False);
-          end;
-
-
+           case comboLatexGraphicsPackage.ItemIndex of
+             0: // none
+               begin
+                 // do nothing
+               end;
+             1: // PDF
+               begin
+                 TexDocGenerator.LatexHead.Add('\usepackage[pdftex]{graphicx}');
+               end;
+             2: // DVI
+               begin
+                 TexDocGenerator.LatexHead.Add('\usepackage[dvips]{graphicx}');
+               end;
+             else Assert(False);
+           end;
          end;
-    else
-      Assert(False);
+      4: PasDoc1.Generator := SimpleXMLDocGenerator;
+      5: PasDoc1.Generator := PHPDocGenerator;
+      else Assert(False);
     end;
 
     PasDoc1.Generator.Language := TLanguageID(comboLanguages.ItemIndex);

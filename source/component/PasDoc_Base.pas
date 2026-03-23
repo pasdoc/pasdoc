@@ -189,10 +189,13 @@ type
     property IgnoreLeading: string read FIgnoreLeading write FIgnoreLeading;
 
     property Generator: TDocGenerator read FGenerator write SetGenerator;
-    property ShowVisibilities: TVisibilities read FShowVisibilities write FShowVisibilities;
+    property ShowVisibilities: TVisibilities
+      read FShowVisibilities write FShowVisibilities
+      default DefaultVisibilities;
     { Visibilities that should be included in HTML output but hidden by default,
       with checkboxes to toggle their display. }
-    property ToggleVisibilities: TVisibilities read FToggleVisibilities write FToggleVisibilities;
+    property ToggleVisibilities: TVisibilities
+      read FToggleVisibilities write FToggleVisibilities default [];
     property CacheDir: string read FCacheDir write FCacheDir;
 
     { How items will be sorted.
@@ -230,7 +233,7 @@ type
     property AutoBackComments: boolean
       read FAutoBackComments write FAutoBackComments default false;
     property InfoMergeType: TInfoMergeType
-      read FInfoMergeType write FInfoMergeType;
+      read FInfoMergeType write FInfoMergeType default imtNone;
   end;
 
 implementation
@@ -254,7 +257,10 @@ begin
   FGeneratorInfo := true;
   FVerbosity := DEFAULT_VERBOSITY_LEVEL;
   FImplicitVisibility := ivPublic;
-  HandleMacros := true;
+  FHandleMacros := true;
+  FShowVisibilities := DefaultVisibilities;
+  FToggleVisibilities := [];
+  FInfoMergeType := imtNone;
 
   FGenerator := nil;
   FCommentMarkers := TStringList.Create;

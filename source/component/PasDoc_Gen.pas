@@ -1073,7 +1073,8 @@ type
     { Visibilities that should be included in output but hidden by default
       in HTML, with checkboxes to toggle their display. }
     property ToggleVisibilities: TVisibilities
-      read FToggleVisibilities write FToggleVisibilities;
+      read FToggleVisibilities write FToggleVisibilities
+      default [];
 
     { How items should be sorted in output.
       See @url(https://pasdoc.github.io/SortOption --sort documentation).
