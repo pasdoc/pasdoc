@@ -1,7 +1,7 @@
 object frmHelpGenerator: TfrmHelpGenerator
-  Left = 480
-  Height = 762
-  Top = 250
+  Left = 546
+  Height = 824
+  Top = 188
   Width = 1187
   HelpType = htKeyword
   HelpKeyword = 'PasDocGui'
@@ -10,7 +10,7 @@ object frmHelpGenerator: TfrmHelpGenerator
   ActiveControl = PanelLeft
   AutoSize = True
   Caption = 'pasdoc gui'
-  ClientHeight = 762
+  ClientHeight = 824
   ClientWidth = 1187
   DesignTimePPI = 120
   KeyPreview = True
@@ -24,10 +24,10 @@ object frmHelpGenerator: TfrmHelpGenerator
   LCLVersion = '3.4.0.0'
   object NotebookMain: TNotebook
     Left = 226
-    Height = 762
+    Height = 824
     Top = 0
     Width = 961
-    PageIndex = 0
+    PageIndex = 5
     Align = alClient
     TabOrder = 0
     TabStop = True
@@ -529,8 +529,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = EditIntroductionFileName
         AnchorSideTop.Side = asrBottom
         Left = 7
-        Height = 22
-        Top = 138
+        Height = 23
+        Top = 177
         Width = 119
         HelpType = htKeyword
         Caption = 'Conclusion file'
@@ -538,11 +538,11 @@ object frmHelpGenerator: TfrmHelpGenerator
         ParentColor = False
       end
       object LabelIntroductionFile: TLabel
-        AnchorSideTop.Control = EditCssFileName
+        AnchorSideTop.Control = CheckBoxBootstrap
         AnchorSideTop.Side = asrBottom
         Left = 7
-        Height = 22
-        Top = 77
+        Height = 23
+        Top = 114
         Width = 132
         HelpType = htKeyword
         BorderSpacing.Top = 9
@@ -553,7 +553,7 @@ object frmHelpGenerator: TfrmHelpGenerator
       object LabelCssFileName: TLabel
         AnchorSideTop.Side = asrBottom
         Left = 7
-        Height = 22
+        Height = 23
         Hint = 'Custom CSS file. Leave empty to use default pasdoc.css.'
         Top = 7
         Width = 281
@@ -566,9 +566,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelConclusionFile
         AnchorSideTop.Side = asrBottom
         Left = 7
-        Height = 39
+        Height = 40
         Hint = 'Optional file used as a conclusion to your project.'
-        Top = 160
+        Top = 200
         Width = 638
         HelpType = htKeyword
         HelpKeyword = 'IntroductionAndConclusion'
@@ -587,9 +587,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelIntroductionFile
         AnchorSideTop.Side = asrBottom
         Left = 7
-        Height = 39
+        Height = 40
         Hint = 'Optional file used as an introduction to your project.'
-        Top = 99
+        Top = 137
         Width = 638
         HelpType = htKeyword
         HelpKeyword = 'IntroductionAndConclusion'
@@ -608,8 +608,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelCssFileName
         AnchorSideTop.Side = asrBottom
         Left = 7
-        Height = 39
-        Top = 29
+        Height = 40
+        Top = 30
         Width = 638
         HelpType = htKeyword
         HelpKeyword = 'CssOption'
@@ -629,8 +629,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = EditConclusionFileName
         AnchorSideTop.Side = asrBottom
         Left = 7
-        Height = 22
-        Top = 208
+        Height = 23
+        Top = 249
         Width = 267
         HelpType = htKeyword
         BorderSpacing.Top = 9
@@ -642,8 +642,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelHtmlHead
         AnchorSideTop.Side = asrBottom
         Left = 7
-        Height = 39
-        Top = 230
+        Height = 40
+        Top = 272
         Width = 638
         HelpType = htKeyword
         HelpKeyword = 'HtmlHeadBodyBeginEndOptions'
@@ -662,8 +662,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = EditHtmlHead
         AnchorSideTop.Side = asrBottom
         Left = 7
-        Height = 22
-        Top = 269
+        Height = 23
+        Top = 312
         Width = 356
         HelpType = htKeyword
         Caption = 'Additional HTML content right after <body>'
@@ -674,8 +674,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelHtmlBodyBegin
         AnchorSideTop.Side = asrBottom
         Left = 7
-        Height = 39
-        Top = 291
+        Height = 40
+        Top = 335
         Width = 638
         HelpType = htKeyword
         HelpKeyword = 'HtmlHeadBodyBeginEndOptions'
@@ -694,8 +694,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = EditHtmlBodyBegin
         AnchorSideTop.Side = asrBottom
         Left = 7
-        Height = 22
-        Top = 330
+        Height = 23
+        Top = 375
         Width = 379
         HelpType = htKeyword
         Caption = 'Additional HTML content right  before</body>'
@@ -706,8 +706,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelHtmlBodyEnd
         AnchorSideTop.Side = asrBottom
         Left = 7
-        Height = 39
-        Top = 352
+        Height = 40
+        Top = 398
         Width = 638
         HelpType = htKeyword
         HelpKeyword = 'HtmlHeadBodyBeginEndOptions'
@@ -726,9 +726,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = EditHtmlBodyEnd
         AnchorSideTop.Side = asrBottom
         Left = 7
-        Height = 22
+        Height = 23
         Hint = 'Additional descriptions, added to the of comments present in Pascal source files.'
-        Top = 400
+        Top = 447
         Width = 171
         HelpType = htKeyword
         BorderSpacing.Top = 9
@@ -740,9 +740,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelExternalDescriptions
         AnchorSideTop.Side = asrBottom
         Left = 7
-        Height = 39
+        Height = 40
         Hint = 'Optional file with external descriptions'
-        Top = 422
+        Top = 470
         Width = 638
         HelpType = htKeyword
         HelpKeyword = 'ReadDescriptionFromFile'
@@ -761,9 +761,9 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = LabelAdditionalFiles
         AnchorSideTop.Side = asrBottom
         Left = 7
-        Height = 63
+        Height = 75
         Hint = 'Path to additional files to be added to the documentation '
-        Top = 492
+        Top = 542
         Width = 613
         HelpType = htKeyword
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -776,8 +776,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideTop.Control = EditExternalDescriptions
         AnchorSideTop.Side = asrBottom
         Left = 7
-        Height = 22
-        Top = 470
+        Height = 23
+        Top = 519
         Width = 122
         BorderSpacing.Top = 9
         Caption = 'Additional files'
@@ -789,8 +789,8 @@ object frmHelpGenerator: TfrmHelpGenerator
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = MemoAdditionalFiles
         Left = 630
-        Height = 44
-        Top = 492
+        Height = 45
+        Top = 542
         Width = 84
         Align = alCustom
         AutoSize = True
@@ -799,6 +799,18 @@ object frmHelpGenerator: TfrmHelpGenerator
         Caption = 'Browse'
         TabOrder = 8
         OnClick = BtnBrowseAdditionalFilesClick
+      end
+      object CheckBoxBootstrap: TCheckBox
+        AnchorSideLeft.Control = EditCssFileName
+        AnchorSideTop.Control = EditCssFileName
+        AnchorSideTop.Side = asrBottom
+        Left = 7
+        Height = 27
+        Top = 78
+        Width = 223
+        BorderSpacing.Top = 8
+        Caption = 'CSS Based on Bootstrap'
+        TabOrder = 9
       end
     end
     object pageLatexOptions: TPage
@@ -1366,346 +1378,346 @@ object frmHelpGenerator: TfrmHelpGenerator
         ParentFont = False
         TabOrder = 1
         Gutter.Width = 66
-        Gutter.MouseActions = <
+        Gutter.MouseActions = <        
           item
             ClickCount = ccAny
             ClickDir = cdDown
             Command = emcOnMainGutterClick
-          end
+          end        
           item
             Button = mbRight
             Command = emcContextMenu
           end>
         RightGutter.Width = 0
         RightGutter.MouseActions = <>
-        Keystrokes = <
+        Keystrokes = <        
           item
             Command = ecUp
             ShortCut = 38
-          end
+          end        
           item
             Command = ecSelUp
             ShortCut = 8230
-          end
+          end        
           item
             Command = ecScrollUp
             ShortCut = 16422
-          end
+          end        
           item
             Command = ecDown
             ShortCut = 40
-          end
+          end        
           item
             Command = ecSelDown
             ShortCut = 8232
-          end
+          end        
           item
             Command = ecScrollDown
             ShortCut = 16424
-          end
+          end        
           item
             Command = ecLeft
             ShortCut = 37
-          end
+          end        
           item
             Command = ecSelLeft
             ShortCut = 8229
-          end
+          end        
           item
             Command = ecWordLeft
             ShortCut = 16421
-          end
+          end        
           item
             Command = ecSelWordLeft
             ShortCut = 24613
-          end
+          end        
           item
             Command = ecRight
             ShortCut = 39
-          end
+          end        
           item
             Command = ecSelRight
             ShortCut = 8231
-          end
+          end        
           item
             Command = ecWordRight
             ShortCut = 16423
-          end
+          end        
           item
             Command = ecSelWordRight
             ShortCut = 24615
-          end
+          end        
           item
             Command = ecPageDown
             ShortCut = 34
-          end
+          end        
           item
             Command = ecSelPageDown
             ShortCut = 8226
-          end
+          end        
           item
             Command = ecPageBottom
             ShortCut = 16418
-          end
+          end        
           item
             Command = ecSelPageBottom
             ShortCut = 24610
-          end
+          end        
           item
             Command = ecPageUp
             ShortCut = 33
-          end
+          end        
           item
             Command = ecSelPageUp
             ShortCut = 8225
-          end
+          end        
           item
             Command = ecPageTop
             ShortCut = 16417
-          end
+          end        
           item
             Command = ecSelPageTop
             ShortCut = 24609
-          end
+          end        
           item
             Command = ecLineStart
             ShortCut = 36
-          end
+          end        
           item
             Command = ecSelLineStart
             ShortCut = 8228
-          end
+          end        
           item
             Command = ecEditorTop
             ShortCut = 16420
-          end
+          end        
           item
             Command = ecSelEditorTop
             ShortCut = 24612
-          end
+          end        
           item
             Command = ecLineEnd
             ShortCut = 35
-          end
+          end        
           item
             Command = ecSelLineEnd
             ShortCut = 8227
-          end
+          end        
           item
             Command = ecEditorBottom
             ShortCut = 16419
-          end
+          end        
           item
             Command = ecSelEditorBottom
             ShortCut = 24611
-          end
+          end        
           item
             Command = ecToggleMode
             ShortCut = 45
-          end
+          end        
           item
             Command = ecCopy
             ShortCut = 16429
-          end
+          end        
           item
             Command = ecPaste
             ShortCut = 8237
-          end
+          end        
           item
             Command = ecDeleteChar
             ShortCut = 46
-          end
+          end        
           item
             Command = ecCut
             ShortCut = 8238
-          end
+          end        
           item
             Command = ecDeleteLastChar
             ShortCut = 8
-          end
+          end        
           item
             Command = ecDeleteLastChar
             ShortCut = 8200
-          end
+          end        
           item
             Command = ecDeleteLastWord
             ShortCut = 16392
-          end
+          end        
           item
             Command = ecUndo
             ShortCut = 32776
-          end
+          end        
           item
             Command = ecRedo
             ShortCut = 40968
-          end
+          end        
           item
             Command = ecLineBreak
             ShortCut = 13
-          end
+          end        
           item
             Command = ecSelectAll
             ShortCut = 16449
-          end
+          end        
           item
             Command = ecCopy
             ShortCut = 16451
-          end
+          end        
           item
             Command = ecBlockIndent
             ShortCut = 24649
-          end
+          end        
           item
             Command = ecLineBreak
             ShortCut = 16461
-          end
+          end        
           item
             Command = ecInsertLine
             ShortCut = 16462
-          end
+          end        
           item
             Command = ecDeleteWord
             ShortCut = 16468
-          end
+          end        
           item
             Command = ecBlockUnindent
             ShortCut = 24661
-          end
+          end        
           item
             Command = ecPaste
             ShortCut = 16470
-          end
+          end        
           item
             Command = ecCut
             ShortCut = 16472
-          end
+          end        
           item
             Command = ecDeleteLine
             ShortCut = 16473
-          end
+          end        
           item
             Command = ecDeleteEOL
             ShortCut = 24665
-          end
+          end        
           item
             Command = ecUndo
             ShortCut = 16474
-          end
+          end        
           item
             Command = ecRedo
             ShortCut = 24666
-          end
+          end        
           item
             Command = ecGotoMarker0
             ShortCut = 16432
-          end
+          end        
           item
             Command = ecGotoMarker1
             ShortCut = 16433
-          end
+          end        
           item
             Command = ecGotoMarker2
             ShortCut = 16434
-          end
+          end        
           item
             Command = ecGotoMarker3
             ShortCut = 16435
-          end
+          end        
           item
             Command = ecGotoMarker4
             ShortCut = 16436
-          end
+          end        
           item
             Command = ecGotoMarker5
             ShortCut = 16437
-          end
+          end        
           item
             Command = ecGotoMarker6
             ShortCut = 16438
-          end
+          end        
           item
             Command = ecGotoMarker7
             ShortCut = 16439
-          end
+          end        
           item
             Command = ecGotoMarker8
             ShortCut = 16440
-          end
+          end        
           item
             Command = ecGotoMarker9
             ShortCut = 16441
-          end
+          end        
           item
             Command = ecSetMarker0
             ShortCut = 24624
-          end
+          end        
           item
             Command = ecSetMarker1
             ShortCut = 24625
-          end
+          end        
           item
             Command = ecSetMarker2
             ShortCut = 24626
-          end
+          end        
           item
             Command = ecSetMarker3
             ShortCut = 24627
-          end
+          end        
           item
             Command = ecSetMarker4
             ShortCut = 24628
-          end
+          end        
           item
             Command = ecSetMarker5
             ShortCut = 24629
-          end
+          end        
           item
             Command = ecSetMarker6
             ShortCut = 24630
-          end
+          end        
           item
             Command = ecSetMarker7
             ShortCut = 24631
-          end
+          end        
           item
             Command = ecSetMarker8
             ShortCut = 24632
-          end
+          end        
           item
             Command = ecSetMarker9
             ShortCut = 24633
-          end
+          end        
           item
             Command = ecNormalSelect
             ShortCut = 24654
-          end
+          end        
           item
             Command = ecColumnSelect
             ShortCut = 24643
-          end
+          end        
           item
             Command = ecLineSelect
             ShortCut = 24652
-          end
+          end        
           item
             Command = ecTab
             ShortCut = 9
-          end
+          end        
           item
             Command = ecShiftTab
             ShortCut = 8201
-          end
+          end        
           item
             Command = ecMatchBracket
             ShortCut = 24642
           end>
-        MouseActions = <
+        MouseActions = <        
           item
             ShiftMask = [ssShift, ssAlt]
             ClickDir = cdDown
             Command = emcStartSelections
             MoveCaret = True
-          end
+          end        
           item
             Shift = [ssShift]
             ShiftMask = [ssShift, ssAlt]
@@ -1713,14 +1725,14 @@ object frmHelpGenerator: TfrmHelpGenerator
             Command = emcStartSelections
             MoveCaret = True
             Option = 1
-          end
+          end        
           item
             Shift = [ssAlt]
             ShiftMask = [ssShift, ssAlt]
             ClickDir = cdDown
             Command = emcStartColumnSelections
             MoveCaret = True
-          end
+          end        
           item
             Shift = [ssShift, ssAlt]
             ShiftMask = [ssShift, ssAlt]
@@ -1728,42 +1740,42 @@ object frmHelpGenerator: TfrmHelpGenerator
             Command = emcStartColumnSelections
             MoveCaret = True
             Option = 1
-          end
+          end        
           item
             Button = mbRight
             Command = emcContextMenu
-          end
+          end        
           item
             ClickCount = ccDouble
             ClickDir = cdDown
             Command = emcSelectWord
             MoveCaret = True
-          end
+          end        
           item
             ClickCount = ccTriple
             ClickDir = cdDown
             Command = emcSelectLine
             MoveCaret = True
-          end
+          end        
           item
             ClickCount = ccQuad
             ClickDir = cdDown
             Command = emcSelectPara
             MoveCaret = True
-          end
+          end        
           item
             Button = mbMiddle
             ClickDir = cdDown
             Command = emcPasteSelection
             MoveCaret = True
-          end
+          end        
           item
             Shift = [ssCtrl]
             ShiftMask = [ssShift, ssAlt, ssCtrl]
             Command = emcMouseLink
           end>
         MouseTextActions = <>
-        MouseSelActions = <
+        MouseSelActions = <        
           item
             ClickDir = cdDown
             Command = emcStartDragMove
@@ -1816,18 +1828,18 @@ object frmHelpGenerator: TfrmHelpGenerator
           end
           object TSynGutterCodeFolding
             Width = 13
-            MouseActions = <
+            MouseActions = <            
               item
                 Button = mbRight
                 Command = emcCodeFoldContextMenu
-              end
+              end            
               item
                 ShiftMask = [ssShift]
                 Button = mbMiddle
                 ClickCount = ccAny
                 ClickDir = cdDown
                 Command = emcCodeFoldCollaps
-              end
+              end            
               item
                 Shift = [ssShift]
                 ShiftMask = [ssShift]
@@ -1836,7 +1848,7 @@ object frmHelpGenerator: TfrmHelpGenerator
                 ClickDir = cdDown
                 Command = emcCodeFoldCollaps
                 Option = 1
-              end
+              end            
               item
                 ClickCount = ccAny
                 ClickDir = cdDown
@@ -1844,20 +1856,20 @@ object frmHelpGenerator: TfrmHelpGenerator
               end>
             MarkupInfo.Background = clNone
             MarkupInfo.Foreground = clGray
-            MouseActionsExpanded = <
+            MouseActionsExpanded = <            
               item
                 ClickCount = ccAny
                 ClickDir = cdDown
                 Command = emcCodeFoldCollaps
               end>
-            MouseActionsCollapsed = <
+            MouseActionsCollapsed = <            
               item
                 Shift = [ssCtrl]
                 ShiftMask = [ssCtrl]
                 ClickCount = ccAny
                 ClickDir = cdDown
                 Command = emcCodeFoldExpand
-              end
+              end            
               item
                 ShiftMask = [ssCtrl]
                 ClickCount = ccAny
@@ -1891,17 +1903,17 @@ object frmHelpGenerator: TfrmHelpGenerator
   end
   object PanelLeft: TPanel
     Left = 0
-    Height = 762
+    Height = 824
     Top = 0
     Width = 226
     Align = alLeft
     BevelOuter = bvNone
-    ClientHeight = 762
+    ClientHeight = 824
     ClientWidth = 226
     TabOrder = 1
     object lbNavigation: TListBox
       Left = 0
-      Height = 705
+      Height = 767
       Top = 57
       Width = 226
       Align = alClient

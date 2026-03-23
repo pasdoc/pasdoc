@@ -58,6 +58,7 @@ type
     cbVizGraphUses: TCheckBox;
     CheckAutoAbstract: TCheckBox;
     CheckAutoLink: TCheckBox;
+    CheckBoxBootstrap: TCheckBox;
     CheckOpenHTML: TCheckBox;
     CheckStoreRelativePaths: TCheckBox;
     CheckHandleMacros: TCheckBox;
@@ -531,6 +532,7 @@ begin
   memoDefines.Lines.Assign(DefaultDirectives);
 
   EditCssFileName.FileName := '';
+  CheckBoxBootstrap.Checked := true;
   EditIntroductionFileName.FileName := '';
   EditConclusionFileName.FileName := '';
   EditHtmlHead.FileName := '';
@@ -939,6 +941,7 @@ begin
       TGenericHTMLDocGenerator(PasDoc1.Generator).Footer := memoFooter.Lines.Text;
       TGenericHTMLDocGenerator(PasDoc1.Generator).CSS :=
         LoadFileNameEdit(EditCssFileName, DefaultPasDocCss);
+      TGenericHTMLDocGenerator(PasDoc1.Generator).Bootstrap := CheckBoxBootstrap.Checked;
       TGenericHTMLDocGenerator(PasDoc1.Generator).HtmlHead :=
         LoadFileNameEdit(EditHtmlHead, '');
       TGenericHTMLDocGenerator(PasDoc1.Generator).HtmlBodyBegin :=
@@ -1278,6 +1281,7 @@ begin
 
     EditCssFileName.FileName := ExpandNotEmptyFileName(
       Ini.ReadString('Main', 'CssFileName', ''));
+    CheckBoxBootstrap.Checked := Ini.ReadBool('Main', 'Bootstrap', true);
     EditIntroductionFileName.FileName := ExpandNotEmptyFileName(
       Ini.ReadString('Main', 'IntroductionFileName', ''));
     EditConclusionFileName.FileName := ExpandNotEmptyFileName(
@@ -1403,6 +1407,7 @@ begin
 
     Ini.WriteString('Main', 'CssFileName', CorrectFileName(
       EditCssFileName.FileName));
+    Ini.WriteBool('Main', 'Bootstrap', CheckBoxBootstrap.Checked);
     Ini.WriteString('Main', 'IntroductionFileName', CorrectFileName(
       EditIntroductionFileName.FileName));
     Ini.WriteString('Main', 'ConclusionFileName', CorrectFileName(
@@ -1537,6 +1542,7 @@ begin
 
   EditCssFileName.Enabled := comboGenerateFormat.ItemIndex in [0,1];
   SetColorFromEnabled(EditCssFileName);
+  CheckAutoLink.Enabled := comboGenerateFormat.ItemIndex in [0,1];
 
   comboLatexGraphicsPackage.Enabled := comboGenerateFormat.ItemIndex in [2,3];
   FillNavigationListBox;
