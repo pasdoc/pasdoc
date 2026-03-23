@@ -27,7 +27,7 @@ object frmHelpGenerator: TfrmHelpGenerator
     Height = 824
     Top = 0
     Width = 961
-    PageIndex = 5
+    PageIndex = 0
     Align = alClient
     TabOrder = 0
     TabStop = True
@@ -252,10 +252,10 @@ object frmHelpGenerator: TfrmHelpGenerator
         Height = 27
         Hint = 'Check this to support Markdown'
         Top = 569
-        Width = 227
+        Width = 277
         HelpType = htKeyword
         HelpKeyword = 'MarkdownOption'
-        Caption = 'Support Markdown style'
+        Caption = 'Markdown syntax in comments'
         TabOrder = 10
         OnChange = SomethingChanged
       end
@@ -294,7 +294,7 @@ object frmHelpGenerator: TfrmHelpGenerator
         Left = 7
         Height = 35
         Top = 389
-        Width = 857
+        Width = 856
         HelpType = htKeyword
         Anchors = [akTop, akLeft, akRight]
         ItemHeight = 0
