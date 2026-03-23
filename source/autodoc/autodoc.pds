@@ -6,8 +6,8 @@ Verbosity=2
 ClassMembers_0=1
 ClassMembers_1=1
 ClassMembers_2=1
-ClassMembers_3=0
-ClassMembers_4=1
+ClassMembers_3=1
+ClassMembers_4=0
 ClassMembers_5=0
 ImplicitVisibility=0
 Sorting_0=0
@@ -47,6 +47,7 @@ ExternalDescriptions=
 Markdown=0
 AutoBackComments=0
 OpenHTML=1
+Bootstrap=1
 
 [Defines]
 Count=3

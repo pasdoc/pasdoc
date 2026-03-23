@@ -155,7 +155,7 @@ type
   { This is a basic item class, that is linkable,
     and has some @link(RawDescription). }
   TBaseItem = class(TSerializable)
-  private
+  strict private
     FDetailedDescription: string;
     FFullLink: string;
     FLastMod: string;
@@ -353,7 +353,7 @@ type
     level are introduced here: things related to handling @@abstract tag,
     @@seealso tag, used to sorting items inside (@link(Sort)) and some more. }
   TPasItem = class(TBaseItem)
-  private
+  strict private
     FAbstractDescription: string;
     FAbstractDescriptionWasAutomatic: boolean;
     FVisibility: TVisibility;
@@ -386,7 +386,6 @@ type
     procedure StoreParamTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
-    function MyUnitName: String;
   protected
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
@@ -405,6 +404,9 @@ type
     function FindName(const NameParts: TNameParts): TBaseItem; override;
 
     procedure RegisterTags(TagManager: TTagManager); override;
+
+    { Name @link(MyUnit) or empty string if MyUnit is nil. }
+    function MyUnitName: String;
 
     { Abstract description of this item.
       This is intended to be short (e.g. one sentence) description of
@@ -631,6 +633,7 @@ type
 
   { @abstract(Alias type) }
   TPasAliasType = class(TPasType)
+  strict private
     FIsStrongAlias: boolean;
     FAliasedName: string;
     FAliasedType: TPasType;
@@ -821,7 +824,7 @@ type
 
     TODO: Rename to TPasStructure, most general term. }
   TPasCio = class(TPasType)
-  protected
+  strict private
     FClassDirective: TClassDirective;
     FFields: TPasItems;
     FConstants: TPasItems;
@@ -834,9 +837,9 @@ type
     FCios: TPasNestedCios;
     FTypes: TPasTypes;
     FNameWithGeneric: string;
+  protected
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
-  protected
     procedure StoreMemberTag(ThisTag: TTag; var ThisTagData: TObject;
       EnclosingTag: TTag; var EnclosingTagData: TObject;
       const TagParameter: string; var ReplaceStr: string);
@@ -946,9 +949,10 @@ type
     { Constants inside this class. }
     property Constants: TPasItems read FConstants;
 
-    { Class or record helper type identifier }
-    property HelperTypeIdentifier: string read  FHelperTypeIdentifier
-                                          write FHelperTypeIdentifier;
+    { Type for which this is a helper.
+      That is, this is 'foo' when we have helper like "helper for foo". }
+    property HelperTypeIdentifier: string
+      read FHelperTypeIdentifier write FHelperTypeIdentifier;
 
     { Methods inside this class. }
     property Methods: TPasRoutines read FMethods;
@@ -986,7 +990,7 @@ type
   { @name extends @link(TBaseItem) to store extra information about a project.
     @name is used to hold an introduction and conclusion to the project. }
   TExternalItem = class(TBaseItem)
-  private
+  strict private
     FSourceFilename: string;
     FTitle: string;
     FShortTitle: string;
@@ -1029,7 +1033,7 @@ type
   TExternalItemList = {$ifdef FPC}specialize{$endif} TObjectList<TExternalItem>;
 
   TAnchorItem = class(TBaseItem)
-  private
+  strict private
     FExternalItem: TExternalItem;
     FSectionLevel: Integer;
     FSectionCaption: string;
@@ -1054,7 +1058,7 @@ type
     Note: Remember to always set @link(CacheDateTime) after
     deserializing this unit. }
   TPasUnit = class(TPasItem)
-  protected
+  strict private
     FTypes: TPasTypes;
     FVariables: TPasItems;
     FCIOs: TPasTypes;
@@ -1067,6 +1071,7 @@ type
     FSourceFileDateTime: TDateTime;
     FIsUnit: boolean;
     FIsProgram: boolean;
+  protected
     procedure Serialize(const ADestination: TStream); override;
     procedure Deserialize(const ASource: TStream); override;
   public
@@ -1205,7 +1210,7 @@ type
 
   { Container class to store a list of @link(TPasItem)s. }
   TPasItems = class(TBaseItems)
-  private
+  strict private
     function GetPasItemAt(const AIndex: Integer): TPasItem;
     procedure SetPasItemAt(const AIndex: Integer; const Value: TPasItem);
   public
@@ -1266,7 +1271,7 @@ type
 
   { Collection of methods. }
   TPasRoutines = class(TPasItems)
-  private
+  strict private
     FShortNameHash: TStringStringDictionary;
   protected
     procedure Serialize(const ADestination: TStream); override;
@@ -1301,7 +1306,7 @@ type
 
   { Collection of units. }
   TPasUnits = class(TPasItems)
-  private
+  strict private
     function GetUnitAt(const AIndex: Integer): TPasUnit;
     procedure SetUnitAt(const AIndex: Integer; const Value: TPasUnit);
   public
@@ -2036,7 +2041,7 @@ begin
   if FCachedUnitRelativeQualifiedName <> '' then
     Result := FCachedUnitRelativeQualifiedName
   else begin
-    Result := FName;
+    Result := Name;
     LItem := Self;
     while LItem.MyObject <> nil do
     begin
