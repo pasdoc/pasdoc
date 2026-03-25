@@ -70,7 +70,7 @@ jobs:
         run: brew install php
 
       - name: Clean And Build All
-        run: clean-build-all
+        run: make clean-build-all
       - name: Fail If Rebuild Made Any Changes To Versioned Files
         run: |
           if [[ -n $(git status --porcelain) ]]; then
