@@ -69,10 +69,15 @@ jobs:
         if: ${{ runner.os == 'macOS' }}
         run: brew install php
 
-      - name: Build
-        run: make
-      - name: Build Tools
-        run: make build-tools
+      - name: Clean And Build All
+        run: clean-build-all
+      - name: Fail If Rebuild Made Any Changes To Versioned Files
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "Error: Rebuild made changes to versioned files. Please commit these changes."
+            git status
+            exit 1
+          fi
       - name: Test
         run: make tests-no-build
 
