@@ -69,19 +69,16 @@ jobs:
         if: ${{ runner.os == 'macOS' }}
         run: brew install php
 
-      - name: Clean And Build All (non-Windows)
-        if: ${{ runner.os != 'Windows' }}
-        run: make clean-build-all
-
-      # Special version of above for Windows, passing SHELL="$(which bash)"
-      # to use correct bash on windows. Otherwise GitHub Actions Windows runner
+      # Without this hack, GitHub Actions Windows runner
       # tries to use WSL bash when our source/component/lang/Makefile calls
       # ./convert_encoding.sh .
-      # In principle we could do this for all platforms, but let's not complicate
-      # command for now with Windows-specific workaround.
-      - name: Clean And Build All (Windows)
+      # See https://github.com/orgs/community/discussions/25038 .
+      - name: Fix bash on Windows
         if: ${{ runner.os == 'Windows' }}
-        run: make clean-build-all SHELL="$(which bash)"
+        run: echo "C:\Program Files\Git\bin" >> $GITHUB_PATH
+
+      - name: Clean And Build All (non-Windows)
+        run: make clean-build-all
 
       - name: Fail If Rebuild Made Any Changes To Versioned Files
         run: |
