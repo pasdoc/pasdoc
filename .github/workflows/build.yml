@@ -75,7 +75,7 @@ jobs:
       # See https://github.com/orgs/community/discussions/25038 .
       - name: Fix bash on Windows
         if: ${{ runner.os == 'Windows' }}
-        run: echo "C:\Program Files\Git\bin" >> $GITHUB_PATH
+        run: echo "C:/Program Files/Git/bin" >> $GITHUB_PATH
 
       - name: Clean And Build All (non-Windows)
         run: make clean-build-all
