@@ -187,39 +187,55 @@ ifdef BINDIR
 	$(MKDIRPROG) -p $(BINDIR)
 endif
 
-# fpc- build targets
+# Build with FPC, debug mode
 .PHONY: build-fpc-debug
 build-fpc-debug: make-dirs
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) $(FILE)
 
+# Build with FPC, release mode
 .PHONY: build-fpc-release
 build-fpc-release: make-dirs
 	$(FPC_DEFAULT) $(FPC_RELEASE_FLAGS) $(FILE)
 
 # Deprecated (defined only temporarily for backward compatibility)
-# name for build-fpc-default .
+# name for build-fpc-release .
 .PHONY: build-fpc-default
 build-fpc-default: build-fpc-release
 
+# Build command-line binaries but not PasDoc itself.
+# This means now: pascal_pre_proc, file_to_pascal_string, file_to_pascal_data.
 .PHONY: build-tools
 build-tools: build-generators
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./source/tools/pascal_pre_proc.dpr
 
-# Separate target to build only 2 generators.
+# Subset of "make build-tools" to build only generators, that don't depend on .inc
+# files in source/component/ and subdirs.
 #
-# This allows to clean everything + build everything using the sequence:
-#   make clean
-#   make clean -C source/component/ # deletes some .inc files in source/component/
-#   make build-generators
-#   make -C source/component/ # recreates some .inc files in source/component/
-#   make build-tools
-#   make
-#
-# Debian packaging relies on this.
+# This target allows to clean everything + build everything using the sequence
+# in "make clean-build-all" (see lower in this Makefile), because "build-generators"
+# needs to be called to recreate .inc files in source/component/ and subdirs.
 .PHONY: build-generators
 build-generators: make-dirs
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./source/tools/file_to_pascal_data.dpr
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./source/tools/file_to_pascal_string.dpr
+
+# Clean and build everything,
+# including .inc files (managed by Makefiles in source/component/ and subdirs),
+# and tools (pascal_pre_proc, file_to_pascal_string, file_to_pascal_data)
+# and PasDoc itself (command-line and GUI).
+#
+# This is not something that usual users need (we provide .inc files in the repository, # so they don't need to be generated),
+# but may be useful if you want to make sure everything is up-to-date.
+# Debian packaging does sthg like this.
+.PHONY: clean-build-all
+clean-build-all:
+	$(MAKE) clean
+	$(MAKE) clean -C source/component/ # deletes some .inc files in source/component/
+	$(MAKE) build-generators
+	$(MAKE) -C source/component/ # recreates some .inc files in source/component/
+	$(MAKE) build-tools
+	$(MAKE) build-fpc-debug
+	$(MAKE) build-gui
 
 .PHONY: build-gui
 build-gui:
@@ -235,6 +251,7 @@ build-gui:
 	fi
 	strip source/gui/pasdoc_gui$(EXE)
 
+# Build and FpcUnit tests.
 .PHONY: tests-fpcunit
 tests-fpcunit: make-dirs
 	$(FPC_DEFAULT) $(FPC_DEBUG_FLAGS) ./tests/fpcunit/test_pasdoc.lpr
