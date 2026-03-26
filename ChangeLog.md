@@ -2,7 +2,7 @@
 
 <!-- ## Upcoming Next Release -->
 
-## Version 1.0.0 (2026-03-23)
+## Version 1.0.0 (TBA)
 
 We are proud to announce the release of PasDoc 1.0.0!
 
