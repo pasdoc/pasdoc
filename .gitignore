@@ -4,13 +4,16 @@ lib/
 source/autodoc/html_by_pasdoc_gui/
 source/autodoc/html/
 source/autodoc/latex/
-source/gui/pasdoc_gui
-source/gui/pasdoc_gui.exe
-source/gui/pasdoc_gui.app/
 *.exe
 *.dll
 *.zip
 *.tar.gz
+
+# pasdoc_gui generated files
+source/gui/pasdoc_gui
+source/gui/pasdoc_gui.exe
+source/gui/pasdoc_gui.app/
+source/gui/pasdoc_gui.obj
 
 # FPC / Lazarus generated stuff
 *.o
