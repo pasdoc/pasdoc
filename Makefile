@@ -56,6 +56,14 @@ BINFILES := $(BINDIR)/pasdoc$(EXE) \
 	$(BINDIR)/file_to_pascal_data$(EXE)
 DOCFILES := LICENSE ChangeLog.md README.md
 
+# Determine if we're building for Windows (including Cygwin or MinGW),
+# to set .exe suffix for binaries.
+ifeq ($(OS),Windows_NT)
+EXE := .exe
+else
+EXE :=
+endif
+
 PACKAGE_BASENAME := $(PACKAGENAME)-$(VERSION)-$(PACKAGE_BASENAME_SUFFIX)
 
 MKDIRPROG := mkdir
