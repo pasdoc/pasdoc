@@ -5,6 +5,10 @@ source/autodoc/html_by_pasdoc_gui/
 source/autodoc/html/
 source/autodoc/latex/
 source/gui/pasdoc_gui
+source/gui/pasdoc_gui.exe
+source/gui/pasdoc_gui.app/
+*.exe
+*.dll
 *.zip
 *.tar.gz
 
@@ -37,8 +41,6 @@ backup/
 *.deployproj
 
 # Delphi compiler-generated binaries (safe to delete)
-*.exe
-*.dll
 *.bpl
 *.bpi
 *.dcp
