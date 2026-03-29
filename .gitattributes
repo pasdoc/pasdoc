@@ -28,11 +28,18 @@ Makefile text eol=auto
 *.hhp text eol=auto
 *.php text eol=auto
 PASDOC-OUTPUT text eol=auto
-# This is important to avoid lots of modifications in "git status"
-# after "make tests" on Windows, since we generate bootstrap..js files
-# with native line endings.
 *.js text eol=auto
 *.dot text eol=auto
+*.pds text eol=auto
+LICENSE text eol=auto
+README text eol=auto
+TODO text eol=auto
+HISTORY text eol=auto
+*.yml text eol=auto
+*.dof text eol=auto
+*.lfm text eol=auto
+*.lpi text eol=auto
+*.man text eol=auto
 
 # Test cases checking specific line endings
 tests/testcases/error_line_number_2.pas text eol=lf
