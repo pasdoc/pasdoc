@@ -758,6 +758,7 @@ begin
   s := ReplaceRegEx(s, '<c>', '@code(');
   s := ReplaceRegEx(s, '</c>', ')');
   s := ReplaceRegEx(s, '<code>', '@preformatted(');
+  s := ReplaceRegEx(s, '<code lang="Delphi">', '@longCode(');
   s := ReplaceRegEx(s, '</code>', ')');
   s := ReplaceRegEx(s, '<b>', '@bold(');
   s := ReplaceRegEx(s, '</b>', ')');
