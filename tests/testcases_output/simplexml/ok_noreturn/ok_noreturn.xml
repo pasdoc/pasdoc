@@ -1,0 +1,16 @@
+<unit name="ok_noreturn">
+  <description><abstract>Test that the noreturn directive is accepted on procedures.</abstract><detailed> Delphi uses the noreturn directive to indicate that a procedure never returns to the caller. See https://docwiki.embarcadero.com/RADStudio/Florence/en/Declarations_and_Statements_(Delphi)#The_noreturn_Directive (Delphi docs).</detailed></description>
+  <routine name="GlobalNoReturn" declaration="procedure GlobalNoReturn; noreturn;" type="procedure">
+  </routine>
+  <routine name="ExternalNoReturn" declaration="procedure ExternalNoReturn; stdcall; noreturn;" type="procedure">
+  </routine>
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <routine name="RaiseAlways" declaration="procedure RaiseAlways; noreturn;" visibility="public" type="procedure">
+    </routine>
+    <routine name="RaiseAlwaysOverloaded" declaration="procedure RaiseAlwaysOverloaded(const Msg: string); overload; noreturn;" visibility="public" type="procedure">
+    </routine>
+    <routine name="RaiseAlwaysOverloaded" declaration="procedure RaiseAlwaysOverloaded(const Code: Integer); overload; noreturn;" visibility="public" type="procedure">
+    </routine>
+  </structure>
+</unit>

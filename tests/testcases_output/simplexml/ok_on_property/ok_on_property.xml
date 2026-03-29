@@ -1,0 +1,8 @@
+<unit name="ok_on_property">
+  <description><abstract>Test that &quot;on&quot; can be used as a property name, Delphi allows this.</abstract></description>
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <property name="on" declaration="property on: Boolean read GetOn write SetOn;" visibility="public" indexdecl="" type="Boolean" reader="GetOn" writer="SetOn" default_in_class="False" default_value="" nodefault="False"   stored="">
+    </property>
+  </structure>
+</unit>

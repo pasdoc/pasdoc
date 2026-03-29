@@ -1,0 +1,27 @@
+<unit name="ok_inline_record_in_class">
+  <description><abstract>Test that anonymous (declared right at variable declaration) record types inside nested classes work.</abstract></description>
+  <structure name="TOuterClass" name_with_generic="TOuterClass" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <structure name="TInnerClass" visibility="protected" name_with_generic="TInnerClass" type="class">
+      <ancestor name="TObject" declaration="TObject" />
+      <routine name="Create" declaration="constructor Create;" visibility="public" type="constructor">
+      </routine>
+      <routine name="Destroy" declaration="destructor Destroy; override;" visibility="public" type="destructor">
+      </routine>
+      <variable name="FStatus" declaration="FStatus:
+        record" visibility="public">
+      </variable>
+      <variable name="FStatusWithCase" declaration="FStatusWithCase:
+        
+        record" visibility="public">
+      </variable>
+    </structure>
+    <structure name="TInfo" visibility="protected" name_with_generic="TInfo" type="record">
+      <description><abstract>just for test, place also record in TOuterClass</abstract></description>
+      <variable name="FInner" declaration="FInner: TInnerClass;" visibility="public">
+      </variable>
+      <variable name="FIndex" declaration="FIndex: Integer;" visibility="public">
+      </variable>
+    </structure>
+  </structure>
+</unit>

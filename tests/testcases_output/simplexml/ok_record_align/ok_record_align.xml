@@ -1,0 +1,15 @@
+<unit name="ok_record_align">
+  <description><abstract>Test that record alignment syntax &quot;end align(N)&quot; is accepted.</abstract><detailed> Delphi supports specifying record alignment with the align directive after the end keyword.</detailed></description>
+  <structure name="TAlignedRecord" name_with_generic="TAlignedRecord" type="record">
+    <variable name="Field1" declaration="Field1: Word;" visibility="public">
+    </variable>
+    <variable name="Field2" declaration="Field2: Int64;" visibility="public">
+    </variable>
+  </structure>
+  <structure name="TAnotherAligned" name_with_generic="TAnotherAligned" type="record">
+    <variable name="X" declaration="X: Byte;" visibility="public">
+    </variable>
+    <variable name="Y" declaration="Y: Byte;" visibility="public">
+    </variable>
+  </structure>
+</unit>

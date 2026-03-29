@@ -337,6 +337,12 @@ all_tests_for_current_format ()
   mk_test ok_inherited_members_sorted  --inherited-members=default-show "${SORT_ALL}" ok_inherited_members.pas
   mk_test ok_inherited_members_hide_ancestor --inherited-members=default-show ok_inherited_members_hide_ancestor.pas
   mk_test ok_exports ok_exports.pas
+  mk_test ok_generic_multiple_constraints ok_generic_multiple_constraints.pas
+  mk_test ok_inline_record_in_class ok_inline_record_in_class.pas
+  mk_test ok_noreturn ok_noreturn.pas
+  mk_test ok_on_property ok_on_property.pas
+  mk_test ok_out_enum ok_out_enum.pas
+  mk_test ok_record_align ok_record_align.pas
 }
 
 # parse params ----------------------------------------

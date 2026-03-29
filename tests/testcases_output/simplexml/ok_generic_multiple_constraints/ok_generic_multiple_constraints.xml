@@ -1,0 +1,26 @@
+<unit name="ok_generic_multiple_constraints">
+  <description><abstract>Test that generics with types separated by semicolons are parsed correctly.</abstract><detailed> See https://docwiki.embarcadero.com/RADStudio/Sydney/en/Constraints_in_Generics: &quot;&quot;&quot;When you specify constraints, you separate multiple type parameters by semicolons, as you do with a parameter list declaration: &quot;&quot;&quot;</detailed></description>
+  <type name="TMethodFunc" declaration="TMethodFunc = function(Arg: A): R of object;">
+    <description><abstract>Generic type aliases with semicolons (in type section)</abstract></description>
+  </type>
+  <type name="TMethodFunc2" declaration="TMethodFunc2 = function(Arg1: A; Arg2: B): R of object;">
+  </type>
+  <structure name="TMyClass" name_with_generic="TMyClass" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <routine name="Call" declaration="function Call&lt;A;R&gt;(const Arg: A): R; overload;" visibility="public" type="function">
+      <description><abstract>Call with two type params separated by semicolon</abstract></description>
+    </routine>
+    <routine name="Call" declaration="function Call&lt;A;B;R&gt;(const Arg1: A; const Arg2: B): R; overload;" visibility="public" type="function">
+      <description><abstract>Call with three type params separated by semicolons</abstract></description>
+    </routine>
+    <routine name="Execute" declaration="procedure Execute&lt;A;B&gt;(const Arg1: A; const Arg2: B); overload;" visibility="public" type="procedure">
+      <description><abstract>Procedure variant</abstract></description>
+    </routine>
+  </structure>
+  <structure name="TMyClassWithConstraints" name_with_generic="TMyClassWithConstraints&lt;A;B;R&gt;" type="class">
+    <ancestor name="TMyClass" declaration="TMyClass" />
+  </structure>
+  <structure name="TMyClassWithConstraints2" name_with_generic="TMyClassWithConstraints2&lt;A:TComponent;B;R&gt;" type="class">
+    <ancestor name="TMyClass" declaration="TMyClass" />
+  </structure>
+</unit>

@@ -1,0 +1,25 @@
+<unit name="ok_out_enum">
+  <description><abstract>Test that &quot;Out&quot; can be used as an enum member name, Delphi allows this.</abstract></description>
+  <type name="TAnimationType" declaration="TAnimationType = (...);">
+    <constant name="In" declaration="In">
+    </constant>
+    <constant name="Out" declaration="Out">
+    </constant>
+    <constant name="InOut" declaration="InOut">
+    </constant>
+  </type>
+  <type name="TDirection" declaration="TDirection = (...);">
+    <constant name="Left" declaration="Left">
+    </constant>
+    <constant name="Right" declaration="Right">
+    </constant>
+    <constant name="Up" declaration="Up">
+    </constant>
+    <constant name="Down" declaration="Down">
+    </constant>
+    <constant name="In" declaration="In">
+    </constant>
+    <constant name="Out" declaration="Out">
+    </constant>
+  </type>
+</unit>

@@ -1,0 +1,188 @@
+\documentclass{report}
+\usepackage{hyperref}
+% WARNING: THIS SHOULD BE MODIFIED DEPENDING ON THE LETTER/A4 SIZE
+\oddsidemargin 0cm
+\evensidemargin 0cm
+\marginparsep 0cm
+\marginparwidth 0cm
+\parindent 0cm
+\setlength{\textwidth}{\paperwidth}
+\addtolength{\textwidth}{-2in}
+
+
+% Conditional define to determine if pdf output is used
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+
+% Write Document information for pdflatex/pdftex
+\ifpdf
+\pdfinfo{
+ /Author     (Pasdoc)
+ /Title      ()
+}
+\fi
+
+
+% definitons for warning and note tag
+\usepackage[most]{tcolorbox}
+\newtcolorbox{tcbwarning}{
+ breakable,
+ enhanced jigsaw,
+ top=0pt,
+ bottom=0pt,
+ titlerule=0pt,
+ bottomtitle=0pt,
+ rightrule=0pt,
+ toprule=0pt,
+ bottomrule=0pt,
+ colback=white,
+ arc=0pt,
+ outer arc=0pt,
+ title style={white},
+ fonttitle=\color{black}\bfseries,
+ left=8pt,
+ colframe=red,
+ title={Warning:},
+}
+\newtcolorbox{tcbnote}{
+ breakable,
+ enhanced jigsaw,
+ top=0pt,
+ bottom=0pt,
+ titlerule=0pt,
+ bottomtitle=0pt,
+ rightrule=0pt,
+ toprule=0pt,
+ bottomrule=0pt,
+ colback=white,
+ arc=0pt,
+ outer arc=0pt,
+ title style={white},
+ fonttitle=\color{black}\bfseries,
+ left=8pt,
+ colframe=yellow,
+ title={Note:},
+}
+
+\begin{document}
+\label{toc}\tableofcontents
+\newpage
+% special variable used for calculating some widths.
+\newlength{\tmplength}
+\chapter{Unit ok{\_}out{\_}enum}
+\label{ok_out_enum}
+\index{ok{\_}out{\_}enum}
+\section{Description}
+Test that "Out" can be used as an enum member name, Delphi allows this.
+\section{Types}
+\ifpdf
+\subsection*{\large{\textbf{TAnimationType}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TAnimationType}
+\fi
+\label{ok_out_enum-TAnimationType}
+\index{TAnimationType}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TAnimationType = (...);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+ \item[\textbf{Values}]
+\begin{description}
+\item[\texttt{In}] \label{ok_out_enum-In}
+\index{}
+ 
+\item[\texttt{Out}] \label{ok_out_enum-Out}
+\index{}
+ 
+\item[\texttt{InOut}] \label{ok_out_enum-InOut}
+\index{}
+ 
+\end{description}
+
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{TDirection}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{TDirection}
+\fi
+\label{ok_out_enum-TDirection}
+\index{TDirection}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+TDirection = (...);\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+ \item[\textbf{Values}]
+\begin{description}
+\item[\texttt{Left}] \label{ok_out_enum-Left}
+\index{}
+ 
+\item[\texttt{Right}] \label{ok_out_enum-Right}
+\index{}
+ 
+\item[\texttt{Up}] \label{ok_out_enum-Up}
+\index{}
+ 
+\item[\texttt{Down}] \label{ok_out_enum-Down}
+\index{}
+ 
+\item[\texttt{In}] \label{ok_out_enum-In}
+\index{}
+ 
+\item[\texttt{Out}] \label{ok_out_enum-Out}
+\index{}
+ 
+\end{description}
+
+
+\end{list}
+\end{document}

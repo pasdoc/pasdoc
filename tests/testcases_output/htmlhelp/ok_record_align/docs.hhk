@@ -1,0 +1,31 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TAlignedRecord">
+<param name="Local" value="ok_record_align.TAlignedRecord.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Field1">
+<param name="Local" value="ok_record_align.TAlignedRecord.html#Field1">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Field2">
+<param name="Local" value="ok_record_align.TAlignedRecord.html#Field2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TAnotherAligned">
+<param name="Local" value="ok_record_align.TAnotherAligned.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="X">
+<param name="Local" value="ok_record_align.TAnotherAligned.html#X">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Y">
+<param name="Local" value="ok_record_align.TAnotherAligned.html#Y">
+</object>
+</ul>
+</body></html>

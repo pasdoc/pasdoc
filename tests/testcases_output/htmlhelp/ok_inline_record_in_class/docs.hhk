@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TOuterClass">
+<param name="Local" value="ok_inline_record_in_class.TOuterClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TInfo">
+<param name="Local" value="ok_inline_record_in_class.TOuterClass.TInfo.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="FIndex">
+<param name="Local" value="ok_inline_record_in_class.TOuterClass.TInfo.html#FIndex">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="FInner">
+<param name="Local" value="ok_inline_record_in_class.TOuterClass.TInfo.html#FInner">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TInnerClass">
+<param name="Local" value="ok_inline_record_in_class.TOuterClass.TInnerClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Create">
+<param name="Local" value="ok_inline_record_in_class.TOuterClass.TInnerClass.html#Create">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Destroy">
+<param name="Local" value="ok_inline_record_in_class.TOuterClass.TInnerClass.html#Destroy">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="FStatus">
+<param name="Local" value="ok_inline_record_in_class.TOuterClass.TInnerClass.html#FStatus">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="FStatusWithCase">
+<param name="Local" value="ok_inline_record_in_class.TOuterClass.TInnerClass.html#FStatusWithCase">
+</object>
+</ul>
+</body></html>
