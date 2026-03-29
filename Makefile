@@ -487,3 +487,4 @@ dist-src:
 		--exclude='*~' \
 		pasdoc
 	mv /tmp/pasdoc-src-temp/$(SOURCE_PACKAGE_BASENAME).zip .
+	rm -Rf /tmp/pasdoc-src-temp
