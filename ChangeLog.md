@@ -22,7 +22,7 @@ If you have any feedback [use our discussion forum](https://github.com/pasdoc/pa
 - Show ancestor description for a method or class, when it misses its own description.
 - Ability to `@link` to specific overloaded routines, like `@link(Foo(String,Integer))` ([testcase](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_link_tag_overloads.pas)).
 - Much more complete expression evaluation for `$if` / `$elseif`.
-- Many parser improvements. We can parse [even Delphi RTL](https://github.com/pasdoc/pasdoc/blob/master/tests/scripts/parse_delphi_sources.sh) (Michalis)
+- Many parser extensions to be complete and handle really every Pascal source code in the wild. As an ultimate test before release, we tested [parsing Delphi RTL](https://github.com/pasdoc/pasdoc/blob/master/tests/scripts/parse_delphi_sources.sh) and [parsing FPC RTL](https://github.com/pasdoc/pasdoc/blob/master/tests/scripts/parse_fpc_sources.sh) (and made numerous fixes to plug all the missing edge-cases) (Michalis)
 
 ### All new features and bugfixes
 
