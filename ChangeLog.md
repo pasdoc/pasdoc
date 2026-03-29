@@ -75,6 +75,7 @@ If you have any feedback [use our discussion forum](https://github.com/pasdoc/pa
     * Parse `align(N)` directive at record end (Michalis)
     * Parse generics with multiple constraints separated by semicolons, like `procedure Foo<A; B>` (Michalis)
     * Fix parsing anonymous record types (`FField: record .. end`) inside classes (Michalis)
+    * Test parsing Delphi source code (Michalis)
 
 * Other fixes:
     * Fixed using introduction `@shortTitle` (Michalis)
