@@ -23,4 +23,7 @@ find "${SOURCES_DIR}" -type f -name "*.pas" > "${OUTPUT_DIR}/sources.txt"
 "${PASDOC_BIN}" \
   --define MSWINDOWS \
   --output="${OUTPUT_DIR}" \
-  --source="${OUTPUT_DIR}/sources.txt"
+  --source="${OUTPUT_DIR}/sources.txt" \
+  --include "${SOURCES_DIR}/Indy10/Core/" \
+  --include "${SOURCES_DIR}/soap/" \
+  | tee "${OUTPUT_DIR}/pasdoc.log"
