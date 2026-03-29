@@ -231,9 +231,18 @@ function CharsPos(const Chars: TCharSet; const S: String): Integer;
 { Remove all instances of a character in Chars from a string. }
 function SRemoveChars(const S: string; const Chars: TCharSet): string;
 
+{ Convert HelpInsight description to PasDoc description, by converting HelpInsight tags
+  like <summary>...</summary> to PasDoc @tags like @@abstract. }
+function ConvertHelpInsightDescription(const Description: string): string;
+
 implementation
 
-uses StrUtils, PasDoc_StreamUtils;
+uses StrUtils,
+  { We use regular expressions to convert HelpInsight descriptions -> PasDoc @tags,
+    and *not for anything else*. }
+  {$ifdef FPC_RegExpr} RegExpr, {$endif}
+  {$ifdef DELPHI_RegularExpressions} RegularExpressions, {$endif}
+  PasDoc_StreamUtils;
 
 {---------------------------------------------------------------------------}
 
@@ -765,6 +774,81 @@ begin
   end;
 
   SetLength(Result, NextResultChar - 1);
+end;
+
+function ConvertHelpInsightDescription(const Description: string): string;
+
+  {$ifdef FPC_RegExpr}
+  function ReplaceRegEx(const AInputStr, ARegExpr, AReplaceStr: string): string;
+  begin
+    Result := ReplaceRegExpr(ARegExpr, AInputStr, AReplaceStr, true);
+  end;
+  {$else}
+  {$ifdef DELPHI_RegularExpressions}
+  function ReplaceRegEx(const AInputStr, ARegExpr, AReplaceStr: string): string;
+  begin
+    Result := TRegEx.Replace(AInputStr, ARegExpr, AReplaceStr);
+  end;
+  {$else}
+  { No regular expressions support, help insight comments will not work. }
+  function ReplaceRegEx(const AInputStr, ARegExpr, AReplaceStr: string): string;
+  begin
+    Result := AInputStr;
+  end;
+  {$endif}
+  {$endif}
+
+begin
+  Result := Description;
+  Result := ReplaceRegEx(Result, '<summary[^>]*>', '@abstract(');
+  Result := ReplaceRegEx(Result, '</summary>', ')');
+  { handle <param.. before <para.., otherwise <para.. would match <param.. too }
+  Result := ReplaceRegEx(Result, '<param[ \t]+name[ \t]*=[ \t]*"([^"]*)"[ \t]*>', '@param($1 ');
+  Result := ReplaceRegEx(Result, '</param>', ')'+LineEnding + LineEnding);
+  Result := ReplaceRegEx(Result, '<para[^>]*>', LineEnding + LineEnding);
+  Result := ReplaceRegEx(Result, '</para>', LineEnding + LineEnding);
+  Result := ReplaceRegEx(Result, '<returns[ ]*([^>]*)>', '@returns($1');
+  Result := ReplaceRegEx(Result, '</returns>', ')');
+  Result := ReplaceRegEx(Result, '<exception[ \t]+cref[ \t]*=[ \t]*"([^"]*)"[ \t]*>', '@raises($1 ');
+  Result := ReplaceRegEx(Result, '<exception[ ]*([^>]*)>', '@raises($1');
+  Result := ReplaceRegEx(Result, '</exception>', ')');
+  Result := ReplaceRegEx(Result, '<permission[ ]*([^>]*)>', '@permission($1');  //not yet implemented
+  Result := ReplaceRegEx(Result, '</permission>', ')');
+  Result := ReplaceRegEx(Result, '<c>', '@code(');
+  Result := ReplaceRegEx(Result, '</c>', ')');
+  Result := ReplaceRegEx(Result, '<code>', '@preformatted(');
+  Result := ReplaceRegEx(Result, '<code lang="Delphi">', '@longCode(');
+  Result := ReplaceRegEx(Result, '</code>', ')');
+  Result := ReplaceRegEx(Result, '<b>', '@bold(');
+  Result := ReplaceRegEx(Result, '</b>', ')');
+  Result := ReplaceRegEx(Result, '<strong>', '@bold(');
+  Result := ReplaceRegEx(Result, '</strong>', ')');
+  Result := ReplaceRegEx(Result, '<i>', '@italic(');
+  Result := ReplaceRegEx(Result, '</i>', ')');
+  Result := ReplaceRegEx(Result, '<em>', '@italic(');
+  Result := ReplaceRegEx(Result, '</em>', ')');
+  Result := ReplaceRegEx(Result, '<u>', '@underline(');  // not yet implemented
+  Result := ReplaceRegEx(Result, '</u>', ')');
+  Result := ReplaceRegEx(Result, '<br */?>', '@br');
+  Result := ReplaceRegEx(Result, '<ul>', '@unorderedList(');
+  Result := ReplaceRegEx(Result, '</ul>', ')');
+  Result := ReplaceRegEx(Result, '<ol>', '@orderedList(');
+  Result := ReplaceRegEx(Result, '</ol>', ')');
+  Result := ReplaceRegEx(Result, '<li>', '@item(');
+  Result := ReplaceRegEx(Result, '</li>', ')');
+  Result := ReplaceRegEx(Result, '<remark>', '');
+  Result := ReplaceRegEx(Result, '</remark>', '');
+  Result := ReplaceRegEx(Result, '<remarks>', '');
+  Result := ReplaceRegEx(Result, '</remarks>', '');
+  Result := ReplaceRegEx(Result, '<comment>', '');
+  Result := ReplaceRegEx(Result, '</comment>', '');
+  Result := ReplaceRegEx(Result, '<exclude[^/]*/>', '@exclude');
+  Result := ReplaceRegEx(Result, '<see[ \t]+cref[ \t]*=[ \t]*"([^"]*)"[ \t]*/>', '@link($1)');
+  Result := ReplaceRegEx(Result, '<see[ \t]+cref[ \t]*=[ \t]*"([^"]*)"[ \t]*>', '@link($1 ');
+  Result := ReplaceRegEx(Result, '</see>', ')');
+  Result := ReplaceRegEx(Result, '<seealso[ \t]+cref[ \t]*=[ \t]*"([^"]*)"[ \t]*/>', '@seealso($1)');
+  Result := ReplaceRegEx(Result, '<seealso[ \t]+cref[ \t]*=[ \t]*"([^"]*)"[ \t]*>', '@seealso($1 ');
+  Result := ReplaceRegEx(Result, '</seealso>', ')');
 end;
 
 end.

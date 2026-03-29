@@ -33,6 +33,7 @@ type
   published
     procedure TestRemoveIndentation;
     procedure TestStripHtml;
+    procedure TestConvertHelpInsight;
   end;
 
 implementation
@@ -71,6 +72,16 @@ begin
      StripHtml(' blah   blah ' + LineEnding + ' foo'));
   AssertEquals(' blah   blah ' + LineEnding + ' foo',
      StripHtml(' <i>blah   <b>blah</b></i> <blabla>' + LineEnding + ' <table>foo'));
+end;
+
+procedure TTestPasDocUtils.TestConvertHelpInsight;
+begin
+  AssertEquals(
+    '@abstract(This is abstract.)' + LineEnding +
+    '@bold(This is bold.)',
+    ConvertHelpInsightDescription(
+      '<summary>This is abstract.</summary>' + LineEnding +
+      '<b>This is bold.</b>'));
 end;
 
 initialization

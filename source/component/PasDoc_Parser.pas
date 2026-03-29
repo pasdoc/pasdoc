@@ -592,8 +592,6 @@ type
 implementation
 
 uses
-  {$ifdef FPC_RegExpr} RegExpr, {$endif}
-  {$ifdef DELPHI_RegularExpressions} RegularExpressions, {$endif}
   PasDoc_Utils;
 
 { Extend full Pascal declaration of something by NextToken.
@@ -721,80 +719,8 @@ begin
 end;
 
 procedure TParser.ExpandHelpInsightDescriptions(var DescriptionInfo: TRawDescriptionInfo);
-
-  {$ifdef FPC_RegExpr}
-  function ReplaceRegEx(const AInputStr, ARegExpr, AReplaceStr: string): string;
-  begin
-    Result := ReplaceRegExpr(ARegExpr, AInputStr, AReplaceStr, true);
-  end;
-  {$else}
-  {$ifdef DELPHI_RegularExpressions}
-  function ReplaceRegEx(const AInputStr, ARegExpr, AReplaceStr: string): string;
-  begin
-    Result := TRegEx.Replace(AInputStr, ARegExpr, AReplaceStr);
-  end;
-  {$else}
-  { No regular expressions support, help insight comments will not work. }
-  function ReplaceRegEx(const AInputStr, ARegExpr, AReplaceStr: string): string;
-  begin
-    Result := AInputStr;
-  end;
-  {$endif}
-  {$endif}
-
-var s: string;
 begin
-  s := DescriptionInfo.Content;
-  s := ReplaceRegEx(s, '<summary[^>]*>', '@abstract(');
-  s := ReplaceRegEx(s, '</summary>', ')');
-  { handle <param.. before <para.., otherwise <para.. would match <param.. too }
-  s := ReplaceRegEx(s, '<param[ \t]+name[ \t]*=[ \t]*"([^"]*)"[ \t]*>', '@param($1 ');
-  s := ReplaceRegEx(s, '</param>', ')'+LineEnding + LineEnding);
-  s := ReplaceRegEx(s, '<para[^>]*>', LineEnding + LineEnding);
-  s := ReplaceRegEx(s, '</para>', LineEnding + LineEnding);
-  s := ReplaceRegEx(s, '<returns[ ]*([^>]*)>', '@returns($1');
-  s := ReplaceRegEx(s, '</returns>', ')');
-  s := ReplaceRegEx(s, '<exception[ \t]+cref[ \t]*=[ \t]*"([^"]*)"[ \t]*>', '@raises($1 ');
-  s := ReplaceRegEx(s, '<exception[ ]*([^>]*)>', '@raises($1');
-  s := ReplaceRegEx(s, '</exception>', ')');
-  s := ReplaceRegEx(s, '<permission[ ]*([^>]*)>', '@permission($1');  //not yet implemented
-  s := ReplaceRegEx(s, '</permission>', ')');
-  s := ReplaceRegEx(s, '<c>', '@code(');
-  s := ReplaceRegEx(s, '</c>', ')');
-  s := ReplaceRegEx(s, '<code>', '@preformatted(');
-  s := ReplaceRegEx(s, '<code lang="Delphi">', '@longCode(');
-  s := ReplaceRegEx(s, '</code>', ')');
-  s := ReplaceRegEx(s, '<b>', '@bold(');
-  s := ReplaceRegEx(s, '</b>', ')');
-  s := ReplaceRegEx(s, '<strong>', '@bold(');
-  s := ReplaceRegEx(s, '</strong>', ')');
-  s := ReplaceRegEx(s, '<i>', '@italic(');
-  s := ReplaceRegEx(s, '</i>', ')');
-  s := ReplaceRegEx(s, '<em>', '@italic(');
-  s := ReplaceRegEx(s, '</em>', ')');
-  s := ReplaceRegEx(s, '<u>', '@underline(');  // not yet implemented
-  s := ReplaceRegEx(s, '</u>', ')');
-  s := ReplaceRegEx(s, '<br */?>', '@br');
-  s := ReplaceRegEx(s, '<ul>', '@unorderedList(');
-  s := ReplaceRegEx(s, '</ul>', ')');
-  s := ReplaceRegEx(s, '<ol>', '@orderedList(');
-  s := ReplaceRegEx(s, '</ol>', ')');
-  s := ReplaceRegEx(s, '<li>', '@item(');
-  s := ReplaceRegEx(s, '</li>', ')');
-  s := ReplaceRegEx(s, '<remark>', '');
-  s := ReplaceRegEx(s, '</remark>', '');
-  s := ReplaceRegEx(s, '<remarks>', '');
-  s := ReplaceRegEx(s, '</remarks>', '');
-  s := ReplaceRegEx(s, '<comment>', '');
-  s := ReplaceRegEx(s, '</comment>', '');
-  s := ReplaceRegEx(s, '<exclude[^/]*/>', '@exclude');
-  s := ReplaceRegEx(s, '<see[ \t]+cref[ \t]*=[ \t]*"([^"]*)"[ \t]*/>', '@link($1)');
-  s := ReplaceRegEx(s, '<see[ \t]+cref[ \t]*=[ \t]*"([^"]*)"[ \t]*>', '@link($1 ');
-  s := ReplaceRegEx(s, '</see>', ')');
-  s := ReplaceRegEx(s, '<seealso[ \t]+cref[ \t]*=[ \t]*"([^"]*)"[ \t]*/>', '@seealso($1)');
-  s := ReplaceRegEx(s, '<seealso[ \t]+cref[ \t]*=[ \t]*"([^"]*)"[ \t]*>', '@seealso($1 ');
-  s := ReplaceRegEx(s, '</seealso>', ')');
-  DescriptionInfo.Content := s;
+  DescriptionInfo.Content := ConvertHelpInsightDescription(DescriptionInfo.Content);
 end;
 
 procedure TParser.RemoveRegionDeclarations(var DescriptionInfo: TRawDescriptionInfo);
