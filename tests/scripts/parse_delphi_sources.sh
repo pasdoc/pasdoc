@@ -3,7 +3,8 @@ set -eu
 
 # --------------------------------------------------------------------
 # Parse Delphi source code.
-# You need to have Delphi installed for this to work naturally.
+# You need to have Delphi installed for this to work.
+# Edit SOURCES_DIR below to point to the Delphi source code on your system.
 # --------------------------------------------------------------------
 
 # Assume pasdoc is on $PATH, if PASDOC_BIN not set.
