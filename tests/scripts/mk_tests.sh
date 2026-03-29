@@ -345,6 +345,7 @@ all_tests_for_current_format ()
   mk_test ok_record_align ok_record_align.pas
   mk_test ok_alias_string ok_alias_string.pas
   mk_test ok_type_helpers ok_type_helpers.pas
+  mk_test ok_octal_notation ok_octal_notation.pas
 }
 
 # parse params ----------------------------------------

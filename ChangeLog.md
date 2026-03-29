@@ -21,7 +21,7 @@ If you have any feedback [use our discussion forum](https://github.com/pasdoc/pa
 - [Automatic abstract is now default](https://pasdoc.github.io/Abstract).
 - Show ancestor description for a method or class, when it misses its own description.
 - Ability to `@link` to specific overloaded routines, like `@link(Foo(String,Integer))` ([testcase](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_link_tag_overloads.pas)).
-- Much more complete expression evaluation for `$if` / `$elseif`.
+- Much more complete expression evaluation for `$if` / `$elseif`. See [details what is supported here](https://pasdoc.github.io/ConditionalDefines).
 - Many parser extensions to be complete and handle really every Pascal source code in the wild. As an ultimate test before release, we tested [parsing Delphi RTL](https://github.com/pasdoc/pasdoc/blob/master/tests/scripts/parse_delphi_sources.sh) and [parsing FPC RTL](https://github.com/pasdoc/pasdoc/blob/master/tests/scripts/parse_fpc_sources.sh) (and made numerous fixes to plug all the missing edge-cases) (Michalis)
 
 ### All new features and bugfixes
@@ -75,8 +75,9 @@ If you have any feedback [use our discussion forum](https://github.com/pasdoc/pa
     * Allow [`on`](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_on_property.pas) and [`out`](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_out_enum.pas) as regular names (e.g. for properties) (Michalis)
     * Parse [`align(N)`](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_record_align.pas) directive at record end (Michalis)
     * Parse [generics with multiple constraints separated by semicolons](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_generic_multiple_constraints.pas), like `procedure Foo<A; B>` (Michalis)
-    * Fix parsing [anonymous record types](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_inline_record_in_class.pas) (`FField: record .. end`) inside classes (Michalis)
-    * Fix parsing [TSomething = type string;](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_alias_string.pas) and `record helper for string` (Michalis)
+    * Parse [anonymous record types](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_inline_record_in_class.pas) (`FField: record .. end`) inside classes (Michalis)
+    * Parse [TSomething = type string;](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_alias_string.pas) and `record helper for string` (Michalis)
+    * Parse [numbers in octal notation](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_octal_notation.pas) (Michalis)
 
 * Other fixes:
     * Fixed using introduction `@shortTitle` (Michalis)

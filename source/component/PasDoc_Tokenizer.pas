@@ -961,8 +961,20 @@ begin
         '%': Result := ReadAttAssemblerRegister;
         '"': Result := ReadDoubleQuotedString;
         '&': begin
-               if not ((GetChar(C) > 0) and
-                       IsIdentifierStartChar(C) and
+               if not (GetChar(C) > 0) then
+               begin
+                 if NilOnInvalidContent then
+                   Exit(nil)
+                 else
+                   DoError('Cannot read valid identifier after "&" prefix', []);
+               end else
+               if CharInSet(C, DecimalDigits) then
+               begin
+                 { Octal number literal: &<octal-digits>, e.g. &4000 }
+                 ReadToken(C, DecimalDigits, TOK_NUMBER, Result);
+                 Result.Data := '&' + Result.Data;
+               end else
+               if not (IsIdentifierStartChar(C) and
                        ReadIdentifierToken(C, Result)) then
                begin
                  if NilOnInvalidContent then
