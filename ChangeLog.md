@@ -22,6 +22,7 @@ If you have any feedback [use our discussion forum](https://github.com/pasdoc/pa
 - Show ancestor description for a method or class, when it misses its own description.
 - Ability to `@link` to specific overloaded routines, like `@link(Foo(String,Integer))` ([testcase](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_link_tag_overloads.pas)).
 - Much more complete expression evaluation for `$if` / `$elseif`.
+- Many parser improvements. We can parse [even Delphi RTL](https://github.com/pasdoc/pasdoc/blob/master/tests/scripts/parse_delphi_sources.sh) (Michalis)
 
 ### All new features and bugfixes
 
@@ -75,8 +76,7 @@ If you have any feedback [use our discussion forum](https://github.com/pasdoc/pa
     * Parse [`align(N)`](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_record_align.pas) directive at record end (Michalis)
     * Parse [generics with multiple constraints separated by semicolons](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_generic_multiple_constraints.pas), like `procedure Foo<A; B>` (Michalis)
     * Fix parsing [anonymous record types](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_inline_record_in_class.pas) (`FField: record .. end`) inside classes (Michalis)
-    * [Test parsing Delphi source code](https://github.com/pasdoc/pasdoc/blob/master/tests/scripts/parse_delphi_sources.sh) (Michalis)
-    * Fix parsing [TSomething = type string;](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_alias_string.pas) (Michalis)
+    * Fix parsing [TSomething = type string;](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_alias_string.pas) and `record helper for string` (Michalis)
 
 * Other fixes:
     * Fixed using introduction `@shortTitle` (Michalis)

@@ -344,6 +344,7 @@ all_tests_for_current_format ()
   mk_test ok_out_enum ok_out_enum.pas
   mk_test ok_record_align ok_record_align.pas
   mk_test ok_alias_string ok_alias_string.pas
+  mk_test ok_type_helpers ok_type_helpers.pas
 }
 
 # parse params ----------------------------------------

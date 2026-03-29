@@ -329,6 +329,10 @@ type
       Returns the whole qualified identifier as a string. }
     function ParseQualifiedIdentifier: String;
 
+    { Parse known type name, which may be "TMyType" or qualified "MyUnit.TMyClass.TMyType"
+      or built-in type ("String", which is a keyword for PasDoc). }
+    function ParseKnownTypeIdentifier: String;
+
     { Parses a constructor, a destructor, a function or a procedure
       or an operator (for FPC).
       Resulting @link(TPasRoutine) item will be returned in M.
@@ -912,6 +916,21 @@ begin
     end else
       Exit;
   end;
+end;
+
+function TParser.ParseKnownTypeIdentifier: String;
+var
+  T: TToken;
+begin
+  T := PeekNextToken;
+  if (T.MyType = TOK_KEYWORD) and
+     (T.Info.KeyWord = KEY_STRING) then
+  begin
+    Result := T.Data;
+    Scanner.ConsumeToken;
+    FreeAndNil(T);
+  end else
+    Result := ParseQualifiedIdentifier;
 end;
 
 function TParser.GetAndCheckNextToken(ASymbolType: TSymbolType): string;
@@ -1588,17 +1607,9 @@ begin
     P.Name := Name;
     P.RawDescriptionInfo^ := RawDescriptionInfo;
     P.SetAttributes(CurrentAttributes);
-    { Allow "TSomething = type string;".
-      Since "string" is a keyword, ParseQualifiedIdentifier would not accept it. }
-    T := PeekNextToken;
-    if (T.MyType = TOK_KEYWORD) and
-       (T.Info.KeyWord = KEY_STRING) then
-    begin
-      P.AliasedName := T.Data;
-      Scanner.ConsumeToken;
-      FreeAndNil(T);
-    end else
-      P.AliasedName := ParseQualifiedIdentifier;
+    { Thanks to ParseKnownTypeIdentifier, we parse any type,
+      including "TSomething = type string;". }
+    P.AliasedName := ParseKnownTypeIdentifier;
     P.IsStrongAlias := true;
     P.FullDeclaration := Name + ' = type ' + P.AliasedName;
 
@@ -4209,23 +4220,8 @@ begin
       if (CIOType in [ CIO_CLASS, CIO_RECORD, CIO_TYPE ]) and
           (ACio.ClassDirective = CT_HELPER) then
       begin
-        t := PeekNextToken;
-        if t.IsKeyWord(KEY_FOR) then
-        begin
-          Scanner.ConsumeToken;
-          FreeAndNil(t);
-
-          t := GetNextToken;
-          if t.MyType = TOK_IDENTIFIER then
-          begin
-            ACio.HelperTypeIdentifier := t.Data;
-            FreeAndNil(t);
-          end
-          else
-            DoError('Identifier expected but %s found', ['''' + t.Data + '''']);
-        end
-        else
-          DoError('Keyword FOR expected but %s found', ['''' + t.Data + '''']);
+        GetAndCheckNextToken(KEY_FOR);
+        ACio.HelperTypeIdentifier := ParseKnownTypeIdentifier;
       end;
 
       if ACio.MyType in [ CIO_CLASS, CIO_PACKEDCLASS, CIO_OBJCCLASS, CIO_PACKEDOBJCCLASS ] then

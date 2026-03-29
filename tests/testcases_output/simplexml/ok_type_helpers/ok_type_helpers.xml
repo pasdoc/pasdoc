@@ -1,0 +1,17 @@
+<unit name="ok_type_helpers">
+  <type name="TMyEnum" declaration="TMyEnum = (...);">
+    <constant name="one" declaration="one">
+    </constant>
+    <constant name="two" declaration="two">
+    </constant>
+    <constant name="three" declaration="three">
+    </constant>
+  </type>
+  <structure name="TStringHelper" name_with_generic="TStringHelper" type="record">
+  </structure>
+  <structure name="TMyEnumHelper" name_with_generic="TMyEnumHelper" type="record">
+    <description><abstract>You can extend enums too.</abstract><detailed> https://docwiki.embarcadero.com/RADStudio/Sydney/en/Class_and_Record_Helpers_(Delphi) suggests you cannot, but https://www.thoughtco.com/record-helpers-for-sets-1058204 and actual test with Delphi 12 shows you can:</detailed></description>
+    <routine name="GetNext" declaration="function GetNext: TMyEnum;" visibility="public" type="function">
+    </routine>
+  </structure>
+</unit>
