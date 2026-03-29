@@ -28,4 +28,11 @@ $pasdoc = array(
   // Overloaded identifier:   'TClassWithNested.TNestedClass.TNestedClass2.ShouldExit' => array('html_filename' => 'ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#ShouldExit', 'type' => 'function'),
   'TClassWithNested.TNestedClass.TNestedClass2.FLowestBreakIter' => array('html_filename' => 'ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#FLowestBreakIter', 'type' => 'variable'),
   'TClassWithNested.TNestedClass.TNestedClass2.LowestBreakIter' => array('html_filename' => 'ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#LowestBreakIter', 'type' => 'property'),
+  'TClassWithNested.TAnotherNestedClass' => array('html_filename' => 'ok_attributes.TClassWithNested.TAnotherNestedClass.html', 'type' => 'class'),
+  'TClassWithNested.TAnotherNestedClass.TNestedClass2' => array('html_filename' => 'ok_attributes.TClassWithNested.TAnotherNestedClass.TNestedClass2.html', 'type' => 'class'),
+  'TClassWithNested.TAnotherNestedClass.TNestedClass2.FLowestBreakIter' => array('html_filename' => 'ok_attributes.TClassWithNested.TAnotherNestedClass.TNestedClass2.html#FLowestBreakIter', 'type' => 'variable'),
+  'TClassWithNested.TAnotherNestedClass.TNestedClass2.FAnotherLowestBreakIter' => array('html_filename' => 'ok_attributes.TClassWithNested.TAnotherNestedClass.TNestedClass2.html#FAnotherLowestBreakIter', 'type' => 'variable'),
+  'TClassWithNested.TAnotherNestedClass.TAnotherNestedClass2' => array('html_filename' => 'ok_attributes.TClassWithNested.TAnotherNestedClass.TAnotherNestedClass2.html', 'type' => 'class'),
+  'TClassWithNested.TAnotherNestedClass.TAnotherNestedClass2.FLowestBreakIter' => array('html_filename' => 'ok_attributes.TClassWithNested.TAnotherNestedClass.TAnotherNestedClass2.html#FLowestBreakIter', 'type' => 'variable'),
+  'TClassWithNested.TAnotherNestedClass.TAnotherNestedClass2.FAnotherLowestBreakIter' => array('html_filename' => 'ok_attributes.TClassWithNested.TAnotherNestedClass.TAnotherNestedClass2.html#FAnotherLowestBreakIter', 'type' => 'variable'),
 );

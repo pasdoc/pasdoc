@@ -66,5 +66,22 @@
         </property>
       </structure>
     </structure>
+    <structure name="TAnotherNestedClass" visibility="public" name_with_generic="TAnotherNestedClass" type="class">
+      <ancestor name="TAncestor" declaration="TAncestor" />
+      <structure name="TNestedClass2" visibility="public" name_with_generic="TNestedClass2" type="class">
+        <ancestor name="TAncestor.TAncestorFlag" declaration="TAncestor.TAncestorFlag" />
+        <variable name="FLowestBreakIter" declaration="FLowestBreakIter: Int64;" visibility="public">
+        </variable>
+        <variable name="FAnotherLowestBreakIter" declaration="FAnotherLowestBreakIter: Int64;" visibility="public">
+        </variable>
+      </structure>
+      <structure name="TAnotherNestedClass2" visibility="public" name_with_generic="TAnotherNestedClass2" type="class">
+        <ancestor name="TAncestor.TAncestorFlag" declaration="TAncestor.TAncestorFlag" />
+        <variable name="FLowestBreakIter" declaration="FLowestBreakIter: Int64;" visibility="public">
+        </variable>
+        <variable name="FAnotherLowestBreakIter" declaration="FAnotherLowestBreakIter: Int64;" visibility="public">
+        </variable>
+      </structure>
+    </structure>
   </structure>
 </unit>

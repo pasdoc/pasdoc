@@ -56,15 +56,15 @@ type
   end;
 
   { Class with nested classes with attributes.
-    This is like TParallel from Delphi RTL. }
+    This testcase is based on TParallel from Delphi RTL declaration. }
   TClassWithNested = class sealed
   public type
     [Align(8)]
     TNestedClass = class sealed(TAncestor)
-    private type
+    public type
       [Align(8)]
       TNestedClass2 = class(TAncestor.TAncestorFlag)
-      private
+      public
         [Align(8)]
         FLowestBreakIter: Int64;
         function InlineMethod: Int64; inline;
@@ -73,6 +73,27 @@ type
         function ShouldExit(ThisIter: Int64): Boolean; overload;
         function ShouldExit: Boolean; overload;
         property LowestBreakIter: Int64 read GetLowestBreakIter;
+      end;
+    end;
+
+    [Align(8)]
+    TAnotherNestedClass = class sealed(TAncestor)
+    public type
+      [Align(8)]
+      TNestedClass2 = class(TAncestor.TAncestorFlag)
+      public
+        [Align(8)]
+        FLowestBreakIter: Int64;
+        [Align(8)]
+        FAnotherLowestBreakIter: Int64;
+      end;
+      [Align(8)]
+      TAnotherNestedClass2 = class(TAncestor.TAncestorFlag)
+      public
+        [Align(8)]
+        FLowestBreakIter: Int64;
+        [Align(8)]
+        FAnotherLowestBreakIter: Int64;
       end;
     end;
   end;

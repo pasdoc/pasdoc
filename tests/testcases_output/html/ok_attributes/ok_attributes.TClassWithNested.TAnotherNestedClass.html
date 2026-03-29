@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>ok_attributes: Class TClassWithNested</title>
+<title>ok_attributes: Class TClassWithNested.TAnotherNestedClass</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <link rel="StyleSheet" type="text/css" href="bootstrap.min.css">
@@ -25,30 +25,34 @@
 <ul class="nav flex-column px-3"><li class="nav-item"><a class="nav-link px-2 py-1" href="AllUnits.html">Units</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="ClassHierarchy.html">Class Hierarchy</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllClasses.html">Classes, Interfaces, Objects and Records</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllTypes.html">Types</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllVariables.html">Variables</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllConstants.html">Constants</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllFunctions.html">Functions and Procedures</a></li><li class="nav-item"><a class="nav-link px-2 py-1" href="AllIdentifiers.html">Identifiers</a></li></ul></div></div>
 <main class="pasdoc-content content">
 <div class="container-fluid py-3 px-4">
-<span id="TClassWithNested"></span><h1 class="cio">Class TClassWithNested</h1>
+<span id="TAnotherNestedClass"></span><h1 class="cio">Class TClassWithNested.TAnotherNestedClass</h1>
 <div class="sections">
-<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section"><a class="section" href="#PasDoc-Hierarchy">Hierarchy</a></div><div class="one_section"><a class="section" href="#PasDoc-NestedCRs">Nested Classes and Records</a></div></div>
+<div class="one_section"><a class="section" href="#PasDoc-Description">Description</a></div><div class="one_section"><a class="section" href="#PasDoc-Hierarchy">Hierarchy</a></div><div class="one_section"><a class="section" href="#PasDoc-EnclosingClass">Enclosing Class</a></div><div class="one_section"><a class="section" href="#PasDoc-NestedCRs">Nested Classes and Records</a></div></div>
 <span id="PasDoc-Description"></span><h2 class="unit">Unit</h2>
 <p class="unitlink">
 <a href="ok_attributes.html">ok_attributes</a></p>
 <h2 class="declaration">Declaration</h2>
 <p class="declaration">
-<code>type TClassWithNested = class sealed(TObject)</code></p>
+<code>type TAnotherNestedClass = class sealed(TAncestor)</code></p>
 <h2 class="description">Description</h2>
-<p>
-Class with nested classes with attributes. This testcase is based on TParallel from Delphi RTL declaration.</p>
+<p class="nodescription">This item has no description.</p><h6 class="description_section">Attributes</h6>
+<dl class="attributes">
+  <dt><code>Align</code>(8)</dt>
+  <dd></dd>
+</dl>
 <span id="PasDoc-Hierarchy"></span><h2 class="hierarchy">Hierarchy</h2>
-<ul class="hierarchy"><li class="ancestor">TObject</li>
-<li class="thisitem">TClassWithNested</li></ul><h2 class="overview">Overview</h2>
+<ul class="hierarchy"><li class="ancestor">TAncestor</li>
+<li class="thisitem">TClassWithNested.TAnotherNestedClass</li></ul><span id="PasDoc-EnclosingClass"></span><h2 class="enclosingclass">Enclosing Class</h2>
+<ul class="hierarchy"><li class="thisitem"><a class="ancestor" href="ok_attributes.TClassWithNested.html">TClassWithNested</a></li></ul><h2 class="overview">Overview</h2>
 <span id="PasDoc-NestedCRs"></span><h3 class="summary">Nested Classes and Records</h3>
 <table class="summary wide_list">
 <tr class="list visibility-public">
 <td class="visibility"><span class="badge vis-public">Public</span></td>
-<td class="itemcode"><code><strong><a href="ok_attributes.TClassWithNested.TNestedClass.html">TNestedClass</a></strong> = class sealed(TAncestor)</code></td>
+<td class="itemcode"><code><strong><a href="ok_attributes.TClassWithNested.TAnotherNestedClass.TNestedClass2.html">TNestedClass2</a></strong> = class(TAncestor.TAncestorFlag)</code></td>
 </tr>
 <tr class="list2 visibility-public">
 <td class="visibility"><span class="badge vis-public">Public</span></td>
-<td class="itemcode"><code><strong><a href="ok_attributes.TClassWithNested.TAnotherNestedClass.html">TAnotherNestedClass</a></strong> = class sealed(TAncestor)</code></td>
+<td class="itemcode"><code><strong><a href="ok_attributes.TClassWithNested.TAnotherNestedClass.TAnotherNestedClass2.html">TAnotherNestedClass2</a></strong> = class(TAncestor.TAncestorFlag)</code></td>
 </tr>
 </table>
 <h2 class="description">Description</h2>
