@@ -343,6 +343,7 @@ all_tests_for_current_format ()
   mk_test ok_on_property ok_on_property.pas
   mk_test ok_out_enum ok_out_enum.pas
   mk_test ok_record_align ok_record_align.pas
+  mk_test ok_alias_string ok_alias_string.pas
 }
 
 # parse params ----------------------------------------

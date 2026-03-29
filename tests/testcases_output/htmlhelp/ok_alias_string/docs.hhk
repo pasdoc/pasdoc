@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TFileName">
+<param name="Local" value="ok_alias_string.html#TFileName">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TFileName2">
+<param name="Local" value="ok_alias_string.html#TFileName2">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TRecord2">
+<param name="Local" value="ok_alias_string.TRecord2.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="A">
+<param name="Local" value="ok_alias_string.TRecord2.html#A">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="B">
+<param name="Local" value="ok_alias_string.TRecord2.html#B">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TRoot">
+<param name="Local" value="ok_alias_string.html#TRoot">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TRoot2">
+<param name="Local" value="ok_alias_string.html#TRoot2">
+</object>
+</ul>
+</body></html>

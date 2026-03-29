@@ -1,0 +1,16 @@
+<unit name="ok_alias_string">
+  <type name="TRoot" declaration="TRoot = type string;">
+  </type>
+  <type name="TFileName" declaration="TFileName = type string;">
+  </type>
+  <type name="TRoot2" declaration="TRoot2 = string;">
+  </type>
+  <type name="TFileName2" declaration="TFileName2 = string;">
+  </type>
+  <structure name="TRecord2" name_with_generic="TRecord2" type="record">
+    <variable name="A" declaration="A: Integer " visibility="public">
+    </variable>
+    <variable name="B" declaration="B: Integer " visibility="public">
+    </variable>
+  </structure>
+</unit>
