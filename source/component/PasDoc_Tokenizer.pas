@@ -119,7 +119,6 @@ type
     KEY_NOT,
     KEY_OBJECT,
     KEY_OF,
-    KEY_ON,
     KEY_OR,
     KEY_PACKED,
     KEY_PROCEDURE,
@@ -144,8 +143,7 @@ type
     KEY_VAR,
     KEY_WHILE,
     KEY_WITH,
-    KEY_XOR,
-    KEY_OUT
+    KEY_XOR
   );
 
   TStandardDirective = (
@@ -173,6 +171,8 @@ type
     SD_NAME,
     SD_NEAR,
     SD_NODEFAULT,
+    SD_NORETURN,
+    SD_ON,
     SD_OPERATOR,
     SD_OUT,
     SD_OVERLOAD,
@@ -466,10 +466,10 @@ const
     'FINALLY', 'FOR', 'FUNCTION', 'GOTO', 'IF', 'IMPLEMENTATION',
     'IN', 'INHERITED', 'INITIALIZATION', 'INLINE', 'INTERFACE',
     'IS', 'LABEL', 'LIBRARY', 'MOD', 'NIL', 'NOT', 'OBJECT', 'OF',
-    'ON', 'OR', 'PACKED', 'PROCEDURE', 'PROGRAM', 'PROPERTY',
+    'OR', 'PACKED', 'PROCEDURE', 'PROGRAM', 'PROPERTY',
     'RAISE', 'RECORD', 'REPEAT', 'RESOURCESTRING', 'SET', 'SHL',
     'SHR', 'STRING', 'THEN', 'THREADVAR', 'TO', 'TRY', 'TYPE',
-    'UNIT', 'UNTIL', 'USES', 'VAR', 'WHILE', 'WITH', 'XOR', 'OUT');
+    'UNIT', 'UNTIL', 'USES', 'VAR', 'WHILE', 'WITH', 'XOR');
 
   { Object Pascal directives }
   StandardDirectiveArray:
@@ -478,7 +478,7 @@ const
     'ABSOLUTE', 'ABSTRACT', 'APIENTRY', 'ASSEMBLER', 'AUTOMATED',
     'CDECL', 'CVAR', 'DEFAULT', 'DISPID', 'DYNAMIC', 'EXPERIMENTAL', 'EXPORT', 'EXTERNAL',
     'FAR', 'FORWARD', 'GENERIC', 'HELPER', 'INDEX', 'INLINE', 'MESSAGE', 'NAME', 'NEAR',
-    'NODEFAULT', 'OPERATOR', 'OUT', 'OVERLOAD', 'OVERRIDE', 'PASCAL', 'PRIVATE',
+    'NODEFAULT', 'NORETURN', 'ON', 'OPERATOR', 'OUT', 'OVERLOAD', 'OVERRIDE', 'PASCAL', 'PRIVATE',
     'PROTECTED', 'PUBLIC', 'PUBLISHED', 'READ', 'REFERENCE', 'REGISTER',
     'REINTRODUCE', 'RESIDENT', 'SEALED', 'SPECIALIZE', 'STATIC',
     'STDCALL', 'STORED', 'STRICT', 'VIRTUAL',

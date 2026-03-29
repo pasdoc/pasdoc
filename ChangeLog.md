@@ -68,8 +68,10 @@ If you have any feedback [use our discussion forum](https://github.com/pasdoc/pa
     * Parsing unit implementation inline variable (Fr0sT-Brutal)
     * Fixed skipping UTF-8 BOM for various text files other than Pascal source (introduction, conclusion, CSS, HTML header/footer, include file) (Michalis)
     * Parsing [`objcclass` and `objcclass external`](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_objc.pas) (Michalis)
-    * Parsing "unimplemented" directive (Michalis)
+    * Parsing `unimplemented` directive (Michalis)
     * Parsing `exports` section (just skip it for now) (Michalis)
+    * Parse `noreturn` (Michalis)
+    * Allow `on` and `out` as regular names (e.g. for properties) (Michalis)
 
 * Other fixes:
     * Fixed using introduction `@shortTitle` (Michalis)

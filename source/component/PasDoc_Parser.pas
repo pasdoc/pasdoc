@@ -1012,7 +1012,8 @@ procedure TParser.ParseRoutine(out M: TPasRoutine;
   function IsParameterIdentifier(Token: TToken): Boolean;
   begin
     if Token.MyType = TOK_IDENTIFIER then
-      Result := True
+      { SD_OUT is a parameter modifier (like const, var), not a parameter name }
+      Result := not (Token.Info.StandardDirective in [SD_OUT])
     else if Token.MyType = TOK_KEYWORD then
     begin
       Result := Token.Info.KeyWord in [KEY_STRING, KEY_ARRAY, KEY_SET, KEY_OF, KEY_FILE];
@@ -1175,7 +1176,7 @@ begin
       begin
         case t.Info.StandardDirective of
           SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
-          SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE, SD_INLINE,
+          SD_FAR, SD_FORWARD, SD_NEAR, SD_NORETURN, SD_OVERLOAD, SD_OVERRIDE, SD_INLINE,
           SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
           SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
           SD_VARARGS, SD_FINAL:
@@ -1213,7 +1214,7 @@ begin
                   case t.Info.StandardDirective of
                     SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
                     SD_EXTERNAL,
-                    SD_FAR, SD_FORWARD, SD_NEAR, SD_OVERLOAD, SD_OVERRIDE,
+                    SD_FAR, SD_FORWARD, SD_NEAR, SD_NORETURN, SD_OVERLOAD, SD_OVERRIDE,
                     SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
                     SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
                     SD_DEPRECATED, SD_PLATFORM, SD_EXPERIMENTAL,
