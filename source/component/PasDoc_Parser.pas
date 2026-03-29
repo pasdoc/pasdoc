@@ -3865,6 +3865,15 @@ begin
           SD_GENERIC:
             begin
               t2 := PeekNextToken;
+              { Handle "generic class procedure/function" }
+              if t2.IsKeyWord(KEY_CLASS) then
+              begin
+                Scanner.ConsumeToken;
+                ClassKeyWordString := t2.Data;
+                FreeAndNil(t2);
+                t2 := PeekNextToken;
+              end else
+                ClassKeyWordString := '';
               if t2.Info.KeyWord in [KEY_FUNCTION, KEY_PROCEDURE] then
               begin
                  t2 := GetNextToken;

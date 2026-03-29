@@ -30,6 +30,18 @@ type
     function Find(const Name: string): TGeometryAttrib;
   end;
 
+  TBitConverter = class
+    generic class procedure UnsafeFrom<T>(const ASrcValue: T; var ADestination: Array of Byte; AOffset: Integer = 0); static;
+    generic class procedure From<T>(const ASrcValue: T; var ADestination: Array of Byte; AOffset: Integer = 0); static;
+    generic class function UnsafeInTo<T>(const ASource: Array of Byte; AOffset: Integer = 0): T; static;
+    generic class function InTo<T>(const ASource: Array of Byte; AOffset: Integer = 0): T; static;
+
+    generic procedure InstanceUnsafeFrom<T>(const ASrcValue: T; var ADestination: Array of Byte; AOffset: Integer = 0); static;
+    generic procedure InstanceFrom<T>(const ASrcValue: T; var ADestination: Array of Byte; AOffset: Integer = 0); static;
+    generic function InstanceUnsafeInTo<T>(const ASource: Array of Byte; AOffset: Integer = 0): T; static;
+    generic function InstanceInTo<T>(const ASource: Array of Byte; AOffset: Integer = 0): T; static;
+  end;
+
   { Delphi generics tests ---------------------------------------------------- }
 
   { A simple Test-Object }
