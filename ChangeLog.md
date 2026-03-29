@@ -76,6 +76,7 @@ If you have any feedback [use our discussion forum](https://github.com/pasdoc/pa
     * Parse [generics with multiple constraints separated by semicolons](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_generic_multiple_constraints.pas), like `procedure Foo<A; B>` (Michalis)
     * Fix parsing [anonymous record types](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_inline_record_in_class.pas) (`FField: record .. end`) inside classes (Michalis)
     * [Test parsing Delphi source code](https://github.com/pasdoc/pasdoc/blob/master/tests/scripts/parse_delphi_sources.sh) (Michalis)
+    * Fix parsing [TSomething = type string;](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_alias_string.pas) (Michalis)
 
 * Other fixes:
     * Fixed using introduction `@shortTitle` (Michalis)

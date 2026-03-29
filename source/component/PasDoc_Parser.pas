@@ -1587,8 +1587,18 @@ begin
     P.Name := Name;
     P.RawDescriptionInfo^ := RawDescriptionInfo;
     P.SetAttributes(CurrentAttributes);
-    P.AliasedName:= ParseQualifiedIdentifier;
-    P.IsStrongAlias:= true;
+    { Allow "TSomething = type string;".
+      Since "string" is a keyword, ParseQualifiedIdentifier would not accept it. }
+    T := PeekNextToken;
+    if (T.MyType = TOK_KEYWORD) and
+       (T.Info.KeyWord = KEY_STRING) then
+    begin
+      P.AliasedName := T.Data;
+      Scanner.ConsumeToken;
+      FreeAndNil(T);
+    end else
+      P.AliasedName := ParseQualifiedIdentifier;
+    P.IsStrongAlias := true;
     P.FullDeclaration := Name + ' = type ' + P.AliasedName;
 
     T := PeekNextToken;
