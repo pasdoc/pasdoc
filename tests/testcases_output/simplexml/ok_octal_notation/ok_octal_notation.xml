@@ -1,0 +1,13 @@
+<unit name="ok_octal_notation">
+  <description><abstract>Parse numbers in octal notation, with &amp; prefix.</abstract><detailed> See https://www.freepascal.org/docs-html/ref/refse6.html .</detailed></description>
+  <constant name="S_ISUID" declaration="S_ISUID = &amp;4000;">
+  </constant>
+  <constant name="S_ISGID" declaration="S_ISGID = &amp;2000;">
+  </constant>
+  <constant name="S_ISVTX" declaration="S_ISVTX = &amp;1000;">
+  </constant>
+  <constant name="IN_CLOEXEC" declaration="IN_CLOEXEC  = &amp;02000000;">
+  </constant>
+  <constant name="IN_NONBLOCK" declaration="IN_NONBLOCK = &amp;00004000;">
+  </constant>
+</unit>

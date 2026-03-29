@@ -1,0 +1,27 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="IN_CLOEXEC">
+<param name="Local" value="ok_octal_notation.html#IN_CLOEXEC">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="IN_NONBLOCK">
+<param name="Local" value="ok_octal_notation.html#IN_NONBLOCK">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="S_ISGID">
+<param name="Local" value="ok_octal_notation.html#S_ISGID">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="S_ISUID">
+<param name="Local" value="ok_octal_notation.html#S_ISUID">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="S_ISVTX">
+<param name="Local" value="ok_octal_notation.html#S_ISVTX">
+</object>
+</ul>
+</body></html>
