@@ -8,8 +8,6 @@ Numerous output formats are supported, including HTML, LaTeX (for PDF, PS), XML 
 
 This is a _free and open source software_.
 
-We [appreciate your donations (Michalis, maintainer of PasDoc, also makes Castle Game Engine)](https://castle-engine.io/donate), esp. if you use PasDoc in a commercial project. This helps us to continue developing and improving PasDoc.
-
 ## Basic Usage
 
 Put comments before the identifiers in your Pascal source code. Like this:
@@ -45,6 +43,10 @@ pasdoc myunit.pas --format=html --output=output-dir
 ```
 
 You can also use the [GUI interface](https://pasdoc.github.io/PasDocGui).
+
+## Support Us
+
+If you find PasDoc useful, we [appreciate your donations](https://castle-engine.io/donate). This helps us to continue improving PasDoc. _Michalis_, maintainer of PasDoc, also makes [Castle Game Engine](https://castle-engine.io/), and you can use the same channels (like [Patreon](https://www.patreon.com/c/castleengine)) to donate to both projects.
 
 ## Complete Documentation
 
