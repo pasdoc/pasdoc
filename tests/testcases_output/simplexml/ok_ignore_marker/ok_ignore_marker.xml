@@ -6,5 +6,6 @@
   <constant name="B" declaration="B = 1;">
   </constant>
   <type name="T" declaration="T = T;">
+    <aliased-name>T</aliased-name>
   </type>
 </unit>

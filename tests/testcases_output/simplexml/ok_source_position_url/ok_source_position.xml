@@ -11,6 +11,7 @@
   </variable>
   <type name="TMyType" declaration="TMyType = Integer;" source-line="10" source-relative-file-name="tests/testcases/ok_source_position.pas" source-url="https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_source_position.pas#L10">
     <description><abstract>A simple type.</abstract></description>
+    <aliased-name>Integer</aliased-name>
   </type>
   <type name="TEnum" declaration="TEnum = (...);" source-line="30" source-relative-file-name="tests/testcases/ok_source_position.pas" source-url="https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_source_position.pas#L30">
     <description><abstract>An enumerated type.</abstract></description>

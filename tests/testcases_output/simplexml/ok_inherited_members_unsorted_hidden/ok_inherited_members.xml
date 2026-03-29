@@ -39,6 +39,7 @@
       </constant>
     </type>
     <type name="TBaseType" declaration="TBaseType = Integer;" visibility="public">
+      <aliased-name>Integer</aliased-name>
     </type>
     <structure name="TBaseNestedCio" visibility="public" name_with_generic="TBaseNestedCio" type="class">
       <ancestor name="TObject" declaration="TObject" />
@@ -86,6 +87,7 @@
       </constant>
     </type>
     <type name="TDerivedType" declaration="TDerivedType = Integer;" visibility="public">
+      <aliased-name>Integer</aliased-name>
     </type>
     <structure name="TDerivedNestedCio" visibility="public" name_with_generic="TDerivedNestedCio" type="class">
       <ancestor name="TObject" declaration="TObject" />
@@ -133,6 +135,7 @@
       </constant>
     </type>
     <type name="TNewDerivedType" declaration="TNewDerivedType = Integer;" visibility="public">
+      <aliased-name>Integer</aliased-name>
     </type>
     <structure name="TNewDerivedNestedCio" visibility="public" name_with_generic="TNewDerivedNestedCio" type="class">
       <ancestor name="TObject" declaration="TObject" />

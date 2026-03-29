@@ -8,6 +8,7 @@
   </variable>
   <type name="TMyType" declaration="TMyType = Integer;" deprecated="true">
     <description><abstract> Normal type deprecated.</abstract></description>
+    <aliased-name>Integer</aliased-name>
   </type>
   <structure name="TMyClass" deprecated="true" name_with_generic="TMyClass" type="class">
     <description><abstract> Deprecated class.</abstract></description>

@@ -268,6 +268,12 @@ begin
     WriteEnumMembers(TPasEnum(Item));
     UnIndent;
   end;
+  if Item is TPasAliasType then
+  begin
+    Indent;
+    WriteDirectLine(space + '<aliased-name>' + ConvertString(TPasAliasType(Item).AliasedName) + '</aliased-name>');
+    UnIndent;
+  end;
   WriteDirectLine(space+'</type>');
 end;
 

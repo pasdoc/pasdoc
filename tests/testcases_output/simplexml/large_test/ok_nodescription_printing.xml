@@ -7,6 +7,7 @@
   <variable name="MyVariable" declaration="MyVariable: Integer;">
   </variable>
   <type name="TMySimpleType" declaration="TMySimpleType = Integer;">
+    <aliased-name>Integer</aliased-name>
   </type>
   <structure name="TClass1" name_with_generic="TClass1" type="class">
     <ancestor name="TObject" declaration="TObject" />

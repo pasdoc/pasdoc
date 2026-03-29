@@ -13,8 +13,10 @@
   <variable name="AAAVar" declaration="AAAVar: Integer;">
   </variable>
   <type name="ZZZType" declaration="ZZZType = Integer;">
+    <aliased-name>Integer</aliased-name>
   </type>
   <type name="AAAType" declaration="AAAType = Integer;">
+    <aliased-name>Integer</aliased-name>
   </type>
   <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />

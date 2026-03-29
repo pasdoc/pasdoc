@@ -1,10 +1,13 @@
 <unit name="ok_no_comments_outside_class">
   <description><abstract>Test that orthan comments do not break away from the class definition</abstract></description>
   <type name="TNoDescr1" declaration="TNoDescr1 = byte;">
+    <aliased-name>byte</aliased-name>
   </type>
   <type name="TNoDescr2" declaration="TNoDescr2 = byte;">
+    <aliased-name>byte</aliased-name>
   </type>
   <type name="TNoDescr3" declaration="TNoDescr3 = byte;">
+    <aliased-name>byte</aliased-name>
   </type>
   <structure name="TEmptyCl" name_with_generic="TEmptyCl" type="class">
     <description><abstract>Empty class with a comment inside</abstract></description>

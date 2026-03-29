@@ -10,6 +10,7 @@
     <description><abstract>descr of V4 after a keyword</abstract></description>
   </variable>
   <type name="T" declaration="T = byte;">
+    <aliased-name>byte</aliased-name>
   </type>
   <type name="TMyEnum" declaration="TMyEnum = (...);">
     <description><abstract>Descr of TMyEnum</abstract></description>

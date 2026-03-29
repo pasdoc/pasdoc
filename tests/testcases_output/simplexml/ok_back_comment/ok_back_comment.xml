@@ -17,6 +17,7 @@
   </variable>
   <type name="TMyType" declaration="TMyType = Integer;">
     <description><abstract>Description of TMyType</abstract></description>
+    <aliased-name>Integer</aliased-name>
   </type>
   <type name="TMyEnum" declaration="TMyEnum = (...);">
     <description><abstract>Description of TMyEnum</abstract></description>

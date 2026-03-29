@@ -15,6 +15,7 @@
   <variable name="VorbisFileInited" declaration="VorbisFileInited: boolean;">
   </variable>
   <type name="TSizeT" declaration="TSizeT = LongWord;">
+    <aliased-name>LongWord</aliased-name>
   </type>
   <type name="TVorbisFileReadFunc" declaration="TVorbisFileReadFunc = function (ptr: Pointer; Size: TSizeT; nmemb: TSizeT; DataSource: Pointer): TSizeT; cdecl;">
   </type>

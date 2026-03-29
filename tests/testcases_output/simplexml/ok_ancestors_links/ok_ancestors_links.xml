@@ -1,8 +1,10 @@
 <unit name="ok_ancestors_links">
   <description><abstract>Test that we show ancestors correctly, even when using type aliases.</abstract></description>
   <type name="TMyClassAlias" declaration="TMyClassAlias = TMyClass;">
+    <aliased-name>TMyClass</aliased-name>
   </type>
   <type name="TStringListAlias" declaration="TStringListAlias = TStringList;">
+    <aliased-name>TStringList</aliased-name>
   </type>
   <structure name="TMyClass" name_with_generic="TMyClass" type="class">
     <ancestor name="TObject" declaration="TObject" />

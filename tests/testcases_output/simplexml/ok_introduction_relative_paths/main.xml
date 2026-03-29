@@ -1,6 +1,7 @@
 <unit name="main">
   <type name="SomeType" declaration="SomeType = integer;">
     <description><abstract>SomeType description.</abstract></description>
+    <aliased-name>integer</aliased-name>
   </type>
   <structure name="SomeClass" name_with_generic="SomeClass" type="class">
     <description><abstract>SomeClass description.</abstract><detailed> program test;

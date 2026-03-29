@@ -18,36 +18,47 @@
   </routine>
   <type name="TWeakAliasType" declaration="TWeakAliasType = TOriginalType;">
     <description><abstract>TOriginalType abstract description</abstract></description>
+    <aliased-name>TOriginalType</aliased-name>
   </type>
   <type name="TStrongAliasType" declaration="TStrongAliasType = type TOriginalType;">
     <description><abstract>TOriginalType abstract description</abstract></description>
+    <aliased-name>TOriginalType</aliased-name>
   </type>
   <type name="TWeakAliasType2" declaration="TWeakAliasType2 = TOriginalType2;">
     <description><abstract>TOriginalType2 abstract description.</abstract><detailed> More and more description.</detailed></description>
+    <aliased-name>TOriginalType2</aliased-name>
   </type>
   <type name="TStrongAliasType2" declaration="TStrongAliasType2 = type TOriginalType2;">
     <description><abstract>TOriginalType2 abstract description.</abstract><detailed> More and more description.</detailed></description>
+    <aliased-name>TOriginalType2</aliased-name>
   </type>
   <type name="TWeakAliasType3" declaration="TWeakAliasType3 = TOriginalType3;">
     <description><abstract>Special weak alias abstract.</abstract><detailed> More and more description.</detailed></description>
+    <aliased-name>TOriginalType3</aliased-name>
   </type>
   <type name="TStrongAliasType3" declaration="TStrongAliasType3 = type TOriginalType3;">
     <description><abstract>Special strong alias abstract.</abstract><detailed> More and more description.</detailed></description>
+    <aliased-name>TOriginalType3</aliased-name>
   </type>
   <type name="TWeakAliasTypeVeryNested" declaration="TWeakAliasTypeVeryNested = TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;">
     <description><abstract>TOriginalType abstract description, inside nested class(es).</abstract><detailed> More and more description.</detailed></description>
+    <aliased-name>TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType</aliased-name>
   </type>
   <type name="TStrongAliasTypeVeryNested" declaration="TStrongAliasTypeVeryNested = type TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType;">
     <description><abstract>TOriginalType abstract description, inside nested class(es).</abstract><detailed> More and more description.</detailed></description>
+    <aliased-name>TMyClass.TMyNestedClass.TAnotherNestedClass.TOriginalType</aliased-name>
   </type>
   <type name="TMyContainerAlias" declaration="TMyContainerAlias = TMyContainer;">
     <description><abstract>This class manages a Controls list.</abstract></description>
+    <aliased-name>TMyContainer</aliased-name>
   </type>
   <type name="TMyContainerStrongAlias" declaration="TMyContainerStrongAlias = type TMyContainer;">
     <description><abstract>This class manages a Controls list.</abstract></description>
+    <aliased-name>TMyContainer</aliased-name>
   </type>
   <type name="UCS4Char" declaration="UCS4Char = type 0..$10ffff;">
     <description><abstract>Alias to subrange type, allowed by FPC (though not by Delphi, at least as of Delphi 12).</abstract></description>
+    <aliased-name>0..$10ffff</aliased-name>
   </type>
   <type name="TEnum" declaration="TEnum = (...);">
     <constant name="One" declaration="One">
@@ -59,6 +70,7 @@
   </type>
   <type name="TEnumAlias" declaration="TEnumAlias = type Two..Three;">
     <description><abstract>Alias to subrange type of anums, again allowed only by FPC.</abstract></description>
+    <aliased-name>Two..Three</aliased-name>
   </type>
   <structure name="TOriginalType" name_with_generic="TOriginalType" type="record">
     <description><abstract>TOriginalType abstract description</abstract></description>
