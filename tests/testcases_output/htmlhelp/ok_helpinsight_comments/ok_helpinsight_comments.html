@@ -20,6 +20,15 @@ Test of handling help insight comments, in the form &quot;/// &lt;tag&gt; ... &l
 <tr class="list visibility-published">
 <td class="itemcode"><code>procedure <strong><a href="ok_helpinsight_comments.html#Parse-string-">Parse</a></strong>(const _CmdLine: string);</code></td>
 </tr>
+<tr class="list2 visibility-published">
+<td class="itemcode"><code>procedure <strong><a href="ok_helpinsight_comments.html#PascalCodeSample">PascalCodeSample</a></strong>;</code></td>
+</tr>
+<tr class="list visibility-published">
+<td class="itemcode"><code>procedure <strong><a href="ok_helpinsight_comments.html#MultilineCodeSample">MultilineCodeSample</a></strong>;</code></td>
+</tr>
+<tr class="list2 visibility-published">
+<td class="itemcode"><code>procedure <strong><a href="ok_helpinsight_comments.html#MultilineSummaryExample">MultilineSummaryExample</a></strong>;</code></td>
+</tr>
 </table>
 <h2 class="description">Description</h2>
 <h3 class="detail">Functions and Procedures</h3>
@@ -37,6 +46,51 @@ parses the commandline</p>
 <dt>CmdLine</dt>
 <dd>is a string giving the commandline. NOTE: Do not pass System.CmdLine since it contains the program's name as the first &quot;parameter&quot;. If you want to parse the commandline as passed by windows, call the overloaded Parse method without parameters. It handles this.</dd>
 </dl>
+</td></tr>
+</table>
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
+<td class="itemcode"><span id="PascalCodeSample"></span><code>procedure <strong>PascalCodeSample</strong>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Pascal code sample.</p>
+<p>
+ </p>
+
+<pre class="longcode"><span class="pascal_keyword">var</span>
+   A: Integer;
+ <span class="pascal_keyword">begin</span>
+   A := <span class="pascal_numeric">1</span> + <span class="pascal_numeric">2</span> + <span class="pascal_numeric">3</span>;
+ <span class="pascal_keyword">end</span>;</pre>
+
+<p></p>
+</td></tr>
+</table>
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
+<td class="itemcode"><span id="MultilineCodeSample"></span><code>procedure <strong>MultilineCodeSample</strong>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Multiline code sample.</p>
+<p>
+ </p>
+
+<pre class="preformatted"># Sample bash script
+ echo &quot;Hello, World!&quot;
+ echo &quot;This is a multiline code sample.&quot;</pre>
+
+<p></p>
+</td></tr>
+</table>
+<table class="detail visibility-published wide_list">
+<tr class="list visibility-published">
+<td class="itemcode"><span id="MultilineSummaryExample"></span><code>procedure <strong>MultilineSummaryExample</strong>;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+ Multiline summary example. This is the second line of the summary. </p>
 </td></tr>
 </table>
 </body></html>

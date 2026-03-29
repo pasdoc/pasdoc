@@ -4,4 +4,19 @@
     <param name="CmdLine">is a string giving the commandline. NOTE: Do not pass System.CmdLine since it contains the program's name as the first &quot;parameter&quot;. If you want to parse the commandline as passed by windows, call the overloaded Parse method without parameters. It handles this.</param>
     <description><abstract>parses the commandline</abstract><detailed> </detailed></description>
   </routine>
+  <routine name="PascalCodeSample" declaration="procedure PascalCodeSample;" type="procedure">
+    <description><abstract>Pascal code sample.</abstract><detailed> var
+   A: Integer;
+ begin
+   A := 1 + 2 + 3;
+ end;</detailed></description>
+  </routine>
+  <routine name="MultilineCodeSample" declaration="procedure MultilineCodeSample;" type="procedure">
+    <description><abstract>Multiline code sample.</abstract><detailed> # Sample bash script
+ echo &quot;Hello, World!&quot;
+ echo &quot;This is a multiline code sample.&quot;</detailed></description>
+  </routine>
+  <routine name="MultilineSummaryExample" declaration="procedure MultilineSummaryExample;" type="procedure">
+    <description><abstract> Multiline summary example. This is the second line of the summary. </abstract></description>
+  </routine>
 </unit>

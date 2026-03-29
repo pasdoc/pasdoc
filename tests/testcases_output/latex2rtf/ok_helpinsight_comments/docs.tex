@@ -64,6 +64,9 @@ Test of handling help insight comments, in the form "/// {$<$}tag{$>$} ... {$<$}
 \section{Overview}
 \begin{description}
 \item[\texttt{Parse}]parses the commandline
+\item[\texttt{PascalCodeSample}]Pascal code sample.
+\item[\texttt{MultilineCodeSample}]Multiline code sample.
+\item[\texttt{MultilineSummaryExample}] Multiline summary example. This is the second line of the summary. 
 \end{description}
 \section{Functions and Procedures}
 \subsection*{Parse}
@@ -94,6 +97,86 @@ parses the commandline\hfill\vspace*{1ex}
 \item[CmdLine] is a string giving the commandline. NOTE: Do not pass System.CmdLine since it contains the program's name as the first "parameter". If you want to parse the commandline as passed by windows, call the overloaded Parse method without parameters. It handles this.
 \end{description}
 
+
+\end{list}
+\subsection*{PascalCodeSample}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure PascalCodeSample;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Pascal code sample.\hfill\vspace*{1ex}
+
+ \texttt{}\textbf{var}\texttt{\\\nopagebreak[3]
+~~~A:~Integer;\\\nopagebreak[3]
+~}\textbf{begin}\texttt{\\\nopagebreak[3]
+~~~A~:=~1~+~2~+~3;\\\nopagebreak[3]
+~}\textbf{end}\texttt{;\\
+}
+
+\end{list}
+\subsection*{MultilineCodeSample}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure MultilineCodeSample;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Multiline code sample.\hfill\vspace*{1ex}
+
+ \begin{verbatim}# Sample bash script
+ echo "Hello, World!"
+ echo "This is a multiline code sample."\end{verbatim}
+
+\end{list}
+\subsection*{MultilineSummaryExample}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+procedure MultilineSummaryExample;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+ Multiline summary example. This is the second line of the summary. 
 
 \end{list}
 \end{document}

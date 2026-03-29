@@ -28,6 +28,18 @@
 <param name="Name" value="Parse">
 <param name="Local" value="ok_helpinsight_comments.html#Parse">
 </object>
+<li><object type="text/sitemap">
+<param name="Name" value="PascalCodeSample">
+<param name="Local" value="ok_helpinsight_comments.html#PascalCodeSample">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MultilineCodeSample">
+<param name="Local" value="ok_helpinsight_comments.html#MultilineCodeSample">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="MultilineSummaryExample">
+<param name="Local" value="ok_helpinsight_comments.html#MultilineSummaryExample">
+</object>
 </ul>
 </ul>
 </ul>

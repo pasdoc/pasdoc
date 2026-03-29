@@ -88,6 +88,9 @@ Test of handling help insight comments, in the form "/// {$<$}tag{$>$} ... {$<$}
 \section{Overview}
 \begin{description}
 \item[\texttt{Parse}]parses the commandline
+\item[\texttt{PascalCodeSample}]Pascal code sample.
+\item[\texttt{MultilineCodeSample}]Multiline code sample.
+\item[\texttt{MultilineSummaryExample}] Multiline summary example. This is the second line of the summary. 
 \end{description}
 \section{Functions and Procedures}
 \ifpdf
@@ -128,6 +131,116 @@ parses the commandline\hfill\vspace*{1ex}
 \item[CmdLine] is a string giving the commandline. NOTE: Do not pass System.CmdLine since it contains the program's name as the first "parameter". If you want to parse the commandline as passed by windows, call the overloaded Parse method without parameters. It handles this.
 \end{description}
 
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{PascalCodeSample}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{PascalCodeSample}
+\fi
+\label{ok_helpinsight_comments-PascalCodeSample}
+\index{PascalCodeSample}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure PascalCodeSample;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Pascal code sample.\hfill\vspace*{1ex}
+
+ \texttt{}\textbf{var}\texttt{\\\nopagebreak[3]
+~~~A:~Integer;\\\nopagebreak[3]
+~}\textbf{begin}\texttt{\\\nopagebreak[3]
+~~~A~:=~1~+~2~+~3;\\\nopagebreak[3]
+~}\textbf{end}\texttt{;\\
+}
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{MultilineCodeSample}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MultilineCodeSample}
+\fi
+\label{ok_helpinsight_comments-MultilineCodeSample}
+\index{MultilineCodeSample}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure MultilineCodeSample;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+Multiline code sample.\hfill\vspace*{1ex}
+
+ \begin{verbatim}# Sample bash script
+ echo "Hello, World!"
+ echo "This is a multiline code sample."\end{verbatim}
+
+\end{list}
+\ifpdf
+\subsection*{\large{\textbf{MultilineSummaryExample}}\normalsize\hspace{1ex}\hrulefill}
+\else
+\subsection*{MultilineSummaryExample}
+\fi
+\label{ok_helpinsight_comments-MultilineSummaryExample}
+\index{MultilineSummaryExample}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\item[\textbf{Declaration}\hfill]
+\ifpdf
+\begin{flushleft}
+\fi
+\begin{ttfamily}
+procedure MultilineSummaryExample;\end{ttfamily}
+
+\ifpdf
+\end{flushleft}
+\fi
+
+\par
+\item[\textbf{Description}]
+ Multiline summary example. This is the second line of the summary. 
 
 \end{list}
 \end{document}
