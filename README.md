@@ -3,7 +3,7 @@
 ## Introduction
 
 _PasDoc_ is a documentation tool for the Object Pascal code.
-Documentation is generated from comments found in the source code and / or in dedicated "description files".
+Documentation is generated from comments found in the source code or in special "description files".
 Numerous output formats are supported, including HTML, LaTeX (for PDF, PS), XML and PHP.
 
 This is a _free and open source software_.
