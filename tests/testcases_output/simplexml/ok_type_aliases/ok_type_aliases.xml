@@ -46,6 +46,20 @@
   <type name="TMyContainerStrongAlias" declaration="TMyContainerStrongAlias = type TMyContainer;">
     <description><abstract>This class manages a Controls list.</abstract></description>
   </type>
+  <type name="UCS4Char" declaration="UCS4Char = type 0..$10ffff;">
+    <description><abstract>Alias to subrange type, allowed by FPC (though not by Delphi, at least as of Delphi 12).</abstract></description>
+  </type>
+  <type name="TEnum" declaration="TEnum = (...);">
+    <constant name="One" declaration="One">
+    </constant>
+    <constant name="Two" declaration="Two">
+    </constant>
+    <constant name="Three" declaration="Three">
+    </constant>
+  </type>
+  <type name="TEnumAlias" declaration="TEnumAlias = type Two..Three;">
+    <description><abstract>Alias to subrange type of anums, again allowed only by FPC.</abstract></description>
+  </type>
   <structure name="TOriginalType" name_with_generic="TOriginalType" type="record">
     <description><abstract>TOriginalType abstract description</abstract></description>
     <variable name="x" declaration="x: integer " visibility="public">
@@ -82,6 +96,9 @@
         </structure>
       </structure>
     </structure>
+  </structure>
+  <structure name="TControls" name_with_generic="TControls" type="class">
+    <ancestor name="TObject" declaration="TObject" />
   </structure>
   <structure name="TMyContainer" name_with_generic="TMyContainer" type="class">
     <description><abstract>This class manages a Controls list.</abstract></description>

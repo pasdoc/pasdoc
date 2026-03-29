@@ -4,6 +4,18 @@
 </head><body>
 <ul>
 <li><object type="text/sitemap">
+<param name="Name" value="TControls">
+<param name="Local" value="ok_type_aliases.TControls.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TEnum">
+<param name="Local" value="ok_type_aliases.html#TEnum">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TEnumAlias">
+<param name="Local" value="ok_type_aliases.html#TEnumAlias">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="Test">
 <param name="Local" value="ok_type_aliases.html#Test">
 </object>
@@ -114,6 +126,10 @@
 <li><object type="text/sitemap">
 <param name="Name" value="TWeakAliasTypeVeryNested">
 <param name="Local" value="ok_type_aliases.html#TWeakAliasTypeVeryNested">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="UCS4Char">
+<param name="Local" value="ok_type_aliases.html#UCS4Char">
 </object>
 </ul>
 </body></html>

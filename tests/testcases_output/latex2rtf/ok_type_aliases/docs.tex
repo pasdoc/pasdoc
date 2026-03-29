@@ -65,6 +65,7 @@
 \item[\texttt{\begin{ttfamily}TOriginalType2\end{ttfamily} Record}]TOriginalType2 abstract description.
 \item[\texttt{\begin{ttfamily}TOriginalType3\end{ttfamily} Record}]TOriginalType3 abstract description.
 \item[\texttt{\begin{ttfamily}TMyClass\end{ttfamily} Class}]
+\item[\texttt{\begin{ttfamily}TControls\end{ttfamily} Class}]
 \item[\texttt{\begin{ttfamily}TMyContainer\end{ttfamily} Class}]This class manages a \begin{ttfamily}Controls\end{ttfamily}(\ref{ok_type_aliases.TMyContainer-Controls}) list.
 \end{description}
 \begin{description}
@@ -219,6 +220,10 @@ public y: integer \end{ttfamily}
 \subsection*{TMyClass Class}
 \subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
 TMyClass {$>$} TObject
+%%%%Description
+\subsection*{TControls Class}
+\subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
+TControls {$>$} TObject
 %%%%Description
 \subsection*{TMyContainer Class}
 \subsubsection*{\large{\textbf{Hierarchy}}\normalsize\hspace{1ex}\hfill}
@@ -522,6 +527,81 @@ TMyContainerStrongAlias = type TMyContainer;\end{ttfamily}
 \par
 \item[\textbf{Description}]
 This class manages a \begin{ttfamily}Controls\end{ttfamily}(\ref{ok_type_aliases.TMyContainer-Controls}) list.
+
+\end{list}
+\subsection*{UCS4Char}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+UCS4Char = type 0..{\$}10ffff;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Alias to subrange type, allowed by FPC (though not by Delphi, at least as of Delphi 12).
+
+\end{list}
+\subsection*{TEnum}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+TEnum = (...);\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+ \item[\textbf{Values}]
+\begin{description}
+\item[\texttt{One}]  
+\item[\texttt{Two}]  
+\item[\texttt{Three}]  
+\end{description}
+
+
+\end{list}
+\subsection*{TEnumAlias}
+\begin{list}{}{
+\settowidth{\tmplength}{\textbf{Description}}
+\setlength{\itemindent}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\leftmargin}{\evensidemargin}
+\addtolength{\leftmargin}{\tmplength}
+\settowidth{\labelsep}{X}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\labelwidth}{\tmplength}
+}
+\begin{flushleft}
+\item[\textbf{Declaration}\hfill]
+\begin{ttfamily}
+TEnumAlias = type Two..Three;\end{ttfamily}
+
+
+\end{flushleft}
+\par
+\item[\textbf{Description}]
+Alias to subrange type of anums, again allowed only by FPC.
 
 \end{list}
 \end{document}
