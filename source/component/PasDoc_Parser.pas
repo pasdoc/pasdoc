@@ -670,7 +670,6 @@ begin
   FCommentMarkers := TStringlist.Create;
   FIgnoreMarkers := TStringlist.Create;
   ItemsForNextBackComment := TPasItems.Create(false);
-  FCioStack := TCioStateStack.Create;
   CurrentAttributes := TStringPairVector.Create(true);
 end;
 
@@ -683,7 +682,6 @@ begin
   FIgnoreMarkers.Free;
   Scanner.Free;
   ItemsForNextBackComment.Free;
-  FCioStack.Free;
   inherited;
 end;
 
@@ -1341,12 +1339,30 @@ procedure TParser.ParseCIO(const U: TPasUnit;
   const CioName, CioNameWithGeneric: string; const CIOType: TCIOType;
   const RawDescriptionInfo: TRawDescriptionInfo;
   const IsInRecordCase: boolean);
+var
+  SavedStack: TCioStateStack;
 begin
+  { Each execution of ParseCIO saves and replaces the FCioStack
+    with a new empty one.
+
+    This is necessary because ParseCIO can be called for anonymous
+    inline records (e.g. "FField: record ... end;", see testcase
+    ok_inline_record_in_class.pas) while the outer
+    class/record is being parsed. Without saving/restoring, the
+    anonymous record parsing would incorrectly pop entries from the
+    outer CIO stack. }
+  SavedStack := FCioStack;
   try
-    ParseCio_StartDeclaration(U, CioName, CioNameWithGeneric, CIOType, RawDescriptionInfo,
-      IsInRecordCase);
+    FCioStack := TCioStateStack.Create;
+    try
+      ParseCio_StartDeclaration(U, CioName, CioNameWithGeneric, CIOType, RawDescriptionInfo,
+        IsInRecordCase);
+    finally
+      FCioStack.Clear;
+      FCioStack.Free;
+    end;
   finally
-    FCioStack.Clear;
+    FCioStack := SavedStack;
   end;
 end;
 

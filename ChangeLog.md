@@ -74,6 +74,7 @@ If you have any feedback [use our discussion forum](https://github.com/pasdoc/pa
     * Allow `on` and `out` as regular names (e.g. for properties) (Michalis)
     * Parse `align(N)` directive at record end (Michalis)
     * Parse generics with multiple constraints separated by semicolons, like `procedure Foo<A; B>` (Michalis)
+    * Fix parsing anonymous record types (`FField: record .. end`) inside classes (Michalis)
 
 * Other fixes:
     * Fixed using introduction `@shortTitle` (Michalis)
