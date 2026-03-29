@@ -20,7 +20,7 @@ If you have any feedback [use our discussion forum](https://github.com/pasdoc/pa
 - [Show inherited members](https://pasdoc.github.io/InheritedMembersOption).
 - [Automatic abstract is now default](https://pasdoc.github.io/Abstract).
 - Show ancestor description for a method or class, when it misses its own description.
-- Ability to `@link` to specific overloaded routines.
+- Ability to `@link` to specific overloaded routines, like `@link(Foo(String,Integer))` ([testcase](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_link_tag_overloads.pas)).
 - Much more complete expression evaluation for `$if` / `$elseif`.
 
 ### All new features and bugfixes
@@ -69,13 +69,13 @@ If you have any feedback [use our discussion forum](https://github.com/pasdoc/pa
     * Fixed skipping UTF-8 BOM for various text files other than Pascal source (introduction, conclusion, CSS, HTML header/footer, include file) (Michalis)
     * Parsing [`objcclass` and `objcclass external`](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_objc.pas) (Michalis)
     * Parsing `unimplemented` directive (Michalis)
-    * Parsing `exports` section (just skip it for now) (Michalis)
-    * Parse `noreturn` (Michalis)
-    * Allow `on` and `out` as regular names (e.g. for properties) (Michalis)
-    * Parse `align(N)` directive at record end (Michalis)
-    * Parse generics with multiple constraints separated by semicolons, like `procedure Foo<A; B>` (Michalis)
-    * Fix parsing anonymous record types (`FField: record .. end`) inside classes (Michalis)
-    * Test parsing Delphi source code (Michalis)
+    * Parsing [`exports`](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_exports.pas) section (just skip it for now) (Michalis)
+    * Parse [`noreturn`](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_noreturn.pas) (Michalis)
+    * Allow [`on`](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_on_property.pas) and [`out`](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_out_enum.pas) as regular names (e.g. for properties) (Michalis)
+    * Parse [`align(N)`](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_record_align.pas) directive at record end (Michalis)
+    * Parse [generics with multiple constraints separated by semicolons](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_generic_multiple_constraints.pas), like `procedure Foo<A; B>` (Michalis)
+    * Fix parsing [anonymous record types](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_inline_record_in_class.pas) (`FField: record .. end`) inside classes (Michalis)
+    * [Test parsing Delphi source code](https://github.com/pasdoc/pasdoc/blob/master/tests/scripts/parse_delphi_sources.sh) (Michalis)
 
 * Other fixes:
     * Fixed using introduction `@shortTitle` (Michalis)
