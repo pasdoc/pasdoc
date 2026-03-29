@@ -3753,6 +3753,10 @@ begin
           KEY_TYPE:
             begin
               Section := psType;
+              { Allow attribute (like [Align(8)]) before the first type name
+                in this nested type section. ParseType will consume it.
+                Testcase: tests/testcases/ok_attributes.pas }
+              AttributeIsPossible := True;
               FreeAndNil(t);
               Exit;
             end;

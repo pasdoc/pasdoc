@@ -44,6 +44,48 @@
 <param name="Local" value="ok_attributes.NonEmptyString.html#Create-String-">
 </object>
 <li><object type="text/sitemap">
+<param name="Name" value="TClassWithNested">
+<param name="Local" value="ok_attributes.TClassWithNested.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TNestedClass">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TNestedClass2">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Create">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#Create">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="FLowestBreakIter">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#FLowestBreakIter">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="InlineMethod">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#InlineMethod">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="LowestBreakIter">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#LowestBreakIter">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ShouldExit">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#ShouldExit">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TNestedClass2 - ok_attributes Unit">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#ShouldExit">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="TNestedClass2 - ok_attributes Unit">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#ShouldExit-Int64-">
+</object>
+</ul>
+<li><object type="text/sitemap">
 <param name="Name" value="TMyClass1">
 <param name="Local" value="ok_attributes.TMyClass1.html">
 </object>

@@ -19,4 +19,13 @@ $pasdoc = array(
   'IEnumerator' => array('html_filename' => 'ok_attributes.IEnumerator.html', 'type' => 'interface'),
   'IEnumerator.GetCurrent' => array('html_filename' => 'ok_attributes.IEnumerator.html#GetCurrent', 'type' => 'function'),
   'IEnumerator.Current' => array('html_filename' => 'ok_attributes.IEnumerator.html#Current', 'type' => 'property'),
+  'TClassWithNested' => array('html_filename' => 'ok_attributes.TClassWithNested.html', 'type' => 'class'),
+  'TClassWithNested.TNestedClass' => array('html_filename' => 'ok_attributes.TClassWithNested.TNestedClass.html', 'type' => 'class'),
+  'TClassWithNested.TNestedClass.TNestedClass2' => array('html_filename' => 'ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html', 'type' => 'class'),
+  'TClassWithNested.TNestedClass.TNestedClass2.InlineMethod' => array('html_filename' => 'ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#InlineMethod', 'type' => 'function'),
+  'TClassWithNested.TNestedClass.TNestedClass2.Create' => array('html_filename' => 'ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#Create', 'type' => 'constructor'),
+  'TClassWithNested.TNestedClass.TNestedClass2.ShouldExit' => array('html_filename' => 'ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#ShouldExit-Int64-', 'type' => 'function'),
+  // Overloaded identifier:   'TClassWithNested.TNestedClass.TNestedClass2.ShouldExit' => array('html_filename' => 'ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#ShouldExit', 'type' => 'function'),
+  'TClassWithNested.TNestedClass.TNestedClass2.FLowestBreakIter' => array('html_filename' => 'ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#FLowestBreakIter', 'type' => 'variable'),
+  'TClassWithNested.TNestedClass.TNestedClass2.LowestBreakIter' => array('html_filename' => 'ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#LowestBreakIter', 'type' => 'property'),
 );

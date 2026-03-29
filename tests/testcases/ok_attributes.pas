@@ -55,6 +55,28 @@ type
     property Current: T read GetCurrent;
   end;
 
+  { Class with nested classes with attributes.
+    This is like TParallel from Delphi RTL. }
+  TClassWithNested = class sealed
+  public type
+    [Align(8)]
+    TNestedClass = class sealed(TAncestor)
+    private type
+      [Align(8)]
+      TNestedClass2 = class(TAncestor.TAncestorFlag)
+      private
+        [Align(8)]
+        FLowestBreakIter: Int64;
+        function InlineMethod: Int64; inline;
+      protected
+        constructor Create;
+        function ShouldExit(ThisIter: Int64): Boolean; overload;
+        function ShouldExit: Boolean; overload;
+        property LowestBreakIter: Int64 read GetLowestBreakIter;
+      end;
+    end;
+  end;
+
 implementation
 
 end.

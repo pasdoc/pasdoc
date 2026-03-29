@@ -150,6 +150,78 @@
 </object>
 </ul>
 </ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TClassWithNested">
+<param name="Local" value="ok_attributes.TClassWithNested.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Nested Classes and Records">
+<param name="Local" value="ok_attributes.TClassWithNested.html#@NestedCRs">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TNestedClass">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Nested Classes and Records">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.html#@NestedCRs">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TNestedClass2">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Fields">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#@Fields">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="FLowestBreakIter">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#FLowestBreakIter">
+</object>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Properties">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#@Properties">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="LowestBreakIter">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#LowestBreakIter">
+</object>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Methods">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#@Methods">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Create">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#Create">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="InlineMethod">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#InlineMethod">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ShouldExit">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#ShouldExit">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ShouldExit">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#ShouldExit">
+</object>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
 </ul>
 </ul>
 </ul>
@@ -240,6 +312,78 @@
 <param name="Name" value="Create">
 <param name="Local" value="ok_attributes.NonEmptyString.html#Create">
 </object>
+</ul>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TClassWithNested">
+<param name="Local" value="ok_attributes.TClassWithNested.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Nested Classes and Records">
+<param name="Local" value="ok_attributes.TClassWithNested.html#@NestedCRs">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TNestedClass">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Nested Classes and Records">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.html#@NestedCRs">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TNestedClass2">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Fields">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#@Fields">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="FLowestBreakIter">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#FLowestBreakIter">
+</object>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Properties">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#@Properties">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="LowestBreakIter">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#LowestBreakIter">
+</object>
+</ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Methods">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#@Methods">
+</object>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="Create">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#Create">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="InlineMethod">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#InlineMethod">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ShouldExit">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#ShouldExit">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="ShouldExit">
+<param name="Local" value="ok_attributes.TClassWithNested.TNestedClass.TNestedClass2.html#ShouldExit">
+</object>
+</ul>
+</ul>
+</ul>
+</ul>
 </ul>
 </ul>
 <li><object type="text/sitemap">

@@ -45,4 +45,26 @@
     <property name="Current" declaration="property Current: T read GetCurrent;" visibility="public" indexdecl="" type="T" reader="GetCurrent" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
     </property>
   </structure>
+  <structure name="TClassWithNested" name_with_generic="TClassWithNested" type="class">
+    <description><abstract>Class with nested classes with attributes.</abstract><detailed> This testcase is based on TParallel from Delphi RTL declaration.</detailed></description>
+    <ancestor name="TObject" declaration="TObject" />
+    <structure name="TNestedClass" visibility="public" name_with_generic="TNestedClass" type="class">
+      <ancestor name="TAncestor" declaration="TAncestor" />
+      <structure name="TNestedClass2" visibility="public" name_with_generic="TNestedClass2" type="class">
+        <ancestor name="TAncestor.TAncestorFlag" declaration="TAncestor.TAncestorFlag" />
+        <routine name="InlineMethod" declaration="function InlineMethod: Int64; inline;" visibility="public" type="function">
+        </routine>
+        <routine name="Create" declaration="constructor Create;" visibility="protected" type="constructor">
+        </routine>
+        <routine name="ShouldExit" declaration="function ShouldExit(ThisIter: Int64): Boolean; overload;" visibility="protected" type="function">
+        </routine>
+        <routine name="ShouldExit" declaration="function ShouldExit: Boolean; overload;" visibility="protected" type="function">
+        </routine>
+        <variable name="FLowestBreakIter" declaration="FLowestBreakIter: Int64;" visibility="public">
+        </variable>
+        <property name="LowestBreakIter" declaration="property LowestBreakIter: Int64 read GetLowestBreakIter;" visibility="protected" indexdecl="" type="Int64" reader="GetLowestBreakIter" writer="" default_in_class="False" default_value="" nodefault="False"   stored="">
+        </property>
+      </structure>
+    </structure>
+  </structure>
 </unit>

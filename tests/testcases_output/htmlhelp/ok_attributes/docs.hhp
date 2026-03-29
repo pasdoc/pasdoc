@@ -33,6 +33,7 @@ ok_attributes.IUIContainer.html
 ok_attributes.TMyClass1.html
 ok_attributes.TMyClass2.html
 ok_attributes.IEnumerator.generic.html
+ok_attributes.TClassWithNested.html
 
 [INFOTYPES]
 
