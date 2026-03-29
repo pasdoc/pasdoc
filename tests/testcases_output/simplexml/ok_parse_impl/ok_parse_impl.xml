@@ -20,7 +20,7 @@
   <routine name="Overloaded" declaration="procedure Overloaded(a: Byte); overload;" type="procedure">
     <description><abstract>This is overloaded proc #2</abstract></description>
   </routine>
-  <routine name=":=" declaration="Operator := (C : TMyType) z : TMyType;" type="operator">
+  <routine name=":=" declaration="Operator :=(C : TMyType) z : TMyType;" type="operator">
     <description><abstract>This is assignment operator</abstract></description>
   </routine>
   <structure name="TClass" name_with_generic="TClass" type="class">

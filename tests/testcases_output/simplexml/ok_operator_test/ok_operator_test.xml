@@ -1,32 +1,32 @@
 <unit name="ok_operator_test">
   <description><abstract>Operator overloads Delphi and FPC</abstract></description>
-  <routine name=":=" declaration="Operator := (C : TMyType2) z : TMyType;" type="operator">
+  <routine name=":=" declaration="Operator :=(C : TMyType2) z : TMyType;" type="operator">
   </routine>
-  <routine name="+" declaration="Operator + (c: TMyType; c1: TMyType) c2: TMyType;" type="operator">
+  <routine name="+" declaration="Operator +(c: TMyType; c1: TMyType) c2: TMyType;" type="operator">
   </routine>
-  <routine name="-" declaration="Operator - (c: TMyType; c1: TMyType) c2: TMyType;" type="operator">
+  <routine name="-" declaration="Operator -(c: TMyType; c1: TMyType) c2: TMyType;" type="operator">
   </routine>
-  <routine name="*" declaration="Operator * (c: TMyType; i: integer) c2: TMyType;" type="operator">
+  <routine name="*" declaration="Operator *(c: TMyType; i: integer) c2: TMyType;" type="operator">
   </routine>
-  <routine name="/" declaration="Operator / (A, B: TMyType): TMyType;" type="operator">
+  <routine name="/" declaration="Operator /(A, B: TMyType): TMyType;" type="operator">
   </routine>
-  <routine name="**" declaration="Operator ** (A, B: TMyType): TMyType;" type="operator">
+  <routine name="**" declaration="Operator **(A, B: TMyType): TMyType;" type="operator">
   </routine>
-  <routine name="=" declaration="operator = (const c, d: TMyType) : boolean;" type="operator">
+  <routine name="=" declaration="operator =(const c, d: TMyType) : boolean;" type="operator">
   </routine>
-  <routine name="&lt;" declaration="operator &lt; (const c, d: TMyType) : boolean;" type="operator">
+  <routine name="&lt;" declaration="operator &lt;(const c, d: TMyType) : boolean;" type="operator">
   </routine>
-  <routine name="&gt;" declaration="operator &gt; (const c, d: TMyType) : boolean;" type="operator">
+  <routine name="&gt;" declaration="operator &gt;(const c, d: TMyType) : boolean;" type="operator">
   </routine>
-  <routine name="&lt;=" declaration="operator &lt;= (const c, d: TMyType) : boolean;" type="operator">
+  <routine name="&lt;=" declaration="operator &lt;=(const c, d: TMyType) : boolean;" type="operator">
   </routine>
-  <routine name="&gt;=" declaration="operator &gt;= (const c, d: TMyType) : boolean;" type="operator">
+  <routine name="&gt;=" declaration="operator &gt;=(const c, d: TMyType) : boolean;" type="operator">
   </routine>
-  <routine name="or" declaration="operator or (const c,d:TMyType) : TMyType;" type="operator">
+  <routine name="or" declaration="operator or(const c,d:TMyType) : TMyType;" type="operator">
   </routine>
-  <routine name="and" declaration="operator and (const c,d:TMyType) : TMyType;" type="operator">
+  <routine name="and" declaration="operator and(const c,d:TMyType) : TMyType;" type="operator">
   </routine>
-  <routine name="xor" declaration="operator xor (const c,d:TMyType) : TMyType;" type="operator">
+  <routine name="xor" declaration="operator xor(const c,d:TMyType) : TMyType;" type="operator">
   </routine>
   <structure name="TDelphiRec" name_with_generic="TDelphiRec" type="record">
     <description><abstract>Operator overloads declared within a record (Delphi 2006+)</abstract></description>
