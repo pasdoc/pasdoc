@@ -23,6 +23,25 @@
     <routine name="Find" declaration="function Find(const Name: string): TGeometryAttrib;" visibility="public" type="function">
     </routine>
   </structure>
+  <structure name="TBitConverter" name_with_generic="TBitConverter" type="class">
+    <ancestor name="TObject" declaration="TObject" />
+    <routine name="UnsafeFrom" declaration="generic class procedure UnsafeFrom&lt;T&gt;(const ASrcValue: T; var ADestination: Array of Byte; AOffset: Integer = 0); static;" visibility="public" type="procedure">
+    </routine>
+    <routine name="From" declaration="generic class procedure From&lt;T&gt;(const ASrcValue: T; var ADestination: Array of Byte; AOffset: Integer = 0); static;" visibility="public" type="procedure">
+    </routine>
+    <routine name="UnsafeInTo" declaration="generic class function UnsafeInTo&lt;T&gt;(const ASource: Array of Byte; AOffset: Integer = 0): T; static;" visibility="public" type="function">
+    </routine>
+    <routine name="InTo" declaration="generic class function InTo&lt;T&gt;(const ASource: Array of Byte; AOffset: Integer = 0): T; static;" visibility="public" type="function">
+    </routine>
+    <routine name="InstanceUnsafeFrom" declaration="generic procedure InstanceUnsafeFrom&lt;T&gt;(const ASrcValue: T; var ADestination: Array of Byte; AOffset: Integer = 0); static;" visibility="public" type="procedure">
+    </routine>
+    <routine name="InstanceFrom" declaration="generic procedure InstanceFrom&lt;T&gt;(const ASrcValue: T; var ADestination: Array of Byte; AOffset: Integer = 0); static;" visibility="public" type="procedure">
+    </routine>
+    <routine name="InstanceUnsafeInTo" declaration="generic function InstanceUnsafeInTo&lt;T&gt;(const ASource: Array of Byte; AOffset: Integer = 0): T; static;" visibility="public" type="function">
+    </routine>
+    <routine name="InstanceInTo" declaration="generic function InstanceInTo&lt;T&gt;(const ASource: Array of Byte; AOffset: Integer = 0): T; static;" visibility="public" type="function">
+    </routine>
+  </structure>
   <structure name="TMyObject" name_with_generic="TMyObject" type="class">
     <description><abstract>A simple Test-Object</abstract></description>
     <ancestor name="TObject" declaration="TObject" />

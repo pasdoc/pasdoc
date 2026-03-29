@@ -12,6 +12,42 @@
 <param name="Local" value="ok_generic.TArray.html">
 </object>
 <li><object type="text/sitemap">
+<param name="Name" value="TBitConverter">
+<param name="Local" value="ok_generic.TBitConverter.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="From">
+<param name="Local" value="ok_generic.TBitConverter.html#From-T-ArrayofByte-Integer-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="InstanceFrom">
+<param name="Local" value="ok_generic.TBitConverter.html#InstanceFrom-T-ArrayofByte-Integer-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="InstanceInTo">
+<param name="Local" value="ok_generic.TBitConverter.html#InstanceInTo-ArrayofByte-Integer-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="InstanceUnsafeFrom">
+<param name="Local" value="ok_generic.TBitConverter.html#InstanceUnsafeFrom-T-ArrayofByte-Integer-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="InstanceUnsafeInTo">
+<param name="Local" value="ok_generic.TBitConverter.html#InstanceUnsafeInTo-ArrayofByte-Integer-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="InTo">
+<param name="Local" value="ok_generic.TBitConverter.html#InTo-ArrayofByte-Integer-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="UnsafeFrom">
+<param name="Local" value="ok_generic.TBitConverter.html#UnsafeFrom-T-ArrayofByte-Integer-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="UnsafeInTo">
+<param name="Local" value="ok_generic.TBitConverter.html#UnsafeInTo-ArrayofByte-Integer-">
+</object>
+<li><object type="text/sitemap">
 <param name="Name" value="TDictionary">
 <param name="Local" value="ok_generic.TDictionary.generic.html">
 </object>
