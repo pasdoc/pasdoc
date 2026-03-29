@@ -3910,7 +3910,27 @@ begin
 
     ParseHintDirectives(ACio);
 
+    { Delphi supports "end align(N);" for record alignment.
+      Consume the align directive and its parenthesized argument. }
     t := GetNextToken;
+    if (t.MyType = TOK_IDENTIFIER) and (LowerCase(t.Data) = 'align') then
+    begin
+      FreeAndNil(t);
+
+      GetAndCheckNextToken(SYM_LEFT_PARENTHESIS);
+
+      { Skip tokens until we find the closing parenthesis }
+      repeat
+        t := GetNextToken;
+        if t.IsSymbol(SYM_RIGHT_PARENTHESIS) then
+          Break;
+        FreeAndNil(t);
+      until false;
+
+      FreeAndNil(t);
+      t := GetNextToken;
+    end;
+
     if not t.IsSymbol(SYM_SEMICOLON) then
     begin
       if IsInRecordCase then

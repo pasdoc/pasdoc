@@ -72,6 +72,7 @@ If you have any feedback [use our discussion forum](https://github.com/pasdoc/pa
     * Parsing `exports` section (just skip it for now) (Michalis)
     * Parse `noreturn` (Michalis)
     * Allow `on` and `out` as regular names (e.g. for properties) (Michalis)
+    * Parse `align(N)` directive at record end (Michalis)
 
 * Other fixes:
     * Fixed using introduction `@shortTitle` (Michalis)
