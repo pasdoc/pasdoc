@@ -1,5 +1,7 @@
 unit ok_type_aliases;
 
+{$ifdef FPC}{$mode objfpc}{$endif}
+
 interface
 
 type
@@ -52,13 +54,25 @@ type
 procedure Test;
 
 type
+  TControls = class end;
+
   { This class manages a @link(Controls) list. }
   TMyContainer = class
+  strict private
+    function GetControls: TControls;
+  public
     property Controls: TControls read GetControls;
   end;
 
   TMyContainerAlias = TMyContainer;
   TMyContainerStrongAlias = type TMyContainer;
+
+  { Alias to subrange type, allowed by FPC (though not by Delphi, at least as of Delphi 12). }
+  UCS4Char = type 0..$10ffff;
+
+  TEnum = (One, Two, Three);
+  { Alias to subrange type of anums, again allowed only by FPC. }
+  TEnumAlias = type Two..Three;
 
 implementation
 

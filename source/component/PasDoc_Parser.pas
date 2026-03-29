@@ -1533,19 +1533,34 @@ begin
     P.Name := Name;
     P.RawDescriptionInfo^ := RawDescriptionInfo;
     P.SetAttributes(CurrentAttributes);
-    { Thanks to ParseKnownTypeIdentifier, we parse any type,
-      including "TSomething = type string;". }
-    P.AliasedName := ParseKnownTypeIdentifier;
     P.IsStrongAlias := true;
-    P.FullDeclaration := Name + ' = type ' + P.AliasedName;
 
+    { With Delphi, this is always a simple known type name,
+      our type or built-in type like "TSomething = type string;".
+      So ParseKnownTypeIdentifier should handle everything.
+      With FPC, it can be more compicated, subranges (of numbers or enums)
+      are also allowed, which will need to iterate "all until ;" to get everything. }
     T := PeekNextToken;
-    if T.IsSymbol(SYM_SEMICOLON) then
-    begin
-      P.FullDeclaration := P.FullDeclaration + ';';
-      Scanner.ConsumeToken;
-      FreeAndNil(T);
-    end;
+    if T.IsKeyWord(KEY_STRING) or (T.MyType = TOK_IDENTIFIER) then
+      P.AliasedName := ParseKnownTypeIdentifier;
+
+    { Parse until ;
+      This handles type definitions with more tokens,
+      like subrange "UCS4Char = type 0..$10fff". }
+    repeat
+      T := GetNextToken;
+      try
+        if T.IsSymbol(SYM_SEMICOLON) then
+          Break
+        else
+          P.AliasedName := P.AliasedName + T.Data;
+      finally
+        FreeAndNil(T);
+      end;
+    until False;
+
+    P.FullDeclaration := Name + ' = type ' + P.AliasedName + ';';
+
     ParseHintDirectives(P, true, true);
   except
     P.Free;
