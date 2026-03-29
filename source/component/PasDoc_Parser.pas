@@ -1103,6 +1103,7 @@ procedure TParser.ParseRoutine(out M: TPasRoutine;
 var
   t: TToken;
   InvalidType, WasDeprecatedDirective: boolean;
+  LGenericParams: string;
 begin
   t := nil;
   WasDeprecatedDirective := false;
@@ -1157,6 +1158,18 @@ begin
       DoMessage(5, pmtInformation, 'Parsing %s "%s"',
         [RoutineTypeToString(RoutineType), M.Name]);
       M.FullDeclaration := M.FullDeclaration + ' ' + M.Name;
+      FreeAndNil(t);
+
+      { Allow generic type parameters on methods, like "function Call<A; R>(...)". }
+      t := GetNextToken;
+      if t.IsSymbol(SYM_LESS_THAN) then
+      begin
+        LGenericParams := M.FullDeclaration;
+        ParseGenericTypeIdentifierList(t, LGenericParams);
+        M.FullDeclaration := LGenericParams;
+      end
+      else
+        Scanner.UnGetToken(t);
       FreeAndNil(t);
     end;
 
