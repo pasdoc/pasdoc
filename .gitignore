@@ -1,19 +1,20 @@
 # Output dirs and files
 bin/
 lib/
-source/autodoc/html_by_pasdoc_gui/
-source/autodoc/html/
-source/autodoc/latex/
+/source/autodoc/html_by_pasdoc_gui/
+/source/autodoc/html/
+/source/autodoc/latex/
+/source/autodoc/htmlhelp/
 *.exe
 *.dll
 *.zip
 *.tar.gz
 
 # pasdoc_gui generated files
-source/gui/pasdoc_gui
-source/gui/pasdoc_gui.exe
-source/gui/pasdoc_gui.app/
-source/gui/pasdoc_gui.obj
+/source/gui/pasdoc_gui
+/source/gui/pasdoc_gui.exe
+/source/gui/pasdoc_gui.app/
+/source/gui/pasdoc_gui.obj
 
 # FPC / Lazarus generated stuff
 *.o
@@ -21,7 +22,7 @@ source/gui/pasdoc_gui.obj
 *.compiled
 *.or
 *.lrs
-source/packages/lazarus/pasdoc_package.pas
+/source/packages/lazarus/pasdoc_package.pas
 backup/
 
 # Emacs backup
