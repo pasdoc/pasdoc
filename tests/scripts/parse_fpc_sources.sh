@@ -9,7 +9,7 @@ set -eu
 # Assume pasdoc is on $PATH, if PASDOC_BIN not set.
 PASDOC_BIN="${PASDOC_BIN:-pasdoc}"
 
-SOURCES_DIR="C:/cygwin64/home/michalis/installed/fpclazarus/fpc322/fpcsrc/"
+SOURCES_DIR="$HOME/installed/fpclazarus/current/fpcsrc/"
 OUTPUT_DIR="fpc_sources"
 
 # OS and CPU which we should assume for parsing files.
