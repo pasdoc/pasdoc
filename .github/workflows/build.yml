@@ -188,6 +188,9 @@ jobs:
           castle-build-ci/install_dependencies
           castle-build-ci/setup_castle_engine --install-fpc=true --install-lazarus=true --install-castle-engine=false
 
+      - name: Install Graphviz (for autodoc)
+        run: sudo apt-get install graphviz
+
       - name: Build PasDoc and put it on $PATH
         run: |
           make
