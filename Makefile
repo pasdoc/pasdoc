@@ -11,7 +11,8 @@
 # The version of the package.
 # This must be changed on each version bump,
 # as documented on https://pasdoc.github.io/ReleaseMaking .
-VERSION := 0.17.0.snapshot
+VERSION := 1.0.0
+#VERSION := 0.17.0.snapshot
 
 # The name of the package / file name
 PACKAGENAME := pasdoc

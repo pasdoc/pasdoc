@@ -88,10 +88,11 @@ const
     Also, different version control systems have different (or none) support
     for this.
   }
-  //PASDOC_DATE = '2021-02-07';
-  PASDOC_DATE = 'snapshot';
+  PASDOC_DATE = '2026-03-30';
+  //PASDOC_DATE = 'snapshot';
   { }
-  PASDOC_VERSION = '0.17.0.snapshot';
+  //PASDOC_VERSION = '0.17.0.snapshot';
+  PASDOC_VERSION = '1.0.0';
   { }
   PASDOC_NAME_AND_VERSION = PASDOC_NAME + ' ' + PASDOC_VERSION;
   { }
