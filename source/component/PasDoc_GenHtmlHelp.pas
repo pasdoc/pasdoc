@@ -1,5 +1,5 @@
 {
-  Copyright 1998-2018 PasDoc developers.
+  Copyright 1998-2026 PasDoc developers.
 
   This file is part of "PasDoc".
 
@@ -36,6 +36,8 @@ type
 
     { Writes the topic files for Html Help Generation }
     procedure WriteHtmlHelpProject;
+  protected
+    function MakeHead: string; override;
   public
     procedure WriteDocumentation; override;
   published
@@ -706,6 +708,17 @@ begin
   WriteDirectLine('[MERGE FILES]');
 
   CloseStream;
+end;
+
+function THTMLHelpDocGenerator.MakeHead: string;
+begin
+  Result := inherited MakeHead;
+  { WWW browser inside HTML Help seems to be an ancient IE version,
+    so we cannot just use our full CSS here. }
+  Result := Result + '<style type="text/css">' + LineEnding +
+    'body { margin: 0.5em; }' + LineEnding +
+    '.badge { padding: 0.1em 0.5em; color: white; }' + LineEnding +
+    '</style>';
 end;
 
 end.

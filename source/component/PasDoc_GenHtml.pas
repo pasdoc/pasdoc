@@ -227,7 +227,7 @@ type
     function StoredCss: Boolean;
   protected
     { Return common HTML content that goes inside <head>. }
-    function MakeHead: string;
+    function MakeHead: string; virtual;
     { Return common HTML content that goes right after <body>. }
     function MakeBodyBegin: string; virtual;
     { Return common HTML content that goes right before </body>. }
