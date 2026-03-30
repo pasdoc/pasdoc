@@ -74,11 +74,17 @@ html:
 	  --output=html/ --use-tipue-search
 	cd html/; $(GRAPHVIZ_COMMANDS)
 
-htmlhelp:
+# Common part of htmlhelp and htmlhelp-chmcmd targets.
+.PHONY: internal-htmlhelp-common
+internal-htmlhelp-common:
 	mkdir -p htmlhelp/
 	$(PASDOC) $(PASDOC_OPTIONS) $(PASDOC_GRAPHVIZ_OPTIONS) \
 	  --format=htmlhelp --output=htmlhelp/
 	cd htmlhelp/; $(GRAPHVIZ_COMMANDS)
+
+# Make htmlhelp docs, using hhc (MS HTML Help Workshop's compiler).
+htmlhelp:
+	$(MAKE) internal-htmlhelp-common
 # Ignore exit code from hhc (it's always 1 ???)
 	-cd htmlhelp/; $(HHC) docs.hhp
 # Since we had to ignore hhc's exit code, let's check if .chm file was generated
@@ -87,6 +93,11 @@ htmlhelp:
 	else \
 	  echo "Error: CHM file was not generated"; exit 1; \
 	fi
+
+# Make htmlhelp docs, using chmcmd (FPC cross-platform tool to make chm files).
+htmlhelp-chmcmd:
+	$(MAKE) internal-htmlhelp-common
+	chmcmd --no-html-scan htmlhelp/docs.hhp
 
 # Just shortcuts
 latex: latex/docs.tex
