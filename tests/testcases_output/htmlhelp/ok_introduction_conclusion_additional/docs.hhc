@@ -83,10 +83,6 @@
 </object>
 </ul>
 <li><object type="text/sitemap">
-<param name="Name" value="Legend">
-<param name="Local" value="Legend.html">
-</object>
-<li><object type="text/sitemap">
 <param name="Name" value="First additional file">
 <param name="Local" value="ok_additionalfile1.html">
 </object>

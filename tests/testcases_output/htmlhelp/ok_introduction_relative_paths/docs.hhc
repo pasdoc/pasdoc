@@ -111,10 +111,6 @@
 </object>
 </ul>
 <li><object type="text/sitemap">
-<param name="Name" value="Legend">
-<param name="Local" value="Legend.html">
-</object>
-<li><object type="text/sitemap">
 <param name="Name" value="somefile ">
 <param name="Local" value="somefile.html">
 </object>
