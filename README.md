@@ -58,7 +58,7 @@ GNU GPL >= 2.
 
 ## Copyright
 
-* copyright (C) 1998-2000 by Marco Schmidt
-* copyright (C) 2001-2003 by Ralf Junker <delphi@zeitungsjunge.de>
-* Copyright (C) 2003 by Johannes Berg <johannes@sipsolutions.de>
-* Copyright 2005-2021 by Michalis Kamburelis, Richard B. Winston and more contributors, see [ChangeLog.md](ChangeLog.md) file.
+* copyright (C) 1998-2000 by _Marco Schmidt_
+* copyright (C) 2001-2003 by _Ralf Junker_ <delphi@zeitungsjunge.de>
+* Copyright (C) 2003 by _Johannes Berg_ <johannes@sipsolutions.de>
+* Copyright 2005-2026 by _Michalis Kamburelis_, _Richard B. Winston_ and more [contributors](https://github.com/pasdoc/pasdoc/graphs/contributors), see [ChangeLog.md](ChangeLog.md) file.

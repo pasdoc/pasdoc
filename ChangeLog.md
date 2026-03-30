@@ -2,13 +2,13 @@
 
 <!-- ## Upcoming Next Release -->
 
-## Version 1.0.0 (TBA)
+## Version 1.0.0 (2026-03-30)
 
 We are proud to announce the release of PasDoc 1.0.0!
 
-It's been 5 years since the previous release, and we spent this time steadily working on improving PasDoc. We've accumulated many improvements, some big, some addressing long-standing plans (like modernized HTML output look), so we feel this release deserves a big grand `1.0.0` version number. Enjoy!
+It's been 5 years since the previous release, and we have a lot of new features and fixes to share. We addressed some long-standing plans (like modernized HTML output look), we tested PasDoc understanding on some big codebases (like Delphi source code and FPC RTL). As such, we feel this release deserves a big grand `1.0.0` version number. Enjoy!
 
-Download the latest release from [our website](https://pasdoc.github.io/).
+Download the latest release from [our website](https://pasdoc.github.io/) where you will also find all the usage documentation.
 
 If you have any feedback [use our discussion forum](https://github.com/pasdoc/pasdoc/discussions/) and [please report any bugs](https://github.com/pasdoc/pasdoc/issues).
 
@@ -16,11 +16,11 @@ If you have any feedback [use our discussion forum](https://github.com/pasdoc/pa
 
 - [Show source code position/link](https://pasdoc.github.io/SourcePosition).
 - [Modern look based on Bootstrap and more mobile-friendly](https://github.com/pasdoc/pasdoc/discussions/230).
-- [Toggleable visibility of members](https://pasdoc.github.io/VisibleMembers).
+- [Visibility of members can be toggled by a checkbox](https://pasdoc.github.io/VisibleMembers).
 - [Show inherited members](https://pasdoc.github.io/InheritedMembersOption).
 - [Automatic abstract is now default](https://pasdoc.github.io/Abstract).
 - Show ancestor description for a method or class, when it misses its own description.
-- Ability to `@link` to specific overloaded routines, like `@link(Foo(String,Integer))` ([testcase](https://github.com/pasdoc/pasdoc/blob/master/tests/testcases/ok_link_tag_overloads.pas)).
+- Ability to `@link` to specific overloaded routines, like `@link(Foo(String,Integer))`. See [@link tag docs](https://pasdoc.github.io/LinkTag).
 - Much more complete expression evaluation for `$if` / `$elseif`. See [details what is supported here](https://pasdoc.github.io/ConditionalDefines).
 - Many parser extensions to be complete and handle really every Pascal source code in the wild. As an ultimate test before release, we tested [parsing Delphi source code](https://github.com/pasdoc/pasdoc/blob/master/tests/scripts/parse_delphi_sources.sh) and [parsing FPC RTL](https://github.com/pasdoc/pasdoc/blob/master/tests/scripts/parse_fpc_sources.sh) (and made numerous fixes to plug all the missing edge-cases). See also [discussion thread](https://github.com/pasdoc/pasdoc/discussions/242).
 
@@ -33,16 +33,17 @@ If you have any feedback [use our discussion forum](https://github.com/pasdoc/pa
 * You can include some visibility members in a state "hidden by default" in the HTML output, and let user click on a checkbox (implemented using JS) to show them. Indicate the "included but hidden by default" visibility levels by `?` suffix in `--visible-members` option, like `--visible-members=public,protected?`. See [--visible-members docs](https://pasdoc.github.io/VisibleMembers) and [discussion thread](https://github.com/pasdoc/pasdoc/discussions/238) (Michalis)
 * Accept identifiers with Unicode characters (not only ASCII letters) in them, both in UTF-8 and other (like Windows 1252) encodings, following Delphi. See also [discussion thread](https://github.com/pasdoc/pasdoc/discussions/235) (Michalis)
 * [New PHP output, generates a map to find/enumerate Pascal identifiers present in HTML output](https://pasdoc.github.io/PhpOutput) (Michalis)
-* GraphViz classes graph shows implemented interfaces as dashed lines (Michalis)
+* [GraphViz classes graph](https://pasdoc.github.io/GraphVizSupport) shows implemented interfaces as dashed lines (Michalis)
 * [Completely new default look: using the latest Bootstrap for modern base style, mobile-friendly, nicer visibility pills, new --css-based-on-bootstrap, show only available sections, backward compatible CSS preserved](https://github.com/pasdoc/pasdoc/discussions/230) (Michalis)
 * [New feature to show source code file/line + link in docs: `--show-source-position`, `--source-url-pattern`, `--source-root`](https://pasdoc.github.io/SourcePosition), see also [discussion thread](https://github.com/pasdoc/pasdoc/discussions/229) (Michalis)
 * Added release (and CI build) on _macOS/Aarch64_ (Michalis)
 * Show ancestor description for a method or class, when it misses its own description. Scans ancestor class and interfaces and generates nice HTML output with ancestor descriptions. (Elliot Hillary)
 * Overloaded methods are now accounted for better (Elliot Hillary):
     - When using @link, you can link to a particular overload like `@link(MyRoutine(Integer, String))` or `@link(MyRoutine(Single))` instead of just `@link(MyRoutine)`.
-    - When generating HTML anchors, we add parameter types, so that each overloaded routine has a different anchor. This makes internal links (from @link, from internal tables) in the generated HTML output correct.
-* Much more complete expression evaluation for `$if` / `$elseif` (functions, subexpressions, negation, comparison, addition, multiplication) (Johann Elsass aka circular17)
-* Ability to define macros on the command-line like `-D FPC_FULLVERSION:=30202` that will be used for both regular Pascal code and in $if / $elseif evaluation (Johann Elsass aka circular17)
+    - When generating HTML anchors, we add parameter types, so that each overloaded routine has a different anchor. This makes internal links (from `@link`, from internal tables) in the generated HTML output correct.
+    - See [@link tag docs](https://pasdoc.github.io/LinkTag) for usage examples.
+* Much more complete expression evaluation for `$if` / `$elseif` (functions, subexpressions, negation, comparison, addition, multiplication). See [conditional expressions docs](https://pasdoc.github.io/ConditionalDefines) (Johann Elsass aka circular17)
+* Ability to define macros on the command-line like `-D FPC_FULLVERSION:=30202` that will be used for both regular Pascal code and in $if / $elseif evaluation. See [conditional expressions docs](https://pasdoc.github.io/ConditionalDefines)  (Johann Elsass aka circular17)
 * Proper "Constants" section in outputs for CIOs with nested constants (Michalis)
 * More complete "Hierarchy" at CIO pages by following also type aliases (Michalis)
 
@@ -50,12 +51,13 @@ If you have any feedback [use our discussion forum](https://github.com/pasdoc/pa
     - Properly separate "name" from "declaration" for `<variable>`, `<constant>`, `<type>`
     - Separate `<label>` inside `<item>` for definition lists
     - `<function>` -> more general `<routine>`
-    - Nested structures (CIOs) and simple types inside other CIOs are now output
+    - Nested structures (CIOs) and simple types inside other CIOs are now generated correctly
     - Contains now deprecated / platform / etc. information, and proper unit name
     - Add `declaration="` to `<property...>`
     - Remove `visibility="..."` from non-members (where the meaning is undefined)
+    - Added `<aliased-name>` to `<type>` for type aliases
 
-* PasDoc GUI exposes options to:
+* [PasDoc GUI](https://pasdoc.github.io/PasDocGui) exposes options to:
     * Change output format to SimpleXML or PHP (in addition to existing ones, like HTML and LaTeX)
     * Configure if CSS is based on Bootstrap or not
     * Configure "Inherited members" (Michalis)
@@ -82,17 +84,17 @@ If you have any feedback [use our discussion forum](https://github.com/pasdoc/pa
 * Other fixes:
     * Fixed using introduction `@shortTitle` (Michalis)
     * Fixed resolving relative paths from introduction/conclusion (Michalis)
-    * Fixes and improvements to Markdown support - add analog to @link tag `[Descr](#Item)` (Fr0sT-Brutal)
+    * Fixes and improvements to Markdown support, and make Markdown `[Descr](#Item)` equivalent to `@link` (Fr0sT-Brutal)
     * Fixed [spellchecking using Aspell](https://pasdoc.github.io/SpellChecking), in previous version we didn't pass language arguments to `aspell` correctly
     * Fixed output when ancestor is not CIO (class, record or interface) for PasDoc (Michalis)
-    * Fixed default visibility members (as documented, we hide `private`, `strict private` and `implicit`, and show the rest, see https://pasdoc.github.io/VisibleMembers ) (Michalis)
+    * Fixed default visibility members (as [documented](https://pasdoc.github.io/VisibleMembers), we hide `private`, `strict private` and `implicit`, and show the rest) (Michalis)
     * Fixed `@exclude` on nested types (Michalis)
 
 * Code cleanups, fixes to pass every auto-test with every compiler, CI improvements (Michalis)
-    * Removed custom `TStreamReader` / `TStreamWriter` implementation, just rely on Delphi provided ones. This codepath is used only with `STRING_UNICODE` (only Delphi), so it's not a problem FPC 3.2.2 doesn't have TStreamReader.
-    * Use generic containers from `Generics.Collections`, they rock with both FPC and Delphi, and make code both simpler (no need for some custom container code) and safer (no need to typecasts, types checked at compile-time). See https://github.com/pasdoc/pasdoc/discussions/231
-    * Fixed compilation and working with Delphi, Delphi 10 and 12, using GitHub Actions, just like we do for CGE (see https://castle-engine.io/supported_compilers ).
-    * Use standard TBufferedFileStream from both FPC and Delphi.
+    * Removed custom `TStreamReader` / `TStreamWriter` implementation, just rely on Delphi provided ones. This codepath is used only with `STRING_UNICODE` (only Delphi), so it's not a problem FPC 3.2.2 doesn't have TStreamReader (only later FPC has this).
+    * Use generic containers from `Generics.Collections`, they rock with both FPC and Delphi, and make code both simpler (no need for some custom container code) and safer (no need to typecasts, types checked at compile-time). See [discussion thread](https://github.com/pasdoc/pasdoc/discussions/231).
+    * Fixed compilation and working with Delphi (Delphi 10 and up), using GitHub Actions, [just like we do for Castle Game Engine](https://castle-engine.io/supported_compilers).
+    * Use standard `TBufferedFileStream` from both FPC and Delphi.
     * Removed a ton of unused old code from `PasDoc_Utils`, `PasDoc_StreamUtils`. We now rely on standard FPC and Delphi API for streams and Unicode handling.
     * Dropped compatibility with some ancient compiler versions. We require now compilers with `Generics.Collections` support, which means FPC >= 3.2.0 and Delphi >= 2009.
     * Nested classes parsing cleaned up (types nested in classes unified with global types, which solves a few accidental differences)
