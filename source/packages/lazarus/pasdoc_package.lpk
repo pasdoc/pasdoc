@@ -38,7 +38,7 @@
 "/>
     <License Value="GNU General Public License (version 2 or later).
 "/>
-    <Version Major="1"/>
+    <Version Major="1" Minor="2"/>
     <Files Count="27">
       <Item1>
         <Filename Value="../../component/PasDoc_Aspell.pas"/>
