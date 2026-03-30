@@ -305,18 +305,6 @@ var
 
   { ---------- }
 
-  procedure ContentWriteLegend(const Text: string);
-  var
-    FileName: string;
-  begin
-    FileName := 'Legend' + GetFileExtension;
-    if Text <> '' then
-      WriteLiObject(Text, FileName) else
-      WriteLiObject(FLanguage.Translation[trLegend], FileName);
-  end;
-
-  { ---------- }
-
   procedure ContentWriteGVUses();
   var
     FileName: string;
@@ -365,12 +353,7 @@ var
             ContentWriteOverview(Text);
           end
           else
-            if CompareText('@Legend', Link) = 0 then begin
-              DefaultContentsWritten := True;
-              ContentWriteLegend(Text);
-            end
-            else
-              WriteLiObject(Text, Link);
+            WriteLiObject(Text, Link);
   end;
 
   { ---------- }
@@ -534,7 +517,6 @@ begin
     ContentWriteClassHierarchy(FLanguage.Translation[trClassHierarchy]);
     ContentWriteClasses('');
     ContentWriteOverview('');
-    ContentWriteLegend('');
     ContentWriteGVClasses();
     ContentWriteGVUses();
     ContentWriteAdditionalFiles;
