@@ -2,6 +2,13 @@
 
 <!-- ## Upcoming Next Release -->
 
+## Version 1.0.2 (2026-03-30)
+
+* Fixed [HTML Help](https://pasdoc.github.io/HtmlHelp) output (Michalis)
+  - Don't link to missing `legend.html`
+  - Improve look: margin around body, white text in visibility pills
+  - Tested with `hhc` using CI (GitHub Actions) to make sure we don't break it again in the future
+
 ## Version 1.0.0 (2026-03-30)
 
 We are proud to announce the release of PasDoc 1.0.0!

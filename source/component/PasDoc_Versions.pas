@@ -91,8 +91,8 @@ const
   PASDOC_DATE = '2026-03-30';
   //PASDOC_DATE = 'snapshot';
   { }
-  PASDOC_VERSION = '1.2.0';
-  //PASDOC_VERSION = '1.3.0.snapshot';
+  PASDOC_VERSION = '1.0.2';
+  //PASDOC_VERSION = '1.1.0.snapshot';
   { }
   PASDOC_NAME_AND_VERSION = PASDOC_NAME + ' ' + PASDOC_VERSION;
   { }
