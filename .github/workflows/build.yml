@@ -137,11 +137,21 @@ jobs:
             *.tar.gz
           if-no-files-found: error
 
-      - name: Test HTML Help Generation
+      - name: Test HTML Help Generation (Prepare)
         if: ${{ runner.os == 'Windows' }}
         run: |
           choco install html-help-workshop graphviz
-          export PATH="$PATH:/c/Program Files (x86)/HTML Help Workshop/"
+          # hhc on $PATH
+          echo "c:/Program Files (x86)/HTML Help Workshop/" >> $GITHUB_PATH
+          # pasdoc on $PATH
+          # Note that GITHUB_WORKSPACE is native path on Windows,
+          # it's OK to pass it to GITHUB_PATH even when we use bash from Msys
+          # (env variable will be converted to Unix-style for bash).
+          echo "${GITHUB_WORKSPACE}/bin/" >> $GITHUB_PATH
+
+      - name: Test HTML Help Generation (Generate CHM)
+        if: ${{ runner.os == 'Windows' }}
+        run: |
           cd source/autodoc/
           make clean htmlhelp
 
