@@ -39,7 +39,7 @@ If you have any feedback [use our discussion forum](https://github.com/pasdoc/pa
 * Added release (and CI build) on _macOS/Aarch64_ (Michalis)
 * Show ancestor description for a method or class, when it misses its own description. Scans ancestor class and interfaces and generates nice HTML output with ancestor descriptions. (Elliot Hillary)
 * Overloaded methods are now accounted for better (Elliot Hillary):
-    - When using @link, you can link to a particular overload like `@link(MyRoutine(Integer, String))` or `@link(MyRoutine(Single))` instead of just `@link(MyRoutine)`.
+    - When using `@link`, you can link to a particular overload like `@link(MyRoutine(Integer, String))` or `@link(MyRoutine(Single))` instead of just `@link(MyRoutine)`.
     - When generating HTML anchors, we add parameter types, so that each overloaded routine has a different anchor. This makes internal links (from `@link`, from internal tables) in the generated HTML output correct.
     - See [@link tag docs](https://pasdoc.github.io/LinkTag) for usage examples.
 * Much more complete expression evaluation for `$if` / `$elseif` (functions, subexpressions, negation, comparison, addition, multiplication). See [conditional expressions docs](https://pasdoc.github.io/ConditionalDefines) (Johann Elsass aka circular17)
