@@ -671,8 +671,6 @@ begin
   { HHC seems to know about the files by reading the Content and Index.
     So there is no need to specify them in the FILES section. }
 
-  WriteDirectLine('Legend.html');
-
   If Introduction <> nil then
   begin
     WriteDirectLine(Introduction.FullLink);
