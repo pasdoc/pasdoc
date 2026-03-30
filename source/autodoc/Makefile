@@ -74,13 +74,19 @@ html:
 	  --output=html/ --use-tipue-search
 	cd html/; $(GRAPHVIZ_COMMANDS)
 
-# Ignore exit code from hhc (it's always 1 ???)
 htmlhelp:
 	mkdir -p htmlhelp/
 	$(PASDOC) $(PASDOC_OPTIONS) $(PASDOC_GRAPHVIZ_OPTIONS) \
 	  --format=htmlhelp --output=htmlhelp/
 	cd htmlhelp/; $(GRAPHVIZ_COMMANDS)
+# Ignore exit code from hhc (it's always 1 ???)
 	-cd htmlhelp/; $(HHC) docs.hhp
+# Since we had to ignore hhc's exit code, let's check if .chm file was generated
+	if [ -f htmlhelp/docs.chm ]; then \
+	  echo "CHM file generated successfully"; \
+	else \
+	  echo "Error: CHM file was not generated"; exit 1; \
+	fi
 
 # Just shortcuts
 latex: latex/docs.tex
