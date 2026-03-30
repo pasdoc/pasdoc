@@ -232,7 +232,7 @@ function CharsPos(const Chars: TCharSet; const S: String): Integer;
 function SRemoveChars(const S: string; const Chars: TCharSet): string;
 
 { Convert HelpInsight description to PasDoc description, by converting HelpInsight tags
-  like <summary>...</summary> to PasDoc @tags like @@abstract. }
+  like <summary>...</summary> to PasDoc @@tags like @@abstract. }
 function ConvertHelpInsightDescription(const Description: string): string;
 
 implementation
