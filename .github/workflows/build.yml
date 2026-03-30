@@ -137,6 +137,14 @@ jobs:
             *.tar.gz
           if-no-files-found: error
 
+      - name: Test HTML Help Generation
+        if: ${{ runner.os == 'Windows' }}
+        run: |
+          choco install html-help-workshop graphviz
+          export PATH="$PATH:/c/Program Files (x86)/HTML Help Workshop/"
+          cd source/autodoc/
+          make clean htmlhelp
+
   # Build for Raspberry Pi using https://github.com/marketplace/actions/arm-runner .
   # See https://github.com/michaliskambi/test-arm-runner-for-cge/ .
   build-rpi:
