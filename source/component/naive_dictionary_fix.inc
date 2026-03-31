@@ -6,6 +6,8 @@
   We reuse it in PasDoc.
   "Castle Game Engine" has even more permissive license
   ( https://castle-engine.io/license ) than PasDoc, so this is OK.
+  Copyright holder (Michalis Kamburelis) allows to licence this file
+  under the same license as the rest of PasDoc, to make licensing easier.
 
   ----------------------------------------------------------------------------
 }
