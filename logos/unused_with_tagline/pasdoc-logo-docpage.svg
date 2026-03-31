@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 270" width="220" height="270">
+  <!-- PasDoc Logo — Document Page -->
+  <!-- Colors: Teal #1A7A5C (Pas/code), Coral #C85A2A (Doc) -->
+
+  <!-- Source code lines in background -->
+  <line x1="30" y1="30" x2="180" y2="30" stroke="#888" stroke-width="0.7" opacity="0.07" stroke-linecap="round"/>
+  <line x1="40" y1="42" x2="190" y2="42" stroke="#888" stroke-width="0.7" opacity="0.07" stroke-linecap="round"/>
+  <line x1="25" y1="54" x2="175" y2="54" stroke="#888" stroke-width="0.7" opacity="0.07" stroke-linecap="round"/>
+  <line x1="35" y1="66" x2="195" y2="66" stroke="#888" stroke-width="0.7" opacity="0.07" stroke-linecap="round"/>
+  <line x1="28" y1="78" x2="185" y2="78" stroke="#888" stroke-width="0.7" opacity="0.07" stroke-linecap="round"/>
+  <line x1="38" y1="90" x2="178" y2="90" stroke="#888" stroke-width="0.7" opacity="0.07" stroke-linecap="round"/>
+  <line x1="32" y1="102" x2="188" y2="102" stroke="#888" stroke-width="0.7" opacity="0.07" stroke-linecap="round"/>
+  <line x1="42" y1="114" x2="182" y2="114" stroke="#888" stroke-width="0.7" opacity="0.07" stroke-linecap="round"/>
+  <line x1="30" y1="126" x2="192" y2="126" stroke="#888" stroke-width="0.7" opacity="0.07" stroke-linecap="round"/>
+  <line x1="36" y1="138" x2="180" y2="138" stroke="#888" stroke-width="0.7" opacity="0.07" stroke-linecap="round"/>
+  <line x1="28" y1="150" x2="186" y2="150" stroke="#888" stroke-width="0.7" opacity="0.07" stroke-linecap="round"/>
+  <line x1="40" y1="162" x2="190" y2="162" stroke="#888" stroke-width="0.7" opacity="0.07" stroke-linecap="round"/>
+  <line x1="34" y1="174" x2="184" y2="174" stroke="#888" stroke-width="0.7" opacity="0.07" stroke-linecap="round"/>
+  <line x1="30" y1="186" x2="188" y2="186" stroke="#888" stroke-width="0.7" opacity="0.07" stroke-linecap="round"/>
+
+  <!-- Document page -->
+  <rect x="58" y="28" width="108" height="140" rx="3" fill="#F4F2EC" stroke="#1A7A5C" stroke-width="1.8"/>
+
+  <!-- Folded corner -->
+  <path d="M136 28 L166 28 L166 58 Z" fill="#E8E5DC" stroke="#1A7A5C" stroke-width="1.2" stroke-linejoin="round"/>
+  <line x1="136" y1="28" x2="166" y2="58" stroke="#1A7A5C" stroke-width="1.2"/>
+
+  <!-- Subtle doc lines on page top area -->
+  <line x1="74" y1="46" x2="124" y2="46" stroke="#1A7A5C" stroke-width="0.8" opacity="0.12" stroke-linecap="round"/>
+  <line x1="74" y1="56" x2="114" y2="56" stroke="#1A7A5C" stroke-width="0.8" opacity="0.12" stroke-linecap="round"/>
+  <line x1="74" y1="66" x2="120" y2="66" stroke="#1A7A5C" stroke-width="0.8" opacity="0.12" stroke-linecap="round"/>
+
+  <!-- { } centered on the page -->
+  <text x="95" y="108" text-anchor="middle" dominant-baseline="central" font-family="'SF Mono','Cascadia Code','Consolas','Liberation Mono',monospace" font-size="54" font-weight="700" fill="#1A7A5C" opacity="0.72">{</text>
+  <text x="131" y="108" text-anchor="middle" dominant-baseline="central" font-family="'SF Mono','Cascadia Code','Consolas','Liberation Mono',monospace" font-size="54" font-weight="700" fill="#C85A2A" opacity="0.72">}</text>
+
+  <!-- Wordmark -->
+  <text x="118" y="204" text-anchor="end" font-size="28" font-weight="700" fill="#1A7A5C" font-family="'Inter','Helvetica Neue','Arial',sans-serif" letter-spacing="-0.5">Pas</text>
+  <text x="120" y="204" text-anchor="start" font-size="28" font-weight="500" fill="#C85A2A" font-family="'Inter','Helvetica Neue','Arial',sans-serif" letter-spacing="-0.5">Doc</text>
+
+  <!-- Tagline -->
+  <text x="112" y="228" text-anchor="middle" font-size="10" font-weight="400" fill="#888" font-family="'Inter','Helvetica Neue','Arial',sans-serif" letter-spacing="0.5">documentation generator</text>
+  <text x="112" y="242" text-anchor="middle" font-size="10" font-weight="400" fill="#888" font-family="'Inter','Helvetica Neue','Arial',sans-serif" letter-spacing="0.5">for Pascal</text>
+</svg>

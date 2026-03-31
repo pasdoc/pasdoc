@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 220 220"
+   width="220"
+   height="220"
+   version="1.1"
+   id="svg23"
+   sodipodi:docname="edited-pasdoc-logo-docpage.svg"
+   inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs23" />
+  <sodipodi:namedview
+     id="namedview23"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="2.0191827"
+     inkscape:cx="111.43122"
+     inkscape:cy="134.46034"
+     inkscape:window-width="1854"
+     inkscape:window-height="1003"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg23" />
+  <!-- PasDoc Logo — Document Page -->
+  <!-- Colors: Teal #1A7A5C (Pas/code), Coral #C85A2A (Doc) -->
+  <!-- Source code lines in background -->
+  <line
+     x1="20.607849"
+     y1="14.492469"
+     x2="188.21812"
+     y2="14.492469"
+     stroke="#888888"
+     stroke-width="0.782181"
+     opacity="0.07"
+     stroke-linecap="round"
+     id="line1" />
+  <line
+     x1="31.781868"
+     y1="27.901293"
+     x2="199.39215"
+     y2="27.901293"
+     stroke="#888888"
+     stroke-width="0.782181"
+     opacity="0.07"
+     stroke-linecap="round"
+     id="line2" />
+  <line
+     x1="15.02084"
+     y1="41.310112"
+     x2="182.63112"
+     y2="41.310112"
+     stroke="#888888"
+     stroke-width="0.782181"
+     opacity="0.07"
+     stroke-linecap="round"
+     id="line3" />
+  <line
+     x1="26.194859"
+     y1="54.718937"
+     x2="204.97916"
+     y2="54.718937"
+     stroke="#888888"
+     stroke-width="0.782181"
+     opacity="0.07"
+     stroke-linecap="round"
+     id="line4" />
+  <line
+     x1="18.373045"
+     y1="68.127762"
+     x2="193.80515"
+     y2="68.127762"
+     stroke="#888888"
+     stroke-width="0.782181"
+     opacity="0.07"
+     stroke-linecap="round"
+     id="line5" />
+  <line
+     x1="29.547064"
+     y1="81.536583"
+     x2="185.98332"
+     y2="81.536583"
+     stroke="#888888"
+     stroke-width="0.782181"
+     opacity="0.07"
+     stroke-linecap="round"
+     id="line6" />
+  <line
+     x1="22.842653"
+     y1="94.945404"
+     x2="197.15735"
+     y2="94.945404"
+     stroke="#888888"
+     stroke-width="0.782181"
+     opacity="0.07"
+     stroke-linecap="round"
+     id="line7" />
+  <line
+     x1="34.01667"
+     y1="108.35423"
+     x2="190.45294"
+     y2="108.35423"
+     stroke="#888888"
+     stroke-width="0.782181"
+     opacity="0.07"
+     stroke-linecap="round"
+     id="line8" />
+  <line
+     x1="20.607849"
+     y1="121.76305"
+     x2="201.62695"
+     y2="121.76305"
+     stroke="#888888"
+     stroke-width="0.782181"
+     opacity="0.07"
+     stroke-linecap="round"
+     id="line9" />
+  <line
+     x1="27.312262"
+     y1="135.17186"
+     x2="188.21812"
+     y2="135.17186"
+     stroke="#888888"
+     stroke-width="0.782181"
+     opacity="0.07"
+     stroke-linecap="round"
+     id="line10" />
+  <line
+     x1="18.373045"
+     y1="148.58069"
+     x2="194.92255"
+     y2="148.58069"
+     stroke="#888888"
+     stroke-width="0.782181"
+     opacity="0.07"
+     stroke-linecap="round"
+     id="line11" />
+  <line
+     x1="31.781868"
+     y1="161.98952"
+     x2="199.39215"
+     y2="161.98952"
+     stroke="#888888"
+     stroke-width="0.782181"
+     opacity="0.07"
+     stroke-linecap="round"
+     id="line12" />
+  <line
+     x1="25.077457"
+     y1="175.39833"
+     x2="192.68774"
+     y2="175.39833"
+     stroke="#888888"
+     stroke-width="0.782181"
+     opacity="0.07"
+     stroke-linecap="round"
+     id="line13" />
+  <line
+     x1="20.607849"
+     y1="188.80716"
+     x2="197.15735"
+     y2="188.80716"
+     stroke="#888888"
+     stroke-width="0.782181"
+     opacity="0.07"
+     stroke-linecap="round"
+     id="line14" />
+  <!-- Document page -->
+  <rect
+     x="51.895103"
+     y="12.257665"
+     width="120.67941"
+     height="156.43626"
+     rx="3.3522058"
+     fill="#f4f2ec"
+     stroke="#1a7a5c"
+     stroke-width="2.01132"
+     id="rect14" />
+  <!-- Folded corner -->
+  <path
+     d="m 139.05245,12.257665 h 33.52206 v 33.522057 z"
+     fill="#e8e5dc"
+     stroke="#1a7a5c"
+     stroke-width="1.34088"
+     stroke-linejoin="round"
+     id="path14" />
+  <line
+     x1="139.05244"
+     y1="12.257665"
+     x2="172.57451"
+     y2="45.77972"
+     stroke="#1a7a5c"
+     stroke-width="1.34088"
+     id="line15" />
+  <!-- Subtle doc lines on page top area -->
+  <line
+     x1="69.773529"
+     y1="32.370899"
+     x2="125.64362"
+     y2="32.370899"
+     stroke="#1a7a5c"
+     stroke-width="0.893921"
+     opacity="0.12"
+     stroke-linecap="round"
+     id="line16" />
+  <line
+     x1="69.773529"
+     y1="43.544918"
+     x2="114.4696"
+     y2="43.544918"
+     stroke="#1a7a5c"
+     stroke-width="0.893921"
+     opacity="0.12"
+     stroke-linecap="round"
+     id="line17" />
+  <line
+     x1="69.773529"
+     y1="54.718937"
+     x2="121.17402"
+     y2="54.718937"
+     stroke="#1a7a5c"
+     stroke-width="0.893921"
+     opacity="0.12"
+     stroke-linecap="round"
+     id="line18" />
+  <!-- { } centered on the page -->
+  <text
+     x="93.238976"
+     y="101.64981"
+     text-anchor="middle"
+     dominant-baseline="central"
+     font-family="'SF Mono', 'Cascadia Code', Consolas, 'Liberation Mono', monospace"
+     font-size="60.3397px"
+     font-weight="700"
+     fill="#1a7a5c"
+     opacity="0.72"
+     id="text18"
+     style="stroke-width:1.1174">{</text>
+  <text
+     x="133.46544"
+     y="101.64981"
+     text-anchor="middle"
+     dominant-baseline="central"
+     font-family="'SF Mono', 'Cascadia Code', Consolas, 'Liberation Mono', monospace"
+     font-size="60.3397px"
+     font-weight="700"
+     fill="#c85a2a"
+     opacity="0.72"
+     id="text19"
+     style="stroke-width:1.1174">}</text>
+  <!-- Wordmark -->
+  <text
+     x="118.93922"
+     y="208.92039"
+     text-anchor="end"
+     font-size="31.2873px"
+     font-weight="700"
+     fill="#1a7a5c"
+     font-family="Inter, 'Helvetica Neue', Arial, sans-serif"
+     letter-spacing="-0.5"
+     id="text20"
+     style="stroke-width:1.1174">Pas</text>
+  <text
+     x="121.17402"
+     y="208.92039"
+     text-anchor="start"
+     font-size="31.2873px"
+     font-weight="500"
+     fill="#c85a2a"
+     font-family="Inter, 'Helvetica Neue', Arial, sans-serif"
+     letter-spacing="-0.5"
+     id="text21"
+     style="stroke-width:1.1174">Doc</text>
+  <!-- Tagline -->
+</svg>
