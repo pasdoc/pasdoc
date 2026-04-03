@@ -3959,6 +3959,7 @@ end;
 procedure TParser.ParseGenericTypeIdentifierList(var T: TToken; var Content: string);
 var
   Level: Cardinal;
+  EqualSignToken: TToken;
 begin
   Content := Content + T.Data;
   Level := 1;
@@ -3970,6 +3971,19 @@ begin
       Inc(Level) else
     if T.IsSymbol(SYM_GREATER_THAN) then
       Dec(Level);
+    { Detect '>=' to close ParseGenericTypeIdentifierList,
+      which means we should consume > but leave = for later processing. }
+    if (Level = 1) and T.IsSymbol(SYM_GREATER_THAN_EQUAL) then
+    begin
+      SetLength(Content, Length(Content) - 1); { remove '=' from Content }
+      EqualSignToken := TToken.Create(TOK_SYMBOL);
+      EqualSignToken.Data := '=';
+      EqualSignToken.Info.SymbolType := SYM_EQUAL;
+      Scanner.UnGetToken(EqualSignToken);
+
+      // behave as if we just saw '>'
+      Dec(Level);
+    end;
   until Level = 0;
   FreeAndNil(T); { free last ">" }
 end;

@@ -2,6 +2,10 @@
 
 <!-- ## Upcoming Next Release -->
 
+## Version 1.0.4 (2026-04-04)
+
+* Fix parsing `TSimpleMap<T>=class`, without a space between `>` and `=` (Michalis)
+
 ## Version 1.0.2 (2026-03-30)
 
 * Fixed [HTML Help](https://pasdoc.github.io/HtmlHelp) output (Michalis)
