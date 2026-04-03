@@ -1,0 +1,13 @@
+<unit name="ok_generic_specialize">
+  <structure name="TSimpleMap" name_with_generic="generic TSimpleMap&lt;T1,T2&gt;" type="class">
+    <description><abstract>TSimpleMap</abstract></description>
+    <ancestor name="TObject" declaration="TObject" />
+    <routine name="Create" declaration="constructor Create;" visibility="public" type="constructor">
+      <description><abstract>TSimpleMap</abstract></description>
+    </routine>
+    <routine name="Destroy" declaration="destructor Destroy; override;" visibility="public" type="destructor">
+    </routine>
+    <routine name="Delete" declaration="procedure Delete(aKey: T1);" visibility="public" type="procedure">
+    </routine>
+  </structure>
+</unit>

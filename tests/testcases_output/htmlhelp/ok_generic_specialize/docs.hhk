@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+</head><body>
+<ul>
+<li><object type="text/sitemap">
+<param name="Name" value="TSimpleMap">
+<param name="Local" value="ok_generic_specialize.TSimpleMap.generic.html">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Create">
+<param name="Local" value="ok_generic_specialize.TSimpleMap.generic.html#Create">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Delete">
+<param name="Local" value="ok_generic_specialize.TSimpleMap.generic.html#Delete-T1-">
+</object>
+<li><object type="text/sitemap">
+<param name="Name" value="Destroy">
+<param name="Local" value="ok_generic_specialize.TSimpleMap.generic.html#Destroy">
+</object>
+</ul>
+</body></html>
