@@ -42,7 +42,7 @@ jobs:
     runs-on: ${{ matrix.operating-system }}
     steps:
       - name: Checkout PasDoc
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # We use https://github.com/castle-engine/castle-build-ci/
       # to get FPC + Lazarus on all platforms.
@@ -142,7 +142,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout PasDoc
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: "Install FPC+Lazarus (using castle-build-ci)"
         run: |
@@ -178,7 +178,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PasDoc
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: "Install FPC+Lazarus (using castle-build-ci)"
         run: |
@@ -217,7 +217,7 @@ jobs:
           cpu: cortex-a53
           base_image: raspios_lite_arm64:latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: pguyot/arm-runner-action@v2
         with:
           base_image: ${{ matrix.base_image }}
@@ -265,7 +265,7 @@ jobs:
     runs-on: ${{ matrix.delphi_runner_version }}
     steps:
       - name: Checkout PasDoc
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Build Using Delphi
         shell: cmd
         # Note: It seems that only the last command in the "run" section
@@ -314,7 +314,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [release]
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Update Release Tag
       if: ${{ github.ref == 'refs/heads/master' }}
       run: |
