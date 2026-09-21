@@ -1,0 +1,6 @@
+<unit name="ok_winapi">
+  <routine name="SslChangeNotify" declaration="function SslChangeNotify( hEvent: THandle; dwFlags: Integer): Integer; winapi; external 'foo.dll';" type="function">
+  </routine>
+  <routine name="SslChangeNotify2" declaration="function SslChangeNotify2( hEvent: THandle; dwFlags: Integer): Integer; winapi;" type="function">
+  </routine>
+</unit>
