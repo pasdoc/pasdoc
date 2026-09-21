@@ -348,6 +348,7 @@ all_tests_for_current_format ()
   mk_test ok_octal_notation ok_octal_notation.pas
   mk_test ok_generic_specialize ok_generic_specialize.pas
   mk_test ok_include_from_parent_dir test_subdir/ok_include_from_parent_dir.pas
+  mk_test ok_winapi ok_winapi.pas
 }
 
 # parse params ----------------------------------------

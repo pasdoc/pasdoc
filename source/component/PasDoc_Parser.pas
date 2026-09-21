@@ -1135,7 +1135,7 @@ begin
           SD_ABSTRACT, SD_ASSEMBLER, SD_CDECL, SD_DYNAMIC, SD_EXPORT,
           SD_FAR, SD_FORWARD, SD_NEAR, SD_NORETURN, SD_OVERLOAD, SD_OVERRIDE, SD_INLINE,
           SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
-          SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
+          SD_STDCALL, SD_WINAPI, SD_REINTRODUCE, SD_VIRTUAL,
           SD_VARARGS, SD_FINAL:
             begin
               M.Directives := M.Directives + [t.Info.StandardDirective];
@@ -1173,7 +1173,7 @@ begin
                     SD_EXTERNAL,
                     SD_FAR, SD_FORWARD, SD_NEAR, SD_NORETURN, SD_OVERLOAD, SD_OVERRIDE,
                     SD_PASCAL, SD_REGISTER, SD_SAFECALL, SD_STATIC,
-                    SD_STDCALL, SD_REINTRODUCE, SD_VIRTUAL,
+                    SD_STDCALL, SD_WINAPI, SD_REINTRODUCE, SD_VIRTUAL,
                     SD_DEPRECATED, SD_PLATFORM, SD_EXPERIMENTAL,
                     SD_UNIMPLEMENTED:
                       begin
@@ -1412,7 +1412,7 @@ begin
       t := GetNextToken(WhitespaceCollector);
       try
         case t.Info.StandardDirective of
-          SD_CDECL, SD_STDCALL, SD_PASCAL, SD_REGISTER, SD_SAFECALL:
+          SD_CDECL, SD_STDCALL, SD_WINAPI, SD_PASCAL, SD_REGISTER, SD_SAFECALL:
             begin
               Constant.FullDeclaration := Constant.FullDeclaration + WhitespaceCollector;
               Constant.FullDeclaration := Constant.FullDeclaration + t.Data;
