@@ -218,7 +218,7 @@ jobs:
           base_image: raspios_lite_arm64:latest
     steps:
       - uses: actions/checkout@v7
-      - uses: pguyot/arm-runner-action@v2
+      - uses: castle-engine/arm-runner-action@castle-current
         with:
           base_image: ${{ matrix.base_image }}
           cpu: ${{ matrix.cpu }}
